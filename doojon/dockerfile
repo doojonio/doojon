@@ -1,0 +1,9 @@
+FROM perl:5.32
+
+ADD ./cpanfile /cpanfile
+RUN cpanm -n --installdeps /
+
+ADD . /app
+WORKDIR /app
+
+ENTRYPOINT [ "/app/script/doojon" ]
