@@ -1,2 +1,4 @@
-requires 'Mojolicious', '>=', '8.71';
+requires 'CLASS', '>=', '1.00';
+requires 'DBIx::Class', '>=', '0.08';
 requires 'Mojo::Pg', '>=', '4.23';
+requires 'Mojolicious', '>=', '8.71';
