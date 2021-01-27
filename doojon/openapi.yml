@@ -1,0 +1,176 @@
+openapi: "3.0.3"
+info:
+  title: Doojon OpenAPI
+  version: "0.0.1"
+servers:
+  - url: localhost
+    description: Local development server
+paths:
+  /api/user:
+    post:
+      summary: Create new user
+      tags: [User]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "200":
+          description: User's id. User successfully created
+          content:
+            application/json:
+              schema:
+                type: integer
+                minimum: 1
+        "400":
+          description: Request schema is not valid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchemaValidationError"
+        "409":
+          description: One of unique fields already taken
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FieldAlreadyTakenError"
+    get:
+      summary: Read user
+      tags: [User]
+      parameters:
+        - $ref: "#/components/parameters/queryId"
+      responses:
+        "200":
+          description: User info-object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Request schema is not valid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchemaValidationError"
+        "404":
+          description: User with this id not found
+    put:
+      summary: Update existing user's info
+      tags: [User]
+      security:
+        - BasicAuth: [user]
+      parameters:
+        - $ref: "#/components/parameters/queryId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "200":
+          description: User's id. User successfully updated
+          content:
+            application/json:
+              schema:
+                type: integer
+                minimum: 1
+        "400":
+          description: Request schema is not valid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchemaValidationError"
+        "401":
+          description: Current user is not authorized
+        "403":
+          description: Current user doesn't has rights to do this action
+        "404":
+          description: User with this id not found
+        "409":
+          description: One of unique fields already taken
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FieldAlreadyTakenError"
+    delete:
+      summary: Delete user
+      tags: [User]
+      security:
+        - BasicAuth: [user]
+      parameters:
+        - $ref: "#/components/parameters/queryId"
+      responses:
+        "200":
+          description: User successfully deleted
+        "400":
+          description: Request schema is no valid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SchemaValidationError"
+        "401":
+          description: Current user is not authorized
+        "403":
+          description: Current user doesn't has rights to do this action
+        "404":
+          description: User with this id not found
+components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+  parameters:
+    queryId:
+      name: id
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+  schemas:
+    # ---
+    # Business schemas
+    # ---
+    User:
+      type: object
+      required:
+        - id
+        - username
+        - email
+        - password
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          writeOnly: true
+    # ---
+    # Tech schemas
+    # ---
+    SchemaValidationError:
+      type: object
+      required:
+        - errors
+      properties:
+        errors:
+          type: array
+          description: An array with validation errors
+          items:
+            type: string
+    FieldAlreadyTakenError:
+      type: object
+      required:
+        - takenFields
+      properties:
+        takenFields:
+          type: array
+          description: An array with taken fields
+          items:
+            type: string
