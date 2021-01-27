@@ -4,6 +4,8 @@ services:
     build: "./doojon"
     entrypoint: ["/usr/local/bin/morbo"]
     command: ["/app/script/doojon"]
+    volumes:
+      - ./doojon:/app
     ports:
       - 3000:3000
   db:
