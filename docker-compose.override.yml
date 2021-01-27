@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  api:
+    entrypoint: ["/usr/local/bin/morbo"]
+    command: ["/app/script/doojon"]
+    volumes:
+      - ./doojon:/app
+  db:
+    environment:
+      - POSTGRES_DATABASE=doojon
+      - POSTGRES_USER=doojon
+      - POSTGRES_PASSWORD=password
+    ports:
+      - 5432:5432
+  proxy:
+    volumes:
+      - "./nginx.override.conf:/etc/nginx/nginx.conf"
+    ports:
+      - "1999:80"
