@@ -1,10 +1,9 @@
 package Doojon::Model::ORM::Result::User;
 
-use base qw(DBIx::Class::Core);
-use CLASS;
+use Doojon::Model::ORM::Base;
 
-CLASS->table('users');
-CLASS->add_columns(
+User->table('users');
+User->add_columns(
     id => {
         data_type => 'integer',
         is_auto_increment => 1,
@@ -21,7 +20,7 @@ CLASS->add_columns(
         data_type => 'text'
     },
 );
-CLASS->set_primary_key('id');
-CLASS->add_unique_constraints([qw(username email)]);
+User->set_primary_key('id');
+User->add_unique_constraints([qw(username email)]);
 
 1
