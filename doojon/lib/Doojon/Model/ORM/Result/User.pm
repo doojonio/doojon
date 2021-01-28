@@ -1,6 +1,6 @@
 package Doojon::Model::ORM::Result::User;
 
-use Doojon::Model::ORM::Base;
+use Doojon::Model::ORM::Result;
 
 User->table('users');
 User->add_columns(

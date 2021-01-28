@@ -1,4 +1,4 @@
-package Doojon::Model::ORM::Base;
+package Doojon::Model::ORM::Result;
 
 use strict;
 use warnings;
