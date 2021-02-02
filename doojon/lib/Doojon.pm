@@ -43,10 +43,10 @@ sub add_resource_shortcut ($self) {
   $self->routes->add_shortcut(resource => sub ($r, $name) {
     my $resource = $r->any("/$name")->to("resource#", model => $name);
 
-    $resource->post('')->to('#create');
-    $resource->get('')->to('#read');
-    $resource->put('')->to('#update');
-    $resource->delete('')->to('#delete');
+    $resource->post->to('#create');
+    $resource->get->to('#read');
+    $resource->put->to('#update');
+    $resource->delete->to('#delete');
 
     return $resource;
   });
