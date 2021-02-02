@@ -41,7 +41,7 @@ sub setup_database ($self) {
 sub add_resource_shortcut ($self) {
 
   $self->routes->add_shortcut(resource => sub ($r, $name) {
-    my $resource = $r->any("/$name")->to("$name#");
+    my $resource = $r->any("/$name")->to("resource#", model => $name);
 
     $resource->post('')->to('#create');
     $resource->get('')->to('#read');

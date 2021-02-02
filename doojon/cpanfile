@@ -2,8 +2,9 @@
 requires 'Mojolicious', '>=', '8.71';
 
 # Model
-requires 'SQL::Translator';
+requires 'DBD::Pg';
 requires 'DBIx::Class', '>=', '0.08';
 requires 'Moose';
 requires 'MooseX::MarkAsMethods';
 requires 'MooseX::NonMoose';
+requires 'SQL::Translator';
