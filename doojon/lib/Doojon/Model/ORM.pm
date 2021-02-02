@@ -1,9 +1,12 @@
 package Doojon::Model::ORM;
 
-use base qw(DBIx::Class::Schema);
-use CLASS;
+use Moose;
+use MooseX::MarkAsMethods autoclean => 1;
 
-CLASS->load_namespaces;
+extends 'DBIx::Class::Schema';
+
+__PACKAGE__->load_namespaces;
+__PACKAGE__->meta->make_immutable;
 
 sub users {shift->resultset('User')}
 

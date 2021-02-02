@@ -1,9 +1,13 @@
 package Doojon::Model::ORM::Result::User;
 
-use Doojon::Model::ORM::Result;
+use Moose;
+use MooseX::MarkAsMethods autoclean => 1;
+use MooseX::NonMoose;
 
-User->table('users');
-User->add_columns(
+extends 'DBIx::Class::Core';
+
+__PACKAGE__->table('users');
+__PACKAGE__->add_columns(
     id => {
         data_type => 'integer',
         is_auto_increment => 1,
@@ -20,7 +24,9 @@ User->add_columns(
         data_type => 'text'
     },
 );
-User->set_primary_key('id');
-User->add_unique_constraints([qw(username email)]);
+__PACKAGE__->set_primary_key('id');
+__PACKAGE__->add_unique_constraints([qw(username email)]);
+
+__PACKAGE__->meta->make_immutable;
 
 1

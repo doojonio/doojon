@@ -5,6 +5,8 @@ services:
     command: ["/app/script/doojon"]
     volumes:
       - ./doojon:/app
+    ports:
+      - 2000:3000
   db:
     environment:
       - POSTGRES_DATABASE=doojon

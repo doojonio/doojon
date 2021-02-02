@@ -1,7 +1,6 @@
 package Doojon;
 use Mojo::Base 'Mojolicious', -signatures;
 
-use Mojo::Pg;
 use Doojon::Model::ORM;
 
 # This method will run once at server start
@@ -30,16 +29,13 @@ sub startup ($self) {
 
 sub setup_database ($self) {
 
-  $self->attr(pg => sub {
-    state $pg = Mojo::Pg->new($self->config->{database}{url});
-  });
-  $self->pg->migrations->from_file($self->home->child('migrations.sql'))->migrate;
-
+  my $dbconf = $self->config->{database};
   $self->attr(orm => sub {
     state $orm = Doojon::Model::ORM->connect(
-      $self->pg->dsn, $self->pg->username, $self->pg->password
+      $dbconf->{dsn}, $dbconf->{username}, $dbconf->{password}
     );
   });
+  $self->orm->deploy({add_drop_table => 1});
 }
 
 sub add_resource_shortcut ($self) {

@@ -1,4 +1,9 @@
-requires 'CLASS', '>=', '1.00';
-requires 'DBIx::Class', '>=', '0.08';
-requires 'Mojo::Pg', '>=', '4.23';
+# Framework
 requires 'Mojolicious', '>=', '8.71';
+
+# Model
+requires 'SQL::Translator';
+requires 'DBIx::Class', '>=', '0.08';
+requires 'Moose';
+requires 'MooseX::MarkAsMethods';
+requires 'MooseX::NonMoose';
