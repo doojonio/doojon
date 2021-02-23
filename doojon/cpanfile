@@ -8,8 +8,9 @@ requires 'DBD::Pg';
 requires 'DBIx::Class', '>=', '0.08';
 requires 'Module::Find';
 requires 'Moose';
+requires 'Redis';
 requires 'SQL::Translator';
-requires 'Session::Token'; #TODO
+requires 'Session::Token';
 requires 'String::CamelCase';
 
 on develop => sub {

@@ -8,6 +8,8 @@ services:
       - "db"
   db:
     image: "postgres:13"
+  redis:
+    image: "redis:6"
   proxy:
     image: "nginx:1.19.6"
     depends_on:

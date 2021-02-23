@@ -39,10 +39,13 @@ sub startup ($self) {
 sub setup_model ($self) {
 
   my $db_conf = $self->config->{database};
+  my $redis_conf = $self->config->{redis};
+
   $self->attr(model => sub {
     state $model = Doojon::Model->new(
       name => 'Doojon',
       db_conf => $db_conf,
+      redis_conf => $redis_conf,
     );
   });
 

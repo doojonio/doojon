@@ -5,3 +5,5 @@ database:
   dsn: dbi:Pg:dbname=doojon;host=db
   username: doojon
   password: password
+redis:
+  server: redis:6379

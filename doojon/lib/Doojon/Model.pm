@@ -17,12 +17,20 @@ has db_conf => (
   required => 1,
 );
 
+has redis_conf => (
+  is => 'ro',
+  isa => 'HashRef',
+  required => 1,
+);
+
 sub BUILD {
 
   my $self = shift;
   my $db_conf = $self->db_conf;
+  my $redis_conf = $self->redis_conf;
 
   container $self => as {
+
     container services => as {
       service auth => (
         class => 'Doojon::Model::Service::Auth',
@@ -71,6 +79,19 @@ sub BUILD {
           username => depends_on('conf/username'),
           password => depends_on('conf/password'),
         },
+      );
+    };
+
+    container redis => as {
+      container conf => as {
+        service server => $redis_conf->{server};
+      };
+      service handler => (
+        lifecycle => 'Singleton',
+        class => 'Redis',
+        dependencies => {
+          server => depends_on('conf/server'),
+        }
       );
     };
   };
