@@ -1,8 +1,14 @@
 version: "3.8"
 services:
   api:
-    build: "./doojon"
+    image: 'carton:latest'
+    build:
+      context: "./doojon"
+    depends_on:
+      - "db"
   db:
     image: "postgres:13"
   proxy:
     image: "nginx:1.19.6"
+    depends_on:
+      - "api"

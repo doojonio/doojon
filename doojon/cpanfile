@@ -1,10 +1,17 @@
-# Framework
+# Web
 requires 'Mojolicious', '>=', '8.71';
 
 # Model
+requires 'Bread::Board';
+requires 'Crypt::PBKDF2';
 requires 'DBD::Pg';
 requires 'DBIx::Class', '>=', '0.08';
+requires 'Module::Find';
 requires 'Moose';
-requires 'MooseX::MarkAsMethods';
-requires 'MooseX::NonMoose';
 requires 'SQL::Translator';
+requires 'Session::Token'; #TODO
+requires 'String::CamelCase';
+
+on develop => sub {
+  requires 'DDP';
+};
