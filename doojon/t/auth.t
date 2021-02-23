@@ -20,7 +20,8 @@ subtest password_auth => sub {
     password => $user{password},
   );
   $t->post_ok('/api/auth/password', json => \%creds)
-    ->status_is(200);
+    ->status_is(200)
+    ->header_exists('Set-Cookie');
 };
 
 done_testing();

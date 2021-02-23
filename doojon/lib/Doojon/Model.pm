@@ -58,6 +58,23 @@ sub BUILD {
       );
     };
 
+    container rdataservices => as {
+      service session => (
+        class => 'Doojon::Model::RDataService::Session',
+        lifecycle => 'Singleton',
+        dependencies => {
+          tokenizer => (
+            service tokenizer => (
+              class => 'Session::Token',
+              lifecycle => 'Singleton', # TODO singleton allowed?
+            ),
+          ),
+          redis => depends_on('/redis/handler'),
+          storage_key => literal 'sessions',
+        }
+      );
+    };
+
     container db => as {
       container conf => as {
         service dsn => $db_conf->{dsn};
@@ -109,6 +126,11 @@ sub get_service ($self, $name) {
 sub get_dataservice ($self, $name) {
 
   $self->resolve(service => "dataservices/$name");
+}
+
+sub get_rdataservice ($self, $name) {
+
+  $self->resolve(service => "rdataservices/$name");
 }
 
 sub list_orm_result_classes ($self) {

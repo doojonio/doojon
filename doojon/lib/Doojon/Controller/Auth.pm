@@ -7,12 +7,12 @@ sub password_auth ($self) {
   my $user = $self->req->json;
   my $user_ds = $self->app->model->get_dataservice('user');
 
-  my $is_user_exists = !!($user_ds->search(
+  my($user_in_db) = $user_ds->search(
     {username => $user->{username}},
-    {columns => ['username']}
-  ));
+    {columns => ['id']}
+  );
 
-  if (!$is_user_exists) {
+  if (!$user_in_db) {
     return $self->reply->not_found;
   }
 
@@ -23,7 +23,9 @@ sub password_auth ($self) {
     return $self->reply->not_authorized;
   }
 
-  # TODO sessions
+  my $session = $self->app->model->get_rdataservice('session')->create($user_in_db->{id});
+  $self->session->{user_session} = $session;
+
   return $self->render(json => 1);
 }
 
