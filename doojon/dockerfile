@@ -1,9 +1,10 @@
 FROM perl:5.32
 
-ADD ./cpanfile /cpanfile
-RUN cpanm -n --installdeps /
+RUN cpanm Carton \
+    && mkdir -p /usr/src/app
+WORKDIR /usr/src/app
 
-ADD . /app
-WORKDIR /app
+COPY cpanfile* /usr/src/app/
+RUN carton install
 
-ENTRYPOINT [ "/app/script/doojon" ]
+COPY . /usr/src/app
