@@ -23,7 +23,7 @@ sub password_auth ($self) {
     return $self->reply->not_authorized;
   }
 
-  my $session = $self->app->model->get_rdataservice('session')->create($user_in_db->{id});
+  my $session = $self->app->model->get_service('session')->create($user_in_db->{id});
   $self->session->{user_session} = $session;
 
   return $self->render(json => 1);

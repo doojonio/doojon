@@ -1,11 +1,15 @@
-package Doojon::Model::RDataService::Session;
+package Doojon::Model::Service::Session;
 
 use Moose;
 use experimental qw(signatures);
 
-extends 'Doojon::Model::RDataService';
-
 use Carp qw();
+
+has redis => (
+  is => 'ro',
+  isa => 'Redis',
+  required => 1,
+);
 
 has tokenizer => (
   is => 'ro',
@@ -32,11 +36,6 @@ sub create ($self, $user_id) {
 sub read ($self, $session) {
 
   return $self->redis->hget($self->storage_key, $session);
-}
-
-sub update {
-
-  Carp::croak('session updating is forbidden');
 }
 
 # TODO delete sesions

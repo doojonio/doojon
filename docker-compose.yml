@@ -1,11 +1,10 @@
 version: "3.8"
 services:
   api:
-    image: 'carton:latest'
-    build:
-      context: "./doojon"
+    build: "./doojon"
     depends_on:
       - "db"
+      - "redis"
   db:
     image: "postgres:13"
   redis:

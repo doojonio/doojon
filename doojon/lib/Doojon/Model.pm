@@ -45,22 +45,8 @@ sub BUILD {
           user_dataservice => depends_on('/dataservices/user'),
         },
       );
-    };
-
-    container dataservices => as {
-      service user => (
-        class => 'Doojon::Model::DataService::User',
-        dependencies => {
-          result_name => literal 'User',
-          auth_service => depends_on('/services/auth'),
-          orm => depends_on('/db/orm'),
-        },
-      );
-    };
-
-    container rdataservices => as {
       service session => (
-        class => 'Doojon::Model::RDataService::Session',
+        class => 'Doojon::Model::Service::Session',
         lifecycle => 'Singleton',
         dependencies => {
           tokenizer => (
@@ -72,6 +58,17 @@ sub BUILD {
           redis => depends_on('/redis/handler'),
           storage_key => literal 'sessions',
         }
+      );
+    };
+
+    container dataservices => as {
+      service user => (
+        class => 'Doojon::Model::DataService::User',
+        dependencies => {
+          result_name => literal 'User',
+          auth_service => depends_on('/services/auth'),
+          orm => depends_on('/db/orm'),
+        },
       );
     };
 
@@ -126,11 +123,6 @@ sub get_service ($self, $name) {
 sub get_dataservice ($self, $name) {
 
   $self->resolve(service => "dataservices/$name");
-}
-
-sub get_rdataservice ($self, $name) {
-
-  $self->resolve(service => "rdataservices/$name");
 }
 
 sub list_orm_result_classes ($self) {
