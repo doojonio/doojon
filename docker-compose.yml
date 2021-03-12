@@ -5,11 +5,27 @@ services:
     depends_on:
       - "db"
       - "redis"
+    entrypoint: ["carton", "exec", "morbo"]
+    command: ["./script/doojon"]
+    volumes:
+      - "./doojon:/usr/src/app"
+    ports:
+      - "2000:3000"
   db:
     image: "postgres:13"
+    environment:
+      - "POSTGRES_DATABASE=doojon"
+      - "POSTGRES_USER=doojon"
+      - "POSTGRES_PASSWORD=password"
+    ports:
+      - "5432:5432"
   redis:
     image: "redis:6"
   proxy:
     image: "nginx:1.19.6"
     depends_on:
       - "api"
+    volumes:
+      - "./nginx.override.conf:/etc/nginx/nginx.conf"
+    ports:
+      - "1999:80"
