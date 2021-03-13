@@ -10,6 +10,9 @@ pub fn create(conn: &PgConnection, account: NewAccount) -> Account {
     )
 }
 
-pub fn read(id: String) {
+pub fn read(conn: &PgConnection, account_id: uuid::Uuid) -> Result<Account, diesel::result::Error> {
 
+    use crate::model::schema::accounts::dsl::*;
+    let acc: Account = accounts.find(account_id).first(conn)?;
+    Ok(acc)
 }

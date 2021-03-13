@@ -28,6 +28,7 @@ async fn main() -> std::io::Result<()> {
                     .service(
                         web::resource("/account")
                             .route(web::post().to(controllers::account::create))
+                            .route(web::get().to(controllers::account::read))
                     )
             )
     })
