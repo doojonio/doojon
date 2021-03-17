@@ -2,8 +2,6 @@
 secrets:
   - 8d9f959b0d41d6b9e0f5928ca2a4a9d93910fa0c
 database:
-  dsn: dbi:Pg:dbname=doojon;host=db
-  username: doojon
-  password: password
+  url: postgresql://doojon:password@localhost/doojon
 redis:
   server: redis:6379

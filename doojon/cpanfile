@@ -1,17 +1,9 @@
-# Web
-requires 'Mojolicious', '>=', '8.71';
-
-# Model
 requires 'Bread::Board';
-requires 'Crypt::PBKDF2';
-requires 'DBD::Pg';
-requires 'DBIx::Class', '>=', '0.08';
 requires 'Module::Find';
+requires 'Mojo::Pg';
+requires 'Mojolicious', '>=', '8.71';
 requires 'Moose';
 requires 'Redis';
-requires 'SQL::Translator';
-requires 'Session::Token';
-requires 'String::CamelCase';
 
 on develop => sub {
   requires 'DDP';

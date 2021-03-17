@@ -28,9 +28,8 @@ sub startup ($self) {
 
   my $api = $r->any('/api');
 
-  for my $result_class ($self->model->list_orm_result_classes) {
-    my $resource_name = decamelize $result_class =~ s/.*::(\w+)$/$1/r;
-    $api->resource($resource_name);
+  for my $ds ($self->model->list_dataservices) {
+    $api->resource($ds);
   }
 
   $api->post('/auth/password')->to('auth#password_auth');
@@ -43,16 +42,10 @@ sub setup_model ($self) {
 
   $self->attr(model => sub {
     state $model = Doojon::Model->new(
-      name => 'Doojon',
       db_conf => $db_conf,
       redis_conf => $redis_conf,
     );
   });
-
-  if ($self->mode eq MODE_DEVELOPMENT)  {
-    my $orm = $self->model->resolve(service => 'db/orm');
-    $orm->deploy({add_drop_table => 1});
-  }
 
   return 1;
 }

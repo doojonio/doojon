@@ -1,155 +1,101 @@
 package Doojon::Model;
 
-use Moose;
 use Bread::Board;
+use Mojo::Base -base, -signatures;
 
-use Doojon::Model::ORM qw();
+use Carp qw(croak);
 use List::Util qw(any);
 use Module::Find qw(findsubmod);
-use String::CamelCase qw(decamelize);
-use experimental qw(signatures);
+use Mojo::IOLoop;
+use Mojo::Pg;
+use Mojo::Util qw(decamelize);
+use Redis;
 
-extends qw(Bread::Board::Container);
+has 'db_conf';
+has 'redis_conf';
+has 'ioc';
 
-has db_conf => (
-  is => 'ro',
-  isa => 'HashRef',
-  required => 1,
-);
+sub new ($type, @args) {
+  my $self = $type->SUPER::new(@args);
 
-has redis_conf => (
-  is => 'ro',
-  isa => 'HashRef',
-  required => 1,
-);
-
-sub BUILD {
-
-  my $self = shift;
   my $db_conf = $self->db_conf;
   my $redis_conf = $self->redis_conf;
 
-  container $self => as {
+  my $ioc = container 'ioc' => as {
+    container services => as {};
+    container dataservices => as {};
 
-    container services => as {
-      service auth => (
-        class => 'Doojon::Model::Service::Auth',
-        lifecycle => 'Singleton',
-        dependencies => {
-          password_hasher => (
-            service password_hasher => (
-              class => 'Crypt::PBKDF2',
-              lifecycle => 'Singleton',
-            )
-          ),
-          user_dataservice => depends_on('/dataservices/user'),
-        },
-      );
-      service session => (
-        class => 'Doojon::Model::Service::Session',
-        lifecycle => 'Singleton',
-        dependencies => {
-          tokenizer => (
-            service tokenizer => (
-              class => 'Session::Token',
-              lifecycle => 'Singleton', # TODO singleton allowed?
-            ),
-          ),
-          redis => depends_on('/redis/handler'),
-          storage_key => literal 'sessions',
-        }
-      );
-    };
-
-    container dataservices => as {
-      service user => (
-        class => 'Doojon::Model::DataService::User',
-        dependencies => {
-          result_name => literal 'User',
-          auth_service => depends_on('/services/auth'),
-          orm => depends_on('/db/orm'),
-        },
-      );
-    };
-
-    container db => as {
-      container conf => as {
-        service dsn => $db_conf->{dsn};
-        service username => $db_conf->{username};
-        service password => $db_conf->{password};
-      };
-      service orm => (
-        lifecycle => 'Singleton',
-        block => sub {
-          my $service = shift;
-          Doojon::Model::ORM->connect(
-            $service->param('dsn'),
-            $service->param('username'),
-            $service->param('password'),
-          );
-        },
-        dependencies => {
-          dsn => depends_on('conf/dsn'),
-          username => depends_on('conf/username'),
-          password => depends_on('conf/password'),
-        },
-      );
-    };
-
-    container redis => as {
-      container conf => as {
-        service server => $redis_conf->{server};
-      };
-      service handler => (
-        lifecycle => 'Singleton',
-        class => 'Redis',
-        dependencies => {
-          server => depends_on('conf/server'),
-        }
-      );
-    };
+    service pg => (
+      lifecycle => 'Singleton',
+      block => sub {
+        Mojo::Pg->new($db_conf->{url} or croak 'need db url')
+      }
+    );
+    service redis => (
+      lifecycle => 'Singleton',
+      block => sub {
+        Redis->new($redis_conf->%*);
+      }
+    );
   };
 
-  $self->_complete_dataservces;
+  $self->ioc($ioc);
+
+  $self->_complete_dataservices;
 
   return $self;
 }
 
 sub get_service ($self, $name) {
 
-  $self->resolve(service => "services/$name");
+  $self->ioc->resolve(service => "services/$name");
 }
 
 sub get_dataservice ($self, $name) {
 
-  $self->resolve(service => "dataservices/$name");
+  $self->ioc->resolve(service => "dataservices/$name");
 }
 
-sub list_orm_result_classes ($self) {
+sub list_dataservices($self) {
 
-  findsubmod 'Doojon::Model::ORM::Result';
+  $self->ioc->fetch('/dataservices')->get_service_list;
 }
 
-sub _complete_dataservces ($self) {
+sub ds_entities_classes ($self) {
 
-  my $dataservice_container = $self->fetch('/dataservices');
-  my @orm_classes = $self->list_orm_result_classes;
+  findsubmod 'Doojon::Model::DSEntity';
+}
 
-  for my $class (@orm_classes) {
-    my $result_name = (split /::/, $class)[-1];
-    my $ds_name = decamelize $result_name;
+sub _complete_dataservices ($self) {
 
+  my $dataservice_container = $self->ioc->fetch('/dataservices');
+  my @classes = $self->ds_entities_classes;
+
+  for my $class (@classes) {
+    my $ds_name = decamelize((split /::/, $class)[-1]);
     next if $dataservice_container->has_service($ds_name);
 
     $dataservice_container->add_service(
       service $ds_name => (
-        class => 'Doojon::Model::Service',
+        lifecycle => 'Singleton',
+        class => 'Doojon::Model::DS',
         dependencies => {
-          result_name => (service result_name => $result_name),
-          orm => depends_on('/db/orm'),
+          entity_class => (service entity_class => $class),
+          pg => depends_on('/pg'),
         },
       )
     );
+  }
+
+  $self->_init_and_check_dataservices;
+}
+
+sub _init_and_check_dataservices ($self) {
+
+  my $ds_container = $self->ioc->fetch('/dataservices');
+  for my $service_name ($ds_container->get_service_list) {
+    my $ds = $ds_container->resolve(service => $service_name);
+    $ds->check_myself;
   }
 }
 
