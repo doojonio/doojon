@@ -1,62 +1,63 @@
 package Doojon::Controller::Resource;
 
-use Mojo::Base 'Mojolicious::Controller', -signatures;
+use Mojo::Base 'Mojolicious::Controller', -signatures, -async_await;
 use Mojo::Util qw(camelize);
 
 has service => sub ($self) {
   $self->app->model->get_dataservice($self->stash('resource_name'));
 };
 
-sub create ($self) {
+async sub create ($self) {
 
   my $obj_to_create = $self->req->json;
-  my $obj_in_db = $self->service->create($obj_to_create);
-  return $self->render(json => {id => $obj_in_db->id});
+  my $id = await $self->service->create($obj_to_create);
+
+  $self->render(json => {id => $id})
 }
 
-sub read ($self) {
+async sub read ($self) {
 
   my $id = $self->param('id');
-  my $obj_in_db = $self->service->read($id);
+  my $obj = await $self->service->read($id);
 
-  if (!$obj_in_db) {
+  if (not defined $obj) {
     return $self->reply->not_found;
   }
 
-  return $self->render(json => {$obj_in_db->get_columns});
+  $self->render(json => $obj)
 }
 
-sub update ($self) {
+async sub update ($self) {
 
   my $id = $self->param('id');
-  my $obj_in_db = $self->service->read($id);
+  my $obj = await $self->service->read($id);
 
-  if (!$obj_in_db) {
+  if (!$obj) {
     return $self->reply->not_found;
   }
 
   my $updated_fields = $self->req->json;
-  $obj_in_db->update($updated_fields);
+  await $self->service->update($id, $updated_fields);
 
-  return $self->render(json => {id => $obj_in_db->id});
+  $self->render(json => {id => $id});
 }
 
-sub delete ($self) {
+async sub delete ($self) {
 
   my $id = $self->param('id');
-  my $obj_in_db = $self->service->read($id);
+  my $obj = await $self->service->read($id);
 
-  if (!$obj_in_db) {
+  if (!$obj) {
     return $self->reply->not_found;
   }
 
-  my $deleted_object_id = $obj_in_db->id;
-  $obj_in_db->delete;
+  my $deleted_object_id = $obj->{id};
+  await $self->service->delete($deleted_object_id);
 
-  return $self->render(json => {id => $deleted_object_id});
+  $self->render(json => {id => $deleted_object_id});
 }
 
-sub search ($self) {
+async sub search ($self) {
 
   my $search_obj = $self->req->json;
   my @objects = $self->service->search(

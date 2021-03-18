@@ -17,6 +17,7 @@ sub startup ($self) {
   $self->renderer->default_format('json');
   $self->add_reply_helpers;
   $self->add_resource_shortcut;
+  push $self->commands->namespaces->@*, 'Doojon::Command';
 
   $self->setup_model;
 

@@ -1,6 +1,6 @@
 package Doojon::Model::DS;
 
-use Mojo::Base -base, -signatures;
+use Mojo::Base -base, -signatures, -async_await;
 
 use Carp qw(croak);
 use List::Util qw(any);
@@ -18,19 +18,50 @@ sub new ($type, @args) {
   $self
 }
 
-sub create ($self, $obj) {
+async sub create ($self, $obj) {
+
+  my $obj = await $self->pg->db->insert($self->table, $obj, {returning => 'id'})->hash;
+  $obj->{id}
 }
 
-sub read ($self, $id) {
+async sub read ($self, $id) {
+
+  my $obj = await $self->pg->db->select_p(
+    $self->table,
+    undef,
+    {id => $id},
+    {limit => 1}
+  )->hash;
+
+  $obj
 }
 
-sub update ($self, $id, $new_fields) {
+async sub update ($self, $id, $new_fields) {
+
+  my $obj = await $self->pg->db->update_p(
+    $self->table,
+    $new_fields,
+    {id => $id},
+    {returning => $id},
+  )->hash;
+
+  $obj->{id}
 }
 
-sub delete ($self, $id) {
+async sub delete ($self, $id) {
+
+  my $obj = await $self->pg->db->delete_p(
+    $self->table,
+    {id => $id},
+    {returning => $id}
+  )->hash;
+
+  $obj->{id}
 }
 
-sub search ($self, $conditions = undef, $options = undef) {
+async sub search ($self, $conditions = undef, $options = undef) {
+
+  return 1
 }
 
 sub check_myself ($self) {
@@ -54,7 +85,6 @@ sub check_myself ($self) {
   )->hashes;
 
   for my $defined_column_name (keys $defined_columns->%*) {
-
     if (not any {$_->{column_name} eq $defined_column_name} $real_columns->@*) {
       croak("$defined_column_name is defined but not present in table $tablename");
     }
