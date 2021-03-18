@@ -20,48 +20,54 @@ sub new ($type, @args) {
 
 async sub create ($self, $obj) {
 
-  my $obj = await $self->pg->db->insert($self->table, $obj, {returning => 'id'})->hash;
-  $obj->{id}
+  my $res = await $self->pg->db->insert_p($self->table, $obj, {returning => 'id'});
+  $res->hash->{id}
 }
 
 async sub read ($self, $id) {
 
-  my $obj = await $self->pg->db->select_p(
+  my $res = await $self->pg->db->select_p(
     $self->table,
     undef,
     {id => $id},
     {limit => 1}
-  )->hash;
+  );
 
-  $obj
+  $res->hash
 }
 
 async sub update ($self, $id, $new_fields) {
 
-  my $obj = await $self->pg->db->update_p(
+  my $res = await $self->pg->db->update_p(
     $self->table,
     $new_fields,
     {id => $id},
     {returning => $id},
-  )->hash;
+  );
 
-  $obj->{id}
+  $res->hash->{id}
 }
 
 async sub delete ($self, $id) {
 
-  my $obj = await $self->pg->db->delete_p(
+  my $res = await $self->pg->db->delete_p(
     $self->table,
     {id => $id},
-    {returning => $id}
-  )->hash;
+    {returning => 'id'}
+  );
 
-  $obj->{id}
+  $res->hash->{id}
 }
 
-async sub search ($self, $conditions = undef, $options = undef) {
+async sub search ($self, $columns = undef, $conditions = undef, $options = undef) {
+  my $res = await $self->pg->db->select_p(
+    $self->table,
+    $columns,
+    $conditions,
+    $options,
+  );
 
-  return 1
+  $res->hashes
 }
 
 sub check_myself ($self) {

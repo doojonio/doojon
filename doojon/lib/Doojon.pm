@@ -11,7 +11,6 @@ use constant (
 # This method will run once at server start
 sub startup ($self) {
 
-  # Load configuration from config file
   my $config = $self->plugin('NotYAMLConfig');
 
   $self->renderer->default_format('json');
@@ -21,19 +20,14 @@ sub startup ($self) {
 
   $self->setup_model;
 
-  # Configure the application
   $self->secrets($config->{secrets});
 
-  # Router
   my $r = $self->routes;
-
   my $api = $r->any('/api');
 
   for my $ds ($self->model->list_dataservices) {
     $api->resource($ds);
   }
-
-  $api->post('/auth/password')->to('auth#password_auth');
 }
 
 sub setup_model ($self) {
@@ -54,7 +48,7 @@ sub setup_model ($self) {
 sub add_resource_shortcut ($self) {
 
   $self->routes->add_shortcut(resource => sub ($r, $name) {
-    my $resource = $r->any("/$name")->to("resource#", resource_name => $name);
+    my $resource = $r->any("/resource/$name")->to("resource#", resource_name => $name);
 
     $resource->post->to('#create');
     $resource->get->to('#read');

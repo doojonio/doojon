@@ -59,13 +59,14 @@ async sub delete ($self) {
 
 async sub search ($self) {
 
-  my $search_obj = $self->req->json;
-  my @objects = $self->service->search(
-    $search_obj->{conditions},
-    $search_obj->{options},
+  my $search = $self->req->json;
+  my $objects = await $self->service->search(
+    $search->{fields},
+    $search->{conditions},
+    $search->{options},
   );
 
-  return $self->render(json => \@objects);
+  return $self->render(json => $objects);
 }
 
 1

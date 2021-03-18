@@ -86,17 +86,6 @@ sub _complete_dataservices ($self) {
       )
     );
   }
-
-  $self->_init_and_check_dataservices;
-}
-
-sub _init_and_check_dataservices ($self) {
-
-  my $ds_container = $self->ioc->fetch('/dataservices');
-  for my $service_name ($ds_container->get_service_list) {
-    my $ds = $ds_container->resolve(service => $service_name);
-    $ds->check_myself;
-  }
 }
 
 1

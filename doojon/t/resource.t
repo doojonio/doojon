@@ -7,36 +7,37 @@ my $t = Test::Mojo->new('Doojon');
 
 subtest resource => sub {
 
-  my $user = {
+  my $profile = {
     username => 'Anton',
-    password => 'password',
     email => 'tosha.fedotov.2000@gmail.com',
   };
-  $t->post_ok('/api/user', json => $user)
+  $t->post_ok('/api/resource/profile', json => $profile)
     ->status_is(200)
     ->json_has('/id');
 
-  my $user_search = {
+  my $profile_search = {
+    fields => [qw(id username)],
     conditions => {
-      username => $user->{username},
+      username => $profile->{username},
     },
     options => {
       order_by => 'username',
+      limit => 10,
     }
   };
-  $t->post_ok('/api/user/search', json => $user_search)
+  $t->post_ok('/api/resource/profile/search', json => $profile_search)
     ->status_is(200)
     ->json_has('/0');
 
-  is $t->tx->res->json('/0/username'), $user->{username};
+  is $t->tx->res->json('/0/username'), $profile->{username};
 
-  my $created_user_id = $t->tx->res->json('/0/id');
+  my $created_profile_id = $t->tx->res->json('/0/id');
 
-  $t->get_ok('/api/user', form => {id => $created_user_id})
+  $t->get_ok('/api/resource/profile', form => {id => $created_profile_id})
     ->status_is(200)
     ->json_has('/username');
 
-  $t->delete_ok('/api/user', form => {id => $created_user_id})
+  $t->delete_ok('/api/resource/profile', form => {id => $created_profile_id})
     ->status_is(200);
 };
 

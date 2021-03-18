@@ -1,9 +1,11 @@
 requires 'Bread::Board';
+requires 'Future::AsyncAwait';
 requires 'Module::Find';
 requires 'Mojo::Pg';
-requires 'Mojolicious', '>=', '8.71';
+requires 'Mojolicious';
 requires 'Moose';
 requires 'Redis';
+requires 'perl', '>=', '5.30';
 
 on develop => sub {
   requires 'DDP';
