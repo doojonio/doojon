@@ -605,8 +605,8 @@ DISTRIBUTIONS
       Mojolicious 8.50
       SQL::Abstract::Pg 1.0
       perl 5.016
-  Mojolicious-8.73
-    pathname: S/SR/SRI/Mojolicious-8.73.tar.gz
+  Mojolicious-9.10
+    pathname: S/SR/SRI/Mojolicious-9.10.tar.gz
     provides:
       Mojo undef
       Mojo::Asset undef
@@ -635,7 +635,6 @@ DISTRIBUTIONS
       Mojo::Home undef
       Mojo::IOLoop undef
       Mojo::IOLoop::Client undef
-      Mojo::IOLoop::Delay undef
       Mojo::IOLoop::Server undef
       Mojo::IOLoop::Stream undef
       Mojo::IOLoop::Subprocess undef
@@ -675,7 +674,7 @@ DISTRIBUTIONS
       Mojo::UserAgent::Transactor undef
       Mojo::Util undef
       Mojo::WebSocket undef
-      Mojolicious 8.73
+      Mojolicious 9.10
       Mojolicious::Command undef
       Mojolicious::Command::Author::cpanify undef
       Mojolicious::Command::Author::generate undef

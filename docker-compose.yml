@@ -5,9 +5,8 @@ services:
     depends_on:
       - "db"
       - "redis"
-    #entrypoint: ["carton", "exec", "morbo"]
-    #command: ["./script/doojon"]
-    command: ["tail", "-fn0", "/etc/hosts"]
+    entrypoint: ["carton", "exec", "morbo"]
+    command: ["./script/doojon"]
     volumes:
       - "./doojon:/usr/src/app"
     ports:
