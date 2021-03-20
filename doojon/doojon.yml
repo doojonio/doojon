@@ -2,6 +2,6 @@
 secrets:
   - 8d9f959b0d41d6b9e0f5928ca2a4a9d93910fa0c
 database:
-  url: postgresql://doojon:password@localhost/doojon
+  url: postgresql://doojon:password@doojon_db/doojon
 redis:
   server: redis:6379

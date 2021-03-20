@@ -1,31 +1,34 @@
 version: "3.8"
 services:
-  api:
+  doojon:
     build: "./doojon"
     depends_on:
-      - "db"
-      - "redis"
-    entrypoint: ["carton", "exec", "morbo"]
-    command: ["./script/doojon"]
+      - "doojon_db"
+      - "doojon_redis"
+    entrypoint: ["carton", "exec"]
+    command: ["morbo", "./script/doojon"]
     volumes:
       - "./doojon:/usr/src/app"
     ports:
       - "2000:3000"
-  db:
+  doojon_db:
     image: "postgres:13"
     environment:
       - "POSTGRES_DATABASE=doojon"
       - "POSTGRES_USER=doojon"
       - "POSTGRES_PASSWORD=password"
-    ports:
-      - "5432:5432"
-  redis:
+  doojon_redis:
     image: "redis:6"
-  proxy:
-    image: "nginx:1.19.6"
+  accounts:
+    build: "./accounts"
     depends_on:
-      - "api"
+      - "accounts_db"
     volumes:
-      - "./nginx.override.conf:/etc/nginx/nginx.conf"
-    ports:
-      - "1999:80"
+      - "./accounts:/usr/src/app"
+    command: ["cargo", "watch", "-x", "run"]
+  accounts_db:
+    image: "postgres:13"
+    environment:
+      - "POSTGRES_DATABASE=accounts"
+      - "POSTGRES_USER=accounts"
+      - "POSTGRES_PASSWORD=password"
