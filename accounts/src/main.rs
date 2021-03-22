@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate diesel;
 
-use actix_web::{post, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{web, App, HttpServer};
 use diesel::PgConnection;
 use diesel::r2d2::{self};
 use dotenv::dotenv;
