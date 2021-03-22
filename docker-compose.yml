@@ -7,8 +7,6 @@ services:
       - "doojon_redis"
     entrypoint: ["carton", "exec"]
     command: ["morbo", "./script/doojon"]
-    volumes:
-      - "./doojon:/usr/src/app"
     ports:
       - "2000:3000"
   doojon_db:
@@ -21,11 +19,9 @@ services:
     image: "redis:6"
   accounts:
     build: "./accounts"
+    command: ["cargo", "run"]
     depends_on:
       - "accounts_db"
-    volumes:
-      - "./accounts:/usr/src/app"
-    command: ["cargo", "watch", "-x", "run"]
   accounts_db:
     image: "postgres:13"
     environment:

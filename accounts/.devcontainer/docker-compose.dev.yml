@@ -1,0 +1,11 @@
+---
+services:
+  accounts:
+    build:
+      context: '.'
+      dockerfile: './accounts/.devcontainer/dockerfile'
+    entrypoint: ""
+    command: ""
+    tty: true
+    volumes:
+      - "./:/usr/src/apps"

@@ -1,0 +1,16 @@
+{
+    "dockerComposeFile": [
+        "../../docker-compose.yml",
+        "./docker-compose.dev.yml"
+    ],
+    "service": "accounts",
+    "runServices": ["accounts", "accounts_db"],
+    "workspaceFolder": "/usr/src/apps/",
+    "name": "accounts",
+    "extensions": [
+        "rust-lang.rust",
+		"bungcip.better-toml",
+		"vadimcn.vscode-lldb",
+		"mutantdino.resourcemonitor"
+    ]
+}
