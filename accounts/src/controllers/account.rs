@@ -13,7 +13,7 @@ pub struct FormWithId {
 pub async fn create(account: web::Json<NewAccount>, pool: web::Data<DbPool>) -> HttpResponse {
 
     let conn = &pool.get().unwrap();
-    let account = account::create(&conn, account.into_inner());
+    let account = account::create(&conn, account.into_inner()).expect("failed to create account");
 
     HttpResponse::Ok().json(account)
 }
