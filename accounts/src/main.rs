@@ -4,6 +4,7 @@ extern crate env_logger;
 
 use actix_web::{web, App, HttpServer};
 use actix_web::middleware::Logger;
+use actix_identity::{CookieIdentityPolicy, IdentityService};
 use diesel::PgConnection;
 use diesel::r2d2::{self};
 use dotenv::dotenv;
@@ -28,6 +29,14 @@ async fn main() -> std::io::Result<()> {
   HttpServer::new(move || {
     App::new()
       .wrap(Logger::default())
+      .wrap(IdentityService::new(
+        CookieIdentityPolicy::new(env::var("SECRET").expect("SECRET is not specified").as_bytes())
+          .name("auth")
+          .path("/")
+          .domain("localhost")
+          .max_age(86400)
+          .secure(true)
+      ))
       .data(pool.clone())
       .service(
         web::scope("/api")
@@ -35,6 +44,10 @@ async fn main() -> std::io::Result<()> {
             web::resource("/account")
               .route(web::post().to(controller::account::create))
               .route(web::get().to(controller::account::read))
+          )
+          .service(
+            web::resource("/auth")
+              .route(web::post().to(controller::auth::password_auth))
           )
       )
   })

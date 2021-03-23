@@ -1,8 +1,8 @@
 use actix_web::{web, HttpResponse};
-use serde::{Deserialize};
+use serde::Deserialize;
 
 use crate::entities::DbPool;
-use crate::model::models::{NewAccount};
+use crate::model::models::NewAccount;
 use crate::model::errors::ServiceError;
 use crate::model::service::account;
 

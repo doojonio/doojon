@@ -1,6 +1,6 @@
 use actix_web::{error::ResponseError, HttpResponse};
 
-use crate::model::errors::ServiceError;
+pub use crate::model::errors::ServiceError;
 
 impl ResponseError for ServiceError {
   fn error_response(&self) -> HttpResponse {
