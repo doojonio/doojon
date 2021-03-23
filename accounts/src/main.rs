@@ -1,20 +1,25 @@
 #[macro_use]
 extern crate diesel;
+extern crate env_logger;
 
 use actix_web::{web, App, HttpServer};
+use actix_web::middleware::Logger;
 use diesel::PgConnection;
 use diesel::r2d2::{self};
 use dotenv::dotenv;
 use std::env;
 
-mod controllers;
+mod controller;
 mod entities;
 mod model;
+mod web_errors;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     // include .env vars to std env
     dotenv().ok();
+    env_logger::init();
+
     let db_conn_manager = setup_db();
     let pool = r2d2::Pool::builder()
         .build(db_conn_manager)
@@ -22,13 +27,14 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
+            .wrap(Logger::default())
             .data(pool.clone())
             .service(
                 web::scope("/api")
                     .service(
                         web::resource("/account")
-                            .route(web::post().to(controllers::account::create))
-                            .route(web::get().to(controllers::account::read))
+                            .route(web::post().to(controller::account::create))
+                            .route(web::get().to(controller::account::read))
                     )
             )
     })
