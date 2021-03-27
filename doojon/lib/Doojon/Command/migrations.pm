@@ -18,6 +18,15 @@ sub run ($self, $command) {
   $method->($self);
 }
 
+sub cli_runc ($self) {
+  $self->cli_run;
+  $self->cli_check;
+}
+sub cli_redoc ($self) {
+  $self->cli_redo;
+  $self->cli_check;
+}
+
 sub cli_run ($self) {
 
   my $migrations = $self->app->model->ioc->resolve(service => 'pg')->migrations->from_file(
@@ -25,7 +34,7 @@ sub cli_run ($self) {
   );
 
   $migrations->migrate;
-  print GREEN "done\n";
+  print GREEN "done\n", RESET;
 }
 
 sub cli_redo ($self) {
@@ -35,7 +44,7 @@ sub cli_redo ($self) {
   );
 
   $migrations->migrate(0)->migrate;
-  print GREEN "done\n";
+  print GREEN "done\n", RESET;
 }
 
 sub cli_check ($self) {

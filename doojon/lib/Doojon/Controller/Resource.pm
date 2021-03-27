@@ -18,6 +18,11 @@ async sub create ($self) {
 async sub read ($self) {
 
   my $id = $self->param('id');
+
+  unless (await $self->service->check_read_perm($id)) {
+    return $self->reply->forbidden;
+  }
+
   my $obj = await $self->service->read($id);
 
   if (not defined $obj) {

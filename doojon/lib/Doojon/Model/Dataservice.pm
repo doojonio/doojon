@@ -9,14 +9,27 @@ has 'pg';
 has 'table' => sub {croak 'no table specified for dataservice'};
 has 'columns' => sub {croak 'no columns specified for dataservice'};
 
+async sub check_create_perm ($self, $obj) {
+  1
+}
 async sub create ($self, $obj) {
+
+  if (not await $self->check_create_perm($obj)) {
+    croak("no rights to create objects")
+  }
 
   my $res = await $self->pg->db->insert_p($self->table, $obj, {returning => 'id'});
   $res->hash->{id}
 }
 
+async sub check_read_perm ($self, $id) {
+  1
+}
 async sub read ($self, $id) {
 
+  if (not await $self->check_read_perm($id)) {
+    croak("no rights to read object $id")
+  }
   my $res = await $self->pg->db->select_p(
     $self->table,
     undef,
@@ -27,7 +40,14 @@ async sub read ($self, $id) {
   $res->hash
 }
 
+async sub check_update_perm ($self, $id, $new_fields) {
+  1
+}
 async sub update ($self, $id, $new_fields) {
+
+  if (not await $self->check_update_perm($id, $new_fields)) {
+    croak("no rights to update $id")
+  }
 
   my $res = await $self->pg->db->update_p(
     $self->table,
@@ -39,7 +59,14 @@ async sub update ($self, $id, $new_fields) {
   $res->hash->{id}
 }
 
+async sub check_delete_perm ($self, $id) {
+  1
+}
 async sub delete ($self, $id) {
+
+  if (not await $self->check_delete_perm($id)) {
+    croak("no rights to delete $id")
+  }
 
   my $res = await $self->pg->db->delete_p(
     $self->table,
@@ -51,6 +78,9 @@ async sub delete ($self, $id) {
 }
 
 async sub search ($self, $columns = undef, $conditions = undef, $options = undef) {
+  if (defined($columns) and (not any {$_ eq 'id'} $columns)) {
+    push $columns->@*, 'id';
+  }
   my $res = await $self->pg->db->select_p(
     $self->table,
     $columns,
@@ -58,6 +88,7 @@ async sub search ($self, $columns = undef, $conditions = undef, $options = undef
     $options,
   );
 
+  #TODO: perm checks
   $res->hashes
 }
 
