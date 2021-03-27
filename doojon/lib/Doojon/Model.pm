@@ -63,7 +63,7 @@ sub list_dataservices($self) {
 
 sub ds_entities_classes ($self) {
 
-  findsubmod 'Doojon::Model::DSEntity';
+  findsubmod 'Doojon::Model::Dataservice';
 }
 
 sub _complete_dataservices ($self) {
@@ -78,9 +78,8 @@ sub _complete_dataservices ($self) {
     $dataservice_container->add_service(
       service $ds_name => (
         lifecycle => 'Singleton',
-        class => 'Doojon::Model::DS',
+        class => $class,
         dependencies => {
-          entity_class => (service entity_class => $class),
           pg => depends_on('/pg'),
         },
       )

@@ -8,8 +8,8 @@ my $t = Test::Mojo->new('Doojon');
 subtest resource => sub {
 
   my $profile = {
+    id => '123e4567-e89b-12d3-a456-426614174000',
     username => 'Anton',
-    email => 'tosha.fedotov.2000@gmail.com',
   };
   $t->post_ok('/api/resource/profile', json => $profile)
     ->status_is(200)

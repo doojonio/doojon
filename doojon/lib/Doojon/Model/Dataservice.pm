@@ -1,22 +1,13 @@
-package Doojon::Model::DS;
+package Doojon::Model::Dataservice;
 
 use Mojo::Base -base, -signatures, -async_await;
 
 use Carp qw(croak);
 use List::Util qw(any);
 
-has 'entity_class';
 has 'pg';
-
-has 'table';
-has 'columns';
-
-sub new ($type, @args) {
-  my $self = $type->SUPER::new(@args);
-  $self->_init_metadata;
-
-  $self
-}
+has 'table' => sub {croak 'no table specified for dataservice'};
+has 'columns' => sub {croak 'no columns specified for dataservice'};
 
 async sub create ($self, $obj) {
 
@@ -97,17 +88,6 @@ sub check_myself ($self) {
   }
 
   1
-}
-
-sub _init_metadata($self) {
-  my $entity_class = $self->entity_class or croak('need entity class');
-  require $entity_class =~ s{::}{/}gr . '.pm';
-  no strict 'refs';
-  my $table = &{$entity_class.'::table'} || croak("no table in $entity_class");
-  my $columns = &{$entity_class.'::columns'} || croak("no columns in $entity_class");
-
-  $self->table($table);
-  $self->columns($columns);
 }
 
 1
