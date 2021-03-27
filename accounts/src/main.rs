@@ -4,9 +4,7 @@ extern crate env_logger;
 
 use actix_web::{web, App, HttpServer};
 use actix_web::middleware::Logger;
-use actix_identity::{CookieIdentityPolicy, IdentityService};
 use diesel::PgConnection;
-use diesel::r2d2::{self};
 use dotenv::dotenv;
 use std::env;
 
@@ -21,23 +19,18 @@ async fn main() -> std::io::Result<()> {
   dotenv().ok();
   env_logger::init();
 
-  let db_conn_manager = setup_db();
-  let pool = r2d2::Pool::builder()
-    .build(db_conn_manager)
-    .expect("r2d2 failed to create pool");
+  let dbpool = diesel::r2d2::Pool::builder()
+    .build(setup_db())
+    .expect("r2d2 failed to create dbpool");
+  let rspool = r2d2_redis::r2d2::Pool::builder()
+    .build(setup_redis())
+    .expect("r2d2 failed to create rspool");
 
   HttpServer::new(move || {
     App::new()
       .wrap(Logger::default())
-      .wrap(IdentityService::new(
-        CookieIdentityPolicy::new(env::var("SECRET").expect("SECRET is not specified").as_bytes())
-          .name("auth")
-          .path("/")
-          .domain("localhost")
-          .max_age(86400)
-          .secure(true)
-      ))
-      .data(pool.clone())
+      .data(dbpool.clone())
+      .data(rspool.clone())
       .service(
         web::scope("/api")
           .service(
@@ -48,6 +41,10 @@ async fn main() -> std::io::Result<()> {
           .service(
             web::resource("/auth")
               .route(web::post().to(controller::auth::password_auth))
+          )
+          .service(
+            web::resource("/session")
+              .route(web::get().to(controller::auth::get_session))
           )
       )
   })
@@ -60,5 +57,9 @@ async fn main() -> std::io::Result<()> {
 fn setup_db() -> diesel::r2d2::ConnectionManager::<PgConnection> {
 
   let db_uri = env::var("DATABASE_URL").expect("database url is not set");
-  r2d2::ConnectionManager::<PgConnection>::new(db_uri)
+  diesel::r2d2::ConnectionManager::<PgConnection>::new(db_uri)
+}
+
+fn setup_redis() -> r2d2_redis::RedisConnectionManager {
+  r2d2_redis::RedisConnectionManager::new(env::var("REDIS_URL").unwrap()).unwrap()
 }

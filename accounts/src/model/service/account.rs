@@ -28,14 +28,12 @@ pub fn read(conn: &PgConnection, account_id: uuid::Uuid) -> Result<Account, Serv
   Ok(account)
 }
 
-pub fn password_auth(conn: &PgConnection, user_email: &String, user_password: &String) -> Result<bool, ServiceError> {
-
+pub fn password_auth(conn: &PgConnection, user_email: &String, user_password: &String) -> Result<uuid::Uuid, ServiceError> {
   use crate::model::schema::accounts::dsl::*;
-  let password_hash: String = accounts.filter(email.eq(user_email)).select(password).get_result(conn)?;
-
-  let password_hash = PasswordHash::new(&password_hash).unwrap();
+  let account_info:(uuid::Uuid, String) = accounts.filter(email.eq(user_email)).select((id, password)).get_result(conn)?;
+  let password_hash = PasswordHash::new(&account_info.1).unwrap();
   match Pbkdf2.verify_password(user_password.as_bytes(), &password_hash) {
-    Ok(_) => Ok(true),
-    Err(_) => Ok(false)
+    Ok(_) => Ok(account_info.0),
+    Err(_) => Err(ServiceError::Unauthorized)
   }
 }

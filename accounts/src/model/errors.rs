@@ -1,8 +1,10 @@
 use diesel::result::{DatabaseErrorKind, Error as DbError};
+use r2d2_redis::redis::{self, RedisError};
 use std::fmt;
 
 #[derive(Debug)]
 pub enum ServiceError {
+  Unauthorized,
   NotFound,
   UniqueViolation,
 }
@@ -11,7 +13,8 @@ impl fmt::Display for ServiceError {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
      match *self {
        ServiceError::NotFound => write!(f, "Not found"),
-       ServiceError::UniqueViolation => write!(f, "Record already exists")
+       ServiceError::UniqueViolation => write!(f, "Record already exists"),
+       ServiceError::Unauthorized => write!(f, "Unautorized"),
      }
   }
 }
@@ -30,4 +33,3 @@ impl From<DbError> for ServiceError {
     }
   }
 }
-

@@ -1,8 +1,9 @@
-use actix_identity::Identity;
-use actix_web::{web, HttpResponse};
+use actix_web::{web, HttpResponse, cookie::Cookie};
 use serde::Deserialize;
+use r2d2_redis::redis::Commands;
+use rand::{distributions::Alphanumeric, thread_rng, Rng};
 
-use crate::entities::DbPool;
+use crate::entities::{RsPool,DbPool};
 use crate::web_errors::ServiceError;
 use crate::model::service::account;
 
@@ -12,20 +13,55 @@ pub struct EmailWithPassword {
   password: String
 }
 
+pub async fn get_session(
+  req: web::HttpRequest,
+  dbpool: web::Data<DbPool>,
+  rspool: web::Data<RsPool>,
+) -> Result<HttpResponse, ServiceError> {
+  let headers = req.headers();
+  let session: &str = match headers.get("Authorization") {
+    Some(session_in_header) => session_in_header.to_str().unwrap(),
+    None => return Ok(HttpResponse::BadRequest().json("Authorization header not found"))
+  }; 
+  let id: Option<String> = rspool.get().unwrap().hget("sessions", session).unwrap();
+  let id = match id {
+    Some(found_uuid) => found_uuid,
+    None => return Ok(HttpResponse::NotFound().json("Session not found"))
+  };
+
+  let id = uuid::Uuid::parse_str(id.as_str()).unwrap();
+  let account = account::read(&dbpool.get().unwrap(), id)?;
+
+  Ok(HttpResponse::Ok().json(account))
+}
+
 pub async fn password_auth(
   auth_data: web::Json<EmailWithPassword>,
-  pool: web::Data<DbPool>,
-  identity: Identity,
+  dbpool: web::Data<DbPool>,
+  rspool: web::Data<RsPool>,
 ) -> Result<HttpResponse, ServiceError> {
-  let conn = &pool.get().unwrap();
-  let auth_data = auth_data.into_inner();
-  let result = account::password_auth(conn, &auth_data.email, &auth_data.password)?;
+  let dbconn = &dbpool.get().unwrap();
+  let mut rsconn = rspool.get().unwrap();
 
-  match result {
-    false => Ok(HttpResponse::Unauthorized().json(false)),
-    true => {
-      identity.remember(auth_data.email);
-      Ok(HttpResponse::Ok().json(true))
-    }
-  }
+  let auth_data = auth_data.into_inner();
+
+  let id = account::password_auth(dbconn, &auth_data.email, &auth_data.password)?;
+
+  let new_session = generate_session().await;
+  let _: () = rsconn.hset("sessions", &new_session, id.to_hyphenated().to_string()).unwrap();
+  let cookie = Cookie::build("auth", new_session)
+    .domain(std::env::var("AUTH_COOKIE_DOMAIN").unwrap())
+    .path("/")
+    .secure(true)
+    .finish();
+  Ok(HttpResponse::Ok().cookie(cookie).json(true))
+}
+
+pub async fn generate_session() -> String {
+
+  thread_rng()
+    .sample_iter(&Alphanumeric)
+    .take(30)
+    .map(char::from)
+    .collect()
 }
