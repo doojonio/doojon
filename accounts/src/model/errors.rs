@@ -1,5 +1,4 @@
 use diesel::result::{DatabaseErrorKind, Error as DbError};
-use r2d2_redis::redis::{self, RedisError};
 use std::fmt;
 
 #[derive(Debug)]
