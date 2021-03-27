@@ -9,8 +9,6 @@
     "name": "doojon",
     "extensions": [
       "mutantdino.resourcemonitor",
-      "mortenhenriksen.perl-debug",
-      "d9705996.perl-toolbox"
     ],
     "remoteUser": "vscode"
 }
