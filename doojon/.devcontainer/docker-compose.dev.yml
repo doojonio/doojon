@@ -1,0 +1,14 @@
+---
+services:
+  doojon:
+    build:
+      context: '.'
+      dockerfile: './doojon/.devcontainer/dockerfile'
+      args:
+        - VARIANT=5.32
+        - USERNAME=vscode
+    entrypoint: ""
+    command: ""
+    tty: true
+    volumes:
+      - "./:/usr/src/apps"

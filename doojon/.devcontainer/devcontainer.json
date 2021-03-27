@@ -1,0 +1,16 @@
+{
+    "dockerComposeFile": [
+        "../../docker-compose.yml",
+        "./docker-compose.dev.yml"
+    ],
+    "service": "doojon",
+    "runServices": ["doojon", "doojon_db", "doojon_redis"],
+    "workspaceFolder": "/usr/src/apps/",
+    "name": "doojon",
+    "extensions": [
+      "mutantdino.resourcemonitor",
+      "mortenhenriksen.perl-debug",
+      "d9705996.perl-toolbox"
+    ],
+    "remoteUser": "vscode"
+}
