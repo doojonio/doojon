@@ -32,6 +32,13 @@ sub run ($self, $command) {
 
 sub cli_generate ($self) {
 
+  my $home = $self->app->home;
+  system("cd $home && git diff --quiet && git diff --cached --quiet");
+  if ($? != 0) {
+    say "👀 ${\RED} this command can hurt files and git repo doesn't clean or there is no git repo...${\RESET}";
+    return 1;
+  }
+
   my $db = $self->app->model->ioc->resolve(service => '/pg')->db;
 
   local $/ = '';
