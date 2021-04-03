@@ -8,7 +8,8 @@
     "workspaceFolder": "/usr/src/apps/",
     "name": "doojon",
     "extensions": [
-      "mutantdino.resourcemonitor",
-    ],
+		"mutantdino.resourcemonitor",
+		"kraih.mojolicious"
+	],
     "remoteUser": "vscode"
 }

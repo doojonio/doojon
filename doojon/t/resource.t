@@ -11,7 +11,7 @@ subtest resource => sub {
     id => '123e4567-e89b-12d3-a456-426614174000',
     username => 'Anton',
   };
-  $t->post_ok('/api/resource/profile', json => $profile)
+  $t->post_ok('/api/resource/profiles', json => $profile)
     ->status_is(200)
     ->json_has('/id');
 
@@ -25,7 +25,7 @@ subtest resource => sub {
       limit => 10,
     }
   };
-  $t->post_ok('/api/resource/profile/search', json => $profile_search)
+  $t->post_ok('/api/resource/profiles/search', json => $profile_search)
     ->status_is(200)
     ->json_has('/0');
 
@@ -33,11 +33,11 @@ subtest resource => sub {
 
   my $created_profile_id = $t->tx->res->json('/0/id');
 
-  $t->get_ok('/api/resource/profile', form => {id => $created_profile_id})
+  $t->get_ok('/api/resource/profiles', form => {id => $created_profile_id})
     ->status_is(200)
     ->json_has('/username');
 
-  $t->delete_ok('/api/resource/profile', form => {id => $created_profile_id})
+  $t->delete_ok('/api/resource/profiles', form => {id => $created_profile_id})
     ->status_is(200);
 };
 

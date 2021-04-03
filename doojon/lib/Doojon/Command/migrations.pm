@@ -19,46 +19,21 @@ sub run ($self, $command) {
     $self->app->home->child('migrations')
   ));
 
-  $method->($self);
-}
+  binmode STDOUT, 'utf8';
 
-sub cli_runc ($self) {
-  $self->cli_run;
-  $self->cli_check;
-}
-sub cli_redoc ($self) {
-  $self->cli_redo;
-  $self->cli_check;
+  $method->($self);
 }
 
 sub cli_run ($self) {
 
   $self->migrations->migrate;
-  print GREEN "done\n", RESET;
+  print GREEN "👌 done\n", RESET;
 }
 
 sub cli_redo ($self) {
 
   $self->migrations->migrate(0)->migrate;
-  print GREEN "done\n", RESET;
-}
-
-sub cli_check ($self) {
-
-  my $ds_container = $self->app->model->ioc->fetch('/dataservices');
-  my @errors;
-  for my $ds_name ($ds_container->get_service_list) {
-    my $ds = $ds_container->resolve(service => $ds_name);
-    my $is_ds_ok = eval {$ds->check_myself};
-    push @errors, $@ unless $is_ds_ok;
-  }
-
-  if (scalar @errors) {
-    print RED, @errors, RESET;
-  }
-  else {
-    print GREEN "database is ok\n", RESET;
-  }
+  print GREEN "👌 done\n", RESET;
 }
 
 1
