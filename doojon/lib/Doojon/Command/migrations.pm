@@ -3,10 +3,10 @@ package Doojon::Command::migrations;
 use Mojo::Base 'Mojolicious::Command', -signatures;
 
 use Carp(qw(croak));
-use Mojo::File qw(path);
 use Term::ANSIColor qw(:constants);
 
 has description => 'Database migrations managment CLI';
+has 'migrations';
 
 sub run ($self, $command) {
 
@@ -14,6 +14,10 @@ sub run ($self, $command) {
   if (not $method) {
     croak("no such command $command")
   }
+
+  $self->migrations($self->app->model->ioc->resolve(service => 'pg')->migrations->from_dir(
+    $self->app->home->child('migrations')
+  ));
 
   $method->($self);
 }
@@ -29,21 +33,13 @@ sub cli_redoc ($self) {
 
 sub cli_run ($self) {
 
-  my $migrations = $self->app->model->ioc->resolve(service => 'pg')->migrations->from_file(
-    path($self->app->home, 'doojon.sql')
-  );
-
-  $migrations->migrate;
+  $self->migrations->migrate;
   print GREEN "done\n", RESET;
 }
 
 sub cli_redo ($self) {
 
-  my $migrations = $self->app->model->ioc->resolve(service => 'pg')->migrations->from_file(
-    path($self->app->home, 'doojon.sql')
-  );
-
-  $migrations->migrate(0)->migrate;
+  $self->migrations->migrate(0)->migrate;
   print GREEN "done\n", RESET;
 }
 
