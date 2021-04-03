@@ -19,9 +19,9 @@ pub async fn get_session(
   rspool: web::Data<RsPool>,
 ) -> Result<HttpResponse, ServiceError> {
   let headers = req.headers();
-  let session: &str = match headers.get("Authorization") {
+  let session: &str = match headers.get("X-Session") {
     Some(session_in_header) => session_in_header.to_str().unwrap(),
-    None => return Ok(HttpResponse::BadRequest().json("Authorization header not found"))
+    None => return Ok(HttpResponse::BadRequest().json("X-Session header not found"))
   }; 
   let id: Option<String> = rspool.get().unwrap().hget("sessions", session).unwrap();
   let id = match id {
