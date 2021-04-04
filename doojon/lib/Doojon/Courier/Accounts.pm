@@ -7,6 +7,8 @@ use Mojo::UserAgent;
 use Mojo::URL;
 
 has host => sub { croak 'accounts service host is not specified' };
+has scheme => 'http';
+has port => 80;
 
 async sub get_account ($self, $account_id) {
 
@@ -22,9 +24,11 @@ async sub get_account ($self, $account_id) {
 
 async sub get_session ($self, $session_id) {
 
-  my $url = Mojo::URL->new;
-  $url->host($self->host);
-  $url->path('/api/session');
+  my $url = Mojo::URL->new
+    ->scheme($self->scheme)
+    ->host($self->host)
+    ->port($self->port)
+    ->path('api/session');
 
   my $tx = await Mojo::UserAgent->new->get_p($url => {'X-Session' => $session_id});
 

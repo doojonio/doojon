@@ -10,20 +10,30 @@ use Mojo::IOLoop;
 use Mojo::Pg;
 use Mojo::Util qw(decamelize);
 use Redis;
+use Doojon::Courier::Accounts;
 
-has 'db_conf';
-has 'redis_conf';
+has 'config';
 has 'ioc';
 
 sub new ($type, @args) {
   my $self = $type->SUPER::new(@args);
 
-  my $db_conf = $self->db_conf;
-  my $redis_conf = $self->redis_conf;
+  my $db_conf = $self->config->{database};
+  my $redis_conf = $self->config->{redis};
+  my $couriers_conf = $self->config->{couriers};
 
   my $ioc = container 'ioc' => as {
     container services => as {};
     container dataservices => as {};
+    container couriers => as {
+      service accounts => (
+        block => sub {
+          Doojon::Courier::Accounts->new(
+            $couriers_conf->{accounts}->%*
+          )
+        }
+      );
+    };
 
     service pg => (
       lifecycle => 'Singleton',
@@ -48,12 +58,17 @@ sub new ($type, @args) {
 
 sub get_service ($self, $name) {
 
-  $self->ioc->resolve(service => "services/$name");
+  $self->ioc->resolve(service => "services/$name")
 }
 
 sub get_dataservice ($self, $name) {
 
-  $self->ioc->resolve(service => "dataservices/$name");
+  $self->ioc->resolve(service => "dataservices/$name")
+}
+
+sub get_courier ($self, $name) {
+
+  $self->ioc->resolve(service => "couriers/$name")
 }
 
 sub list_dataservices($self) {
