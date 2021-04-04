@@ -1,25 +1,30 @@
 package Doojon::Model::Dataservice::Profiles;
 
 use Mojo::Base 'Doojon::Model::Dataservice';
+
+
 # ---
 # autogen::start
 # ---
 has table => 'profiles';
 has columns => sub {+{
   id => {
-    required => 1,
+    data_type => 'string',
     has_default => 0,
-    is_updatable => 1
+    is_updatable => 1,
+    required => 1
   },
   username => {
-    required => 1,
+    data_type => 'string',
     has_default => 0,
-    is_updatable => 1
+    is_updatable => 1,
+    required => 1
   },
   reg_date => {
-    required => 1,
+    data_type => 'date',
     has_default => 0,
-    is_updatable => 1
+    is_updatable => 1,
+    required => 1
   },
 }};
 # ---

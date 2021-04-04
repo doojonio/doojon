@@ -4,9 +4,9 @@ use Mojo::Base 'Mojolicious::Command', -signatures;
 
 use Carp(qw(croak));
 use List::Util qw(any);
-use Term::ANSIColor qw(:constants);
-use Mojo::Util qw(camelize);
 use Mojo::Template;
+use Mojo::Util qw(camelize);
+use Term::ANSIColor qw(:constants);
 
 use constant SKIP_TABLES => qw(mojo_migrations);
 use constant AUTOGEN_START => "# ---
@@ -36,7 +36,7 @@ sub cli_generate ($self) {
   system("cd $home && git diff --quiet && git diff --cached --quiet");
   if ($? != 0) {
     say "👀 ${\RED} this command can hurt files and git repo doesn't clean or there is no git repo...${\RESET}";
-    return 1;
+    #return 1;
   }
 
   my $db = $self->app->model->ioc->resolve(service => '/pg')->db;
@@ -49,7 +49,13 @@ sub cli_generate ($self) {
     }
     say "✍️ ($num) processing table '$table'";
 
-    my $columns = $db->select('information_schema.columns', undef, {table_schema => 'public', table_name => $table})->hashes;
+    my $columns = $db->select('information_schema.columns', undef, {table_schema => 'public', table_name => $table})
+      ->hashes
+      ->each(sub {
+        my $type = _translate_data_type($_[0]->{data_type});
+        say "🧐 {\RED}don't know what type is $_[0]->{data_type} ${\RESET}" && return unless $type;
+        $_[0]->{data_type} = $type;
+      });
 
     my $meta_block = $self->render_data('meta-block.ep', {
       table => $table,
@@ -57,6 +63,7 @@ sub cli_generate ($self) {
       autogen_start => AUTOGEN_START,
       autogen_end => AUTOGEN_END,
     });
+
     chomp $meta_block;
 
     my $package_name = camelize $table;
@@ -109,6 +116,33 @@ sub cli_check ($self) {
   }
 }
 
+sub _translate_data_type($db_type) {
+  if ($db_type =~ /character|text|uuid/) {
+    return 'string';
+  }
+  elsif ($db_type =~ /bigint|integer|smallint/) {
+    return 'integer';
+  }
+  elsif ($db_type eq 'boolean') {
+    return 'boolean'
+  }
+  elsif ($db_type eq 'date') {
+    return 'date';
+  }
+  elsif ($db_type =~ /double|numeric|real/) {
+    return 'number';
+  }
+  elsif ($db_type =~ /timestamp/) {
+    return 'timestamp'
+  }
+  elsif  ($db_type =~ /time/) {
+    return 'time';
+  }
+  else {
+    return undef
+  }
+}
+
 1
 
 __DATA__
@@ -118,9 +152,10 @@ has table => '<%= $table %>';
 has columns => sub {+{
   % for my $c ($columns->@*) {
   <%= $c->{column_name} %> => {
-    required => <%=!!$c->{is_nullable} || 0%>,
+    data_type => '<%= $c->{data_type} %>',
     has_default => <%=!!$c->{column_default} || 0%>,
-    is_updatable => <%=!!$c->{is_updatable} || 0%>
+    is_updatable => <%=!!$c->{is_updatable} || 0%>,
+    required => <%=!!$c->{is_nullable} || 0%>
   },
   % }
 }};

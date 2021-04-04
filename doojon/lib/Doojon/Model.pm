@@ -4,13 +4,14 @@ use Bread::Board;
 use Mojo::Base -base, -signatures;
 
 use Carp qw(croak);
+use Doojon::Courier::Accounts;
+use Doojon::Model::State;
 use List::Util qw(any);
-use Module::Find qw(findsubmod);
 use Mojo::IOLoop;
+use Mojo::Loader qw(find_modules);
 use Mojo::Pg;
 use Mojo::Util qw(decamelize);
 use Redis;
-use Doojon::Courier::Accounts;
 
 has 'config';
 has 'ioc';
@@ -35,6 +36,13 @@ sub new ($type, @args) {
       );
     };
 
+    service state => (
+      lifecycle => 'Singleton',
+      block => sub {
+        Doojon::Model::State->new
+      }
+    );
+
     service pg => (
       lifecycle => 'Singleton',
       block => sub {
@@ -54,6 +62,11 @@ sub new ($type, @args) {
   $self->_complete_dataservices;
 
   return $self;
+}
+
+sub get_state ($self) {
+
+  $self->ioc->resolve(service => '/state')
 }
 
 sub get_service ($self, $name) {
@@ -78,7 +91,7 @@ sub list_dataservices($self) {
 
 sub ds_entities_classes ($self) {
 
-  findsubmod 'Doojon::Model::Dataservice';
+  find_modules 'Doojon::Model::Dataservice';
 }
 
 sub _complete_dataservices ($self) {
