@@ -4,7 +4,7 @@
         "./docker-compose.dev.yml"
     ],
     "service": "doojon",
-    "runServices": ["doojon", "doojon_db", "doojon_redis"],
+    "runServices": ["doojon", "doojon_db", "doojon_redis", "accounts"],
     "workspaceFolder": "/usr/src/apps/",
     "name": "doojon",
     "extensions": [

@@ -1,6 +1,7 @@
 ---
 services:
   doojon:
+    container_name: doojon_dev
     build:
       context: '.'
       dockerfile: './doojon/.devcontainer/dockerfile'

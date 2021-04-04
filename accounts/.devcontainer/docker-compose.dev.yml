@@ -1,6 +1,7 @@
 ---
 services:
   accounts:
+    container_name: accounts_dev
     build:
       context: '.'
       dockerfile: './accounts/.devcontainer/dockerfile'
