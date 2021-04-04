@@ -41,10 +41,6 @@ sub cli_generate ($self) {
 
   my $db = $self->app->model->ioc->resolve(service => '/pg')->db;
 
-  local $/ = '';
-  my $gen_template = <DATA>;
-  my $renderer = Mojo::Template->new;
-
   $db->select(
     'information_schema.tables', 'table_name', {table_schema => 'public'}
   )->hashes->map(sub {shift->{table_name}})->each(sub ($table, $num) {
@@ -71,7 +67,18 @@ sub cli_generate ($self) {
 
       my $autogen_start = AUTOGEN_START;
       my $autogen_end = AUTOGEN_END;
-      die "couldn't find metablock in $package_file" unless $package_content =~ s/${autogen_start}.*${autogen_end}/$meta_block/s;
+
+      my $updated_package_content = $package_content =~ s/${autogen_start}.+${autogen_end}/$meta_block/sr;
+
+      if (not $updated_package_content) {
+        say "😥${\RED} unable to find metablock in $package_file ${\RESET}";
+        return
+      }
+      if ($updated_package_content eq $package_content) {
+        say '😐 nothing to change';
+        return
+      }
+
       say "[write] $package_file";
       return $package_file->spurt($package_content);
     }
