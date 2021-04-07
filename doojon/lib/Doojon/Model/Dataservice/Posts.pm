@@ -10,6 +10,7 @@ has table => 'posts';
 has columns => sub {+{
   id => {
     data_type => 'string',
+    is_primary_key => 1,
     has_default => 1,
     is_updatable => 1,
     required => 1

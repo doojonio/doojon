@@ -3,7 +3,7 @@ package Doojon::Command::dataservices;
 use Mojo::Base 'Mojolicious::Command', -signatures;
 
 use Carp(qw(croak));
-use List::Util qw(any);
+use List::Util qw(any first);
 use Mojo::Template;
 use Mojo::Util qw(camelize);
 use Term::ANSIColor qw(:constants);
@@ -17,6 +17,7 @@ use constant AUTOGEN_END => "# ---
 # ---";
 
 has description => 'Check and generate dataservices';
+has 'pg';
 
 sub run ($self, $command) {
 
@@ -25,6 +26,7 @@ sub run ($self, $command) {
     croak("no such command $command")
   }
 
+  $self->pg($self->app->model->ioc->resolve(service => '/pg'));
   binmode STDOUT, 'utf8';
 
   $method->($self);
@@ -39,7 +41,7 @@ sub cli_generate ($self) {
     #return 1;
   }
 
-  my $db = $self->app->model->ioc->resolve(service => '/pg')->db;
+  my $db = $self->pg->db;
 
   $db->select(
     'information_schema.tables', 'table_name', {table_schema => 'public'}
@@ -56,6 +58,12 @@ sub cli_generate ($self) {
         say "🧐 {\RED}don't know what type is $_[0]->{data_type} ${\RESET}" && return unless $type;
         $_[0]->{data_type} = $type;
       });
+
+    $self->_get_primary_keys($table)->each(sub {
+      my $name = shift;
+      my $column = first { $_->{column_name} eq $name } $columns->@*;
+      $column->{is_primary_key} = 1
+    });
 
     my $meta_block = $self->render_data('meta-block.ep', {
       table => $table,
@@ -87,7 +95,7 @@ sub cli_generate ($self) {
       }
 
       say "[write] $package_file";
-      return $package_file->spurt($package_content);
+      return $package_file->spurt($updated_package_content);
     }
 
     $self->render_to_file('package.ep', $package_file, {
@@ -117,6 +125,7 @@ sub cli_check ($self) {
 }
 
 sub _translate_data_type($db_type) {
+
   if ($db_type =~ /character|text|uuid/) {
     return 'string';
   }
@@ -143,6 +152,31 @@ sub _translate_data_type($db_type) {
   }
 }
 
+sub _get_primary_keys ($self, $table) {
+
+  $self->pg->db->select(
+    [
+      'information_schema.table_constraints',
+      [
+        'information_schema.constraint_column_usage',
+        ('constraint_schema') x 2,
+        ('constraint_name') x 2
+      ],
+      [
+        'information_schema.columns',
+        'table_schema' => 'constraint_schema',
+        ('table_name') x 2,
+        'column_name' => 'information_schema.constraint_column_usage.column_name'
+      ]
+    ],
+    [['information_schema.columns.column_name' => 'name']],
+    {
+      'constraint_type' => 'PRIMARY KEY',
+      'information_schema.table_constraints.table_name' => $table
+    }
+  )->hashes->map(sub {shift->{name}});
+}
+
 1
 
 __DATA__
@@ -153,6 +187,9 @@ has columns => sub {+{
   % for my $c ($columns->@*) {
   <%= $c->{column_name} %> => {
     data_type => '<%= $c->{data_type} %>',
+    % if ($c->{is_primary_key}) {
+    is_primary_key => 1,
+    % }
     has_default => <%=!!$c->{column_default} || 0%>,
     is_updatable => <%=!!$c->{is_updatable} || 0%>,
     required => <%=!!$c->{is_nullable} || 0%>
