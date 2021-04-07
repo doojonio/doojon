@@ -1,176 +1,547 @@
-openapi: "3.0.3"
+openapi: 3.0.3
 info:
-  title: Doojon OpenAPI
-  version: "0.0.1"
-servers:
-  - url: localhost
-    description: Local development server
+  title: openapi for doojon.com
+  version: 0.0.1
+
 paths:
-  /api/user:
+  /api/resource/challenges:
     post:
-      summary: Create new user
-      tags: [User]
+      tags: [resource_challenges]
+      description: create-resource for challenges
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/User"
+              type: object
+              required:
+                - descr
+                - proposed_by
+                - title
+              properties:
+                create_time:
+                  type: string
+                descr:
+                  type: string
+                id:
+                  type: string
+                proposed_by:
+                  type: string
+                title:
+                  type: string
+                update_time:
+                  type: string
       responses:
         "200":
-          description: User's id. User successfully created
+          description: id of created resource
           content:
             application/json:
               schema:
-                type: integer
-                minimum: 1
-        "400":
-          description: Request schema is not valid
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SchemaValidationError"
-        "409":
-          description: One of unique fields already taken
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FieldAlreadyTakenError"
+                type: object
+                required: [id]
+                properties:
+                  id:
+                    type: string
     get:
-      summary: Read user
-      tags: [User]
+      tags: [resource_challenges]
       parameters:
-        - $ref: "#/components/parameters/queryId"
+        - name: id
+          in: query
+          schema:
+            type: string
       responses:
         "200":
-          description: User info-object
+          description: fields of record of resource "challenges"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-        "400":
-          description: Request schema is not valid
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SchemaValidationError"
-        "404":
-          description: User with this id not found
+                type: object
+                required:
+                  - create_time
+                  - descr
+                  - id
+                  - proposed_by
+                  - title
+                  - update_time
+                properties:
+                  create_time:
+                    type: string
+                  descr:
+                    type: string
+                  id:
+                    type: string
+                  proposed_by:
+                    type: string
+                  title:
+                    type: string
+                  update_time:
+                    type: string
     put:
-      summary: Update existing user's info
-      tags: [User]
-      security:
-        - BasicAuth: [user]
+      tags: [resource_challenges]
       parameters:
-        - $ref: "#/components/parameters/queryId"
+        - name: id
+          in: query
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/User"
+              type: object
+              required:
+                - descr
+                - proposed_by
+                - title
+              properties:
+                create_time:
+                  type: string
+                descr:
+                  type: string
+                id:
+                  type: string
+                proposed_by:
+                  type: string
+                title:
+                  type: string
+                update_time:
+                  type: string
       responses:
         "200":
-          description: User's id. User successfully updated
+          description: id of the updated record
           content:
             application/json:
               schema:
-                type: integer
-                minimum: 1
-        "400":
-          description: Request schema is not valid
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SchemaValidationError"
-        "401":
-          description: Current user is not authorized
-        "403":
-          description: Current user doesn't has rights to do this action
-        "404":
-          description: User with this id not found
-        "409":
-          description: One of unique fields already taken
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FieldAlreadyTakenError"
+                type: object
+                required: [id]
+                properties:
+                  id:
+                    type: string
     delete:
-      summary: Delete user
-      tags: [User]
-      security:
-        - BasicAuth: [user]
+      tags: [resource_challenges]
       parameters:
-        - $ref: "#/components/parameters/queryId"
+        - name: id
+          in: query
+          schema:
+            type: string
       responses:
         "200":
-          description: User successfully deleted
-        "400":
-          description: Request schema is no valid
+          description: id of the deleted record
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SchemaValidationError"
-        "401":
-          description: Current user is not authorized
-        "403":
-          description: Current user doesn't has rights to do this action
-        "404":
-          description: User with this id not found
-components:
-  securitySchemes:
-    BasicAuth:
-      type: http
-      scheme: basic
-  parameters:
-    queryId:
-      name: id
-      in: query
-      schema:
-        type: integer
-        minimum: 1
-  schemas:
-    # ---
-    # Business schemas
-    # ---
-    User:
-      type: object
-      required:
-        - id
-        - username
-        - email
-        - password
-      properties:
-        id:
-          type: integer
-          readOnly: true
-        username:
-          type: string
-        email:
-          type: string
-          format: email
-        password:
-          type: string
-          format: password
-          writeOnly: true
-    # ---
-    # Tech schemas
-    # ---
-    SchemaValidationError:
-      type: object
-      required:
-        - errors
-      properties:
-        errors:
-          type: array
-          description: An array with validation errors
-          items:
+                type: object
+                required: [id]
+                properties:
+                  id:
+                    type: string
+  /api/resource/post_comment_likes:
+    post:
+      tags: [resource_post_comment_likes]
+      description: create-resource for post_comment_likes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - comment_id
+                - liked_by
+              properties:
+                comment_id:
+                  type: string
+                liked_by:
+                  type: string
+      responses:
+        "200":
+          description: prints "1" as a sign of success
+          content:
+            application/json:
+              schema:
+                enum: [1]
+  /api/resource/post_comments:
+    post:
+      tags: [resource_post_comments]
+      description: create-resource for post_comments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+                - post_id
+                - writed_by
+              properties:
+                create_time:
+                  type: string
+                id:
+                  type: string
+                message:
+                  type: string
+                post_id:
+                  type: string
+                writed_by:
+                  type: string
+      responses:
+        "200":
+          description: id of created resource
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id]
+                properties:
+                  id:
+                    type: string
+    get:
+      tags: [resource_post_comments]
+      parameters:
+        - name: id
+          in: query
+          schema:
             type: string
-    FieldAlreadyTakenError:
-      type: object
-      required:
-        - takenFields
-      properties:
-        takenFields:
-          type: array
-          description: An array with taken fields
-          items:
+      responses:
+        "200":
+          description: fields of record of resource "post_comments"
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - create_time
+                  - id
+                  - message
+                  - post_id
+                  - writed_by
+                properties:
+                  create_time:
+                    type: string
+                  id:
+                    type: string
+                  message:
+                    type: string
+                  post_id:
+                    type: string
+                  writed_by:
+                    type: string
+    put:
+      tags: [resource_post_comments]
+      parameters:
+        - name: id
+          in: query
+          schema:
             type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+                - post_id
+                - writed_by
+              properties:
+                create_time:
+                  type: string
+                id:
+                  type: string
+                message:
+                  type: string
+                post_id:
+                  type: string
+                writed_by:
+                  type: string
+      responses:
+        "200":
+          description: id of the updated record
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id]
+                properties:
+                  id:
+                    type: string
+    delete:
+      tags: [resource_post_comments]
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: id of the deleted record
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id]
+                properties:
+                  id:
+                    type: string
+  /api/resource/post_likes:
+    post:
+      tags: [resource_post_likes]
+      description: create-resource for post_likes
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - liked_by
+                - post_id
+              properties:
+                liked_by:
+                  type: string
+                post_id:
+                  type: string
+      responses:
+        "200":
+          description: prints "1" as a sign of success
+          content:
+            application/json:
+              schema:
+                enum: [1]
+  /api/resource/posts:
+    post:
+      tags: [resource_posts]
+      description: create-resource for posts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - body
+                - challenge_id
+                - title
+                - writed_by
+              properties:
+                body:
+                  type: string
+                challenge_id:
+                  type: string
+                create_time:
+                  type: string
+                id:
+                  type: string
+                title:
+                  type: string
+                writed_by:
+                  type: string
+      responses:
+        "200":
+          description: id of created resource
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id]
+                properties:
+                  id:
+                    type: string
+    get:
+      tags: [resource_posts]
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: fields of record of resource "posts"
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - body
+                  - challenge_id
+                  - create_time
+                  - id
+                  - title
+                  - writed_by
+                properties:
+                  body:
+                    type: string
+                  challenge_id:
+                    type: string
+                  create_time:
+                    type: string
+                  id:
+                    type: string
+                  title:
+                    type: string
+                  writed_by:
+                    type: string
+    put:
+      tags: [resource_posts]
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - body
+                - challenge_id
+                - title
+                - writed_by
+              properties:
+                body:
+                  type: string
+                challenge_id:
+                  type: string
+                create_time:
+                  type: string
+                id:
+                  type: string
+                title:
+                  type: string
+                writed_by:
+                  type: string
+      responses:
+        "200":
+          description: id of the updated record
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id]
+                properties:
+                  id:
+                    type: string
+    delete:
+      tags: [resource_posts]
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: id of the deleted record
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id]
+                properties:
+                  id:
+                    type: string
+  /api/resource/profiles:
+    post:
+      tags: [resource_profiles]
+      description: create-resource for profiles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - reg_date
+                - username
+              properties:
+                id:
+                  type: string
+                reg_date:
+                  type: string
+                username:
+                  type: string
+      responses:
+        "200":
+          description: id of created resource
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id]
+                properties:
+                  id:
+                    type: string
+    get:
+      tags: [resource_profiles]
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: fields of record of resource "profiles"
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                  - reg_date
+                  - username
+                properties:
+                  id:
+                    type: string
+                  reg_date:
+                    type: string
+                  username:
+                    type: string
+    put:
+      tags: [resource_profiles]
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - reg_date
+                - username
+              properties:
+                id:
+                  type: string
+                reg_date:
+                  type: string
+                username:
+                  type: string
+      responses:
+        "200":
+          description: id of the updated record
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id]
+                properties:
+                  id:
+                    type: string
+    delete:
+      tags: [resource_profiles]
+      parameters:
+        - name: id
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: id of the deleted record
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id]
+                properties:
+                  id:
+                    type: string
+
+
+

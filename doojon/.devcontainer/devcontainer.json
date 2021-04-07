@@ -9,7 +9,8 @@
     "name": "doojon",
     "extensions": [
 		"mutantdino.resourcemonitor",
-		"kraih.mojolicious"
+		"kraih.mojolicious",
+		"42crunch.vscode-openapi"
 	],
     "remoteUser": "vscode"
 }
