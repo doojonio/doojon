@@ -19,8 +19,8 @@ jobs:
           file: ./accounts/dockerfile
           push: true
           tags: |
-            doojonio/doojon-accounts:latest
-            doojonio/doojon-accounts:latest-dev
+            doojonio/doojon:accounts-latest
+            doojonio/doojon:accounts-latest-dev
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: ghcr.io
