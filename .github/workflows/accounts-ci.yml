@@ -19,6 +19,5 @@ jobs:
         with:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          registry: ghcr.com/doojonio/doojon/accounts
+          registry: ghcr.io/doojonio/doojon/accounts
           tag_with_ref: true
-      
