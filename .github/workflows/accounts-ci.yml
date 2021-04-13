@@ -15,6 +15,7 @@ jobs:
       - name: build and push accounts image
         uses: docker/build-push-action@v1
         with:
+          file: ./accounts/dockerfile
           context: ./accounts
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
