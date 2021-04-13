@@ -1,4 +1,4 @@
-name: accounts ci
+name: doojon ci
 
 on:
   push:
@@ -15,12 +15,12 @@ jobs:
       - name: build and push doojon image
         uses: docker/build-push-action@v2
         with:
-          context: ./accounts
-          file: ./accounts/dockerfile
+          context: ./doojon
+          file: ./doojon/dockerfile
           push: true
           tags: |
-            doojonio/doojon/accounts:latest
-            doojonio/doojon/accounts:latest-dev
+            doojonio/doojon/doojon:latest
+            doojonio/doojon/doojon:latest-dev
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: ghcr.io
