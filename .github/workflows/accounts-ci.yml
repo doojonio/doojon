@@ -12,11 +12,10 @@ jobs:
     steps:
       - name: checkout the repository
         uses: actions/checkout@v2
-      - name: go to the accounts dir
-        run: cd accounts
       - name: build and push accounts image
         uses: docker/build-push-action@v1
         with:
+          context: ./accounts
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: ghcr.io/doojonio/doojon/accounts
