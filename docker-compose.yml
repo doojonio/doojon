@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   doojon:
-    build: "./doojon"
+    image: doojonio/doojon
     container_name: doojon
     depends_on:
       - "doojon_db"
@@ -21,7 +21,7 @@ services:
     image: "redis:6"
     container_name: doojon_redis
   accounts:
-    build: "./accounts"
+    image: doojonio/accounts
     command: ["cargo", "run"]
     container_name: accounts
     expose:

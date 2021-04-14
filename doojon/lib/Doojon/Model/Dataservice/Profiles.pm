@@ -23,7 +23,7 @@ has columns => sub {+{
   },
   reg_date => {
     data_type => 'date',
-    has_default => 0,
+    has_default => 1,
     is_updatable => 1,
     required => 1
   },

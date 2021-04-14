@@ -67,7 +67,7 @@ $$ language plpgsql;
 create table profiles(
   id uuid primary key, -- accounts service identifier
   username text unique,
-  reg_date date unique
+  reg_date date unique default now()
 );
 create table challenges(
   id text primary key default generate_challenge_id(),

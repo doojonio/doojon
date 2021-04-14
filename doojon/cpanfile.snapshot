@@ -548,16 +548,6 @@ DISTRIBUTIONS
       perl 5.006
       strict 0
       warnings 0
-  Module-Find-0.15
-    pathname: C/CR/CRENZ/Module-Find-0.15.tar.gz
-    provides:
-      Module::Find 0.15
-    requirements:
-      ExtUtils::MakeMaker 0
-      File::Find 0
-      File::Spec 0
-      Test::More 0
-      perl 5.006001
   Module-Implementation-0.09
     pathname: D/DR/DROLSKY/Module-Implementation-0.09.tar.gz
     provides:
@@ -1256,6 +1246,16 @@ DISTRIBUTIONS
       perl 5.006
       strict 0
       warnings 0
+  OpenAPI-Generator-0.05
+    pathname: D/DO/DOOJONIO/OpenAPI-Generator-0.05.tar.gz
+    provides:
+      OpenAPI::Generator 0.05
+      OpenAPI::Generator::From::Definitions undef
+      OpenAPI::Generator::From::Pod undef
+      OpenAPI::Generator::Util undef
+    requirements:
+      ExtUtils::MakeMaker 0
+      perl 5.014
   Package-DeprecationManager-0.17
     pathname: D/DR/DROLSKY/Package-DeprecationManager-0.17.tar.gz
     provides:
@@ -1607,6 +1607,15 @@ DISTRIBUTIONS
       ExtUtils::CBuilder 0
       Module::Build 0.4004
       perl 5.016
+  YAML-LibYAML-0.82
+    pathname: T/TI/TINITA/YAML-LibYAML-0.82.tar.gz
+    provides:
+      YAML::LibYAML 0.82
+      YAML::XS 0.82
+      YAML::XS::LibYAML undef
+    requirements:
+      ExtUtils::MakeMaker 0
+      perl 5.008001
   namespace-autoclean-0.29
     pathname: E/ET/ETHER/namespace-autoclean-0.29.tar.gz
     provides:

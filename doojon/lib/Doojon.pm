@@ -11,7 +11,9 @@ use constant (
 # This method will run once at server start
 sub startup ($self) {
 
-  my $config = $self->plugin('NotYAMLConfig');
+  require YAML::XS;
+  $YAML::XS::Boolean = 'JSON::PP';
+  my $config = $self->plugin('NotYAMLConfig' => {module => 'YAML::XS'});
 
   $self->renderer->default_format('json');
   $self->add_reply_helpers;
