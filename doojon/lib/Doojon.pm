@@ -1,72 +1,25 @@
 package Doojon;
 use Mojo::Base 'Mojolicious', -signatures;
 
-use Doojon::Model;
-use Mojo::Util qw(decamelize);
+use Mojo::Loader qw(load_classes);
 
-use constant (
-  MODE_DEVELOPMENT => 'development',
+use constant STARTUP_STEPS => (
+  'Config',
+  'Model',
+  'Routes',
+  'Helpers',
+  'Commands',
 );
 
 # This method will run once at server start
 sub startup ($self) {
 
-  require YAML::XS;
-  $YAML::XS::Boolean = 'JSON::PP';
-  my $config = $self->plugin('NotYAMLConfig' => {module => 'YAML::XS'});
+  load_classes 'Doojon::Startup';
 
-  $self->renderer->default_format('json');
-  $self->add_reply_helpers;
-  $self->add_resource_shortcut;
-  push $self->commands->namespaces->@*, 'Doojon::Command';
-
-  $self->setup_model;
-
-  $self->secrets($config->{secrets});
-
-  my $r = $self->routes;
-  my $api = $r->any('/api');
-
-  for my $ds ($self->model->list_dataservices) {
-    $api->resource($ds);
+  for my $startup (STARTUP_STEPS) {
+    $startup = "Doojon::Startup::$startup"->new;
+    $startup->startup($self);
   }
-}
-
-sub setup_model ($self) {
-
-  $self->attr(model => sub {
-    state $model = Doojon::Model->new(
-      config => $self->config->{model}
-    );
-  });
-
-  return 1;
-}
-
-sub add_resource_shortcut ($self) {
-
-  $self->routes->add_shortcut(resource => sub ($r, $name) {
-    my $resource = $r->any("/resource/$name")->to("resource#", resource_name => $name);
-
-    $resource->post->to('#create');
-    $resource->get->to('#read');
-    $resource->put->to('#update');
-    $resource->delete->to('#delete');
-
-    $resource->post('/search')->to('#search');
-
-    return $resource;
-  });
-}
-
-sub add_reply_helpers ($self) {
-
-  $self->helper('reply.not_authorized', sub ($c) {
-    $c->render(json => 'not authorized', {status => 401});
-  });
-  $self->helper('reply.forbidden', sub ($c) {
-    $c->render(json => 'forbidden', {status => 403});
-  });
 }
 
 1
