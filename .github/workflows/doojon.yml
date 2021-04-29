@@ -4,11 +4,11 @@ on:
   push:
     branches: [ master ]
     paths:
-      - doojon/
+      - doojon
   pull_request:
     branches: [ master ]
     paths:
-      - doojon/
+      - doojon
 
 jobs:
   build:
