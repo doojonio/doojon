@@ -3,8 +3,12 @@ name: doojon ci
 on:
   push:
     branches: [ master ]
+    paths:
+      - doojon/
   pull_request:
     branches: [ master ]
+    paths:
+      - doojon/
 
 jobs:
   build:

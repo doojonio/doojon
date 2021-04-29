@@ -3,8 +3,12 @@ name: accounts ci
 on:
   push:
     branches: [ master ]
+    paths:
+      - accounts/
   pull_request:
     branches: [ master ]
+    paths:
+      - accounts/
 
 jobs:
   build:
