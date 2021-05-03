@@ -1,0 +1,3 @@
+{
+    "perl.perlInc": ["/usr/src/apps/doojon/local/lib/perl5", "/usr/src/apps/doojon/lib"]
+}

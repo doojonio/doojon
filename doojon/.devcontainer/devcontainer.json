@@ -5,12 +5,13 @@
     ],
     "service": "doojon",
     "runServices": ["doojon", "doojon_db", "doojon_redis", "accounts"],
-    "workspaceFolder": "/usr/src/apps/",
+    "workspaceFolder": "/usr/src/apps/doojon",
     "name": "doojon",
     "extensions": [
 		"mutantdino.resourcemonitor",
 		"kraih.mojolicious",
-		"42crunch.vscode-openapi"
+		"42crunch.vscode-openapi",
+		"richterger.perl"
 	],
     "remoteUser": "vscode"
 }
