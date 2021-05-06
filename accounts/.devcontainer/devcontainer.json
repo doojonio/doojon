@@ -5,12 +5,13 @@
     ],
     "service": "accounts",
     "runServices": ["accounts", "accounts_db", "accounts_redis"],
-    "workspaceFolder": "/usr/src/apps/",
+    "workspaceFolder": "/usr/src/apps/accounts",
     "name": "accounts",
     "extensions": [
-        "rust-lang.rust",
+		"rust-lang.rust",
 		"bungcip.better-toml",
 		"vadimcn.vscode-lldb",
-		"mutantdino.resourcemonitor"
-    ]
+		"mutantdino.resourcemonitor",
+		"eamodio.gitlens"
+	]
 }
