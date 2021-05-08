@@ -71,7 +71,10 @@ pub async fn password_auth(
     let cookie = Cookie::build("auth", new_session)
         .domain(std::env::var("AUTH_COOKIE_DOMAIN").unwrap())
         .path("/")
-        .secure(true)
+        .secure(match std::env::var("COOKIE_SECURE").unwrap().as_str() {
+            "1" => true,
+            _ => false,
+        })
         .finish();
 
     Ok(HttpResponse::Ok().cookie(cookie).json(true))
