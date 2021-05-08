@@ -7,7 +7,7 @@ use Carp qw(croak);
 use Doojon::Courier::Accounts;
 use Doojon::Model::State;
 use List::Util qw(any);
-use Mojo::IOLoop;
+use Mojo::Exception qw(raise);
 use Mojo::Loader qw(find_modules);
 use Mojo::Pg;
 use Mojo::Util qw(decamelize);
@@ -62,6 +62,18 @@ sub new ($type, @args) {
   $self->_complete_dataservices;
 
   return $self;
+}
+
+sub set_cu ($self, $account) {
+
+  raise q(E::MissingParameter) => 'id' unless defined $account->{id};
+
+  $self->get_state->cu($account);
+}
+
+sub get_cu($self) {
+
+  $self->get_state->cu;
 }
 
 sub get_state ($self) {

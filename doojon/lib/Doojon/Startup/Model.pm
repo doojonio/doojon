@@ -6,11 +6,11 @@ use Doojon::Model;
 
 sub startup ($self, $app) {
 
-  $app->attr(model => sub {
-    state $model = Doojon::Model->new(
-      config => $app->config->{model}
-    );
-  })
+  $app->attr(
+    model => sub {
+      Doojon::Model->new(config => $app->config->{model});
+    }
+  );
 }
 
 1

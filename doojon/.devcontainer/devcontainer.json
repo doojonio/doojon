@@ -11,7 +11,11 @@
 		"mutantdino.resourcemonitor",
 		"kraih.mojolicious",
 		"42crunch.vscode-openapi",
-		"richterger.perl"
+		"richterger.perl",
+		"sfodje.perlcritic",
+		"kaktus.perltidy-more",
+		"redhat.vscode-yaml",
+		"eamodio.gitlens"
 	],
     "remoteUser": "vscode"
 }

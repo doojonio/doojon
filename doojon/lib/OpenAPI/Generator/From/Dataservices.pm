@@ -219,7 +219,7 @@ sub _generate_updatable ($self, $ds) {
     $comp{properties}{$name} = {type => _openapi_type($col)};
   }
 
-  return undef unless $comp{properties}->%*;
+  return unless $comp{properties}->%*;
 
   delete $comp{required} unless $comp{required}->@*;
 

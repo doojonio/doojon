@@ -20,4 +20,4 @@ RUN apt-get update \
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 #     && apt-get -y install --no-install-recommends <your-package-list-here>
 
-RUN cpanm Carton
+RUN cpanm -n Carton Perl::LanguageServer Perl::Tidy Perl::Critic

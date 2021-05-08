@@ -2,6 +2,6 @@ package Doojon::Model::State;
 
 use Mojo::Base -base, -signatures;
 
-has 'user';
+has 'cu';
 
 1

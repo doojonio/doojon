@@ -1,3 +1,7 @@
 {
-    "perl.perlInc": ["/usr/src/apps/doojon/local/lib/perl5", "/usr/src/apps/doojon/lib"]
+    "perl.perlInc": ["/usr/src/apps/doojon/local/lib/perl5", "/usr/src/apps/doojon/lib"],
+    "perltidy-more.profile": ".../.perltidyrc",
+    "[perl]": {
+        "editor.defaultFormatter": "Kaktus.perltidy-more"
+    }
 }
