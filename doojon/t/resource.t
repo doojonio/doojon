@@ -3,6 +3,8 @@ use Mojo::Base -strict;
 use Test::More;
 use Test::Mojo;
 
+use Mojo::URL;
+
 use constant useremail => 'test@doojon.com';
 use constant userpw    => 'password';
 
@@ -28,22 +30,18 @@ subtest resource => sub {
   my $account = $accounts->get_account({email => useremail});
   my %profile = (id => $account->{id}, username => 'Anton',);
 
-  $t->post_ok('/api/resource/profiles', json => \%profile)->status_is(200)->json_has('/id');
+  $t->post_ok('/api/resource/profiles', json => \%profile)->status_is(200)->json_has('/0/id');
 
-  my $profile_search = {
-    fields     => [qw(id username)],
-    conditions => {username => $profile{username},},
-    options    => {order_by => 'username', limit => 10,}
-  };
-  $t->post_ok('/api/resource/profiles/search', json => $profile_search)->status_is(200)->json_has('/0');
-
+  $t->get_ok('/api/resource/profiles?username=' . $profile{username})->status_is(200)->json_has('/0');
   is $t->tx->res->json('/0/username'), $profile{username};
 
-  my $created_profile_id = $t->tx->res->json('/0/id');
+  $t->put_ok('/api/resource/profiles?username=' . $profile{username}, json => {username => 'doojonio'})->status_is(200)
+    ->json_has('/0');
 
-  $t->get_ok('/api/resource/profiles', form => {id => $created_profile_id})->status_is(200)->json_has('/username');
+  $t->put_ok('/api/resource/profiles?username=doojonio', json => {username => $profile{username}})->status_is(200)
+    ->json_has('/0');
 
-  $t->delete_ok('/api/resource/profiles', form => {id => $created_profile_id})->status_is(200);
+  $t->delete_ok('/api/resource/profiles?username=' . $profile{username})->status_is(200);
 };
 
 $accounts->logout;

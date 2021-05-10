@@ -18,13 +18,13 @@ sub add_reply_helpers ($self, $app) {
   $app->helper(
     'reply.not_authorized',
     sub ($c) {
-      $c->render(json => 'not authorized', {status => 401});
+      $c->render(json => 'not authorized', status => 401);
     }
   );
   $app->helper(
     'reply.forbidden',
     sub ($c) {
-      $c->render(json => 'forbidden', {status => 403});
+      $c->render(json => 'forbidden', status => 403);
     }
   );
 }

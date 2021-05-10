@@ -121,6 +121,7 @@ sub _complete_dataservices ($self) {
         class => $class,
         dependencies => {
           pg => depends_on('/pg'),
+          mstate => depends_on('/state')
         },
       )
     );

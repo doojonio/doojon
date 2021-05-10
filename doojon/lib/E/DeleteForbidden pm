@@ -1,0 +1,3 @@
+package E::DeleteForbidden;
+use Mojo::Base 'Mojo::Exception';
+1

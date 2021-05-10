@@ -1,6 +1,21 @@
 package Doojon::Model::Dataservice::Profiles;
 
-use Mojo::Base 'Doojon::Model::Dataservice';
+use Mojo::Base 'Doojon::Model::Dataservice', -signatures, -async_await;
+
+async sub check_create_perm ($self, $objects) {
+
+  my(@passed, @forbidden);
+
+  return [], $objects if @$objects != 1;
+  return [], $objects unless my $cu_id = $self->mstate->cu->{id};
+
+
+  if ($objects->[0]->{id} ne $cu_id) {
+    return undef, $objects; ## no critic (Subroutines::ProhibitExplicitReturnUndef)
+  }
+
+  return $objects;
+}
 
 
 # ---

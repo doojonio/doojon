@@ -9,69 +9,73 @@ has service => sub ($self) {
 
 async sub create ($self) {
 
-  my $obj_to_create = $self->req->json;
-  my $id = await $self->service->create($obj_to_create);
+  my $objs_to_create = $self->req->json;
 
-  $self->render(json => {id => $id})
+  if (ref $objs_to_create ne uc 'array') {
+    $objs_to_create = [$objs_to_create];
+  }
+
+  my ($allowed, $forbidden) = await $self->service->check_create_perm($objs_to_create);
+  return $self->reply->forbidden if $forbidden && @$forbidden;
+
+  my $keys = await $self->service->create($objs_to_create);
+
+  $self->render(json => $keys);
 }
 
 async sub read ($self) {
 
-  my $id = $self->param('id');
-
-  unless (await $self->service->check_read_perm($id)) {
-    return $self->reply->forbidden;
+  my $fields = $self->service->columns;
+  my %search_by;
+  for my $fname (keys $fields->%*) {
+    next unless my $param_val = $self->param($fname);
+    $search_by{$fname} = $param_val;
   }
 
-  my $obj = await $self->service->read($id);
+  my($objects, $forbidden) = await $self->service->read(undef, \%search_by);
 
-  if (not defined $obj) {
+  if (not @$objects) {
     return $self->reply->not_found;
   }
 
-  $self->render(json => $obj)
+  $self->render(json => $objects);
 }
 
 async sub update ($self) {
 
-  my $id = $self->param('id');
-  my $obj = await $self->service->read($id);
-
-  if (!$obj) {
-    return $self->reply->not_found;
+  my $fields = $self->service->columns;
+  my %where;
+  for my $fname (keys $fields->%*) {
+    next unless my $param_val = $self->param($fname);
+    $where{$fname} = $param_val;
   }
 
-  my $updated_fields = $self->req->json;
-  await $self->service->update($id, $updated_fields);
+  my $fields_to_update = $self->req->json;
+  return $self->reply->forbidden unless $self->service->check_update_perm($fields_to_update, \%where);
 
-  $self->render(json => {id => $id});
+  my $keys = await $self->service->update($fields_to_update, \%where);
+
+  return $self->reply->not_found unless @$keys;
+
+  $self->render(json => $keys);
 }
 
 async sub delete ($self) {
 
-  my $id = $self->param('id');
-  my $obj = await $self->service->read($id);
-
-  if (!$obj) {
-    return $self->reply->not_found;
+  my $fields = $self->service->columns;
+  my %where;
+  for my $fname (keys $fields->%*) {
+    next unless my $param_val = $self->param($fname);
+    $where{$fname} = $param_val;
   }
 
-  my $deleted_object_id = $obj->{id};
-  await $self->service->delete($deleted_object_id);
+  return $self->reply->forbidden unless $self->service->check_delete_perm(\%where);
 
-  $self->render(json => {id => $deleted_object_id});
-}
+  my $keys = await $self->service->delete(\%where);
 
-async sub search ($self) {
+  return $self->reply->not_found unless @$keys;
 
-  my $search = $self->req->json;
-  my $objects = await $self->service->search(
-    $search->{fields},
-    $search->{conditions},
-    $search->{options},
-  );
-
-  return $self->render(json => $objects);
+  $self->render(json => $keys);
 }
 
 1
