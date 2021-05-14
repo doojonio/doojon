@@ -31,3 +31,12 @@
     name: docker
     enabled: true
     state: started
+- name: ensure docker group
+  group:
+    name: docker
+    state: present
+- name: ensure user in docker group
+  user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: yes
