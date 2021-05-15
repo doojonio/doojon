@@ -1,2 +1,5 @@
-- src: gantsign.minikube
-- src: githubixx.kubectl
+roles:
+  - src: gantsign.minikube
+  - src: githubixx.kubectl
+collections:
+  - name: community.kubernetes
