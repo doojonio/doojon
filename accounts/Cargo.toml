@@ -7,18 +7,19 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix-web = "3"
-actix-rt = "2.2.0"
-chrono = { version = "0.4.19", features = ["serde"] }
-diesel = { version = "1.4.4", features = ["postgres", "r2d2", "uuidv07", "chrono"] }
-dotenv = "0.15.0"
-env_logger = "0.8.3"
-log = "0.4.0"
-pbkdf2 = "0.7"
-r2d2 = "0.8.9"
+actix-rt = "*"
+actix-web = "*"
+chrono = { version = "*", features = ["serde"] }
+diesel = { version = "*", features = ["postgres", "r2d2", "uuidv07", "chrono"] }
+diesel_migrations = "*"
+dotenv = "*"
+env_logger = "*"
+log = "*"
+pbkdf2 = "*"
+r2d2 = "*"
 r2d2_redis = "*"
 rand = "*"
-rand_core = { version = "0.6", features = ["std"] }
+rand_core = { version = "*", features = ["std"] }
 redis = "*"
-serde = "1"
-uuid = { version = "0.8", features = ["serde"] }
+serde = "*"
+uuid = { version = "*", features = ["serde"] }

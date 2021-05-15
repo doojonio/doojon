@@ -1,5 +1,7 @@
 #[macro_use]
 extern crate diesel;
+#[macro_use]
+extern crate diesel_migrations;
 extern crate env_logger;
 
 use actix_web::middleware::Logger;
@@ -16,6 +18,8 @@ mod web_errors;
 #[cfg(test)]
 mod tests;
 
+embed_migrations!();
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     // include .env vars to std env
@@ -31,6 +35,9 @@ async fn main() -> std::io::Result<()> {
 fn configure_app(cfg: &mut web::ServiceConfig) {
     let dbpool = build_dbpool();
     let rspool = build_rspool();
+
+    embedded_migrations::run(&dbpool.get().unwrap()).unwrap();
+
     cfg.data(dbpool.clone()).data(rspool.clone()).service(
         web::scope("/api")
             .service(
