@@ -1,0 +1,26 @@
+{
+  "name": "doojon",
+  "version": "0.0.1",
+  "description": "doojon.com",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/doojonio/doojon.git"
+  },
+  "keywords": [
+    "doojon"
+  ],
+  "author": "Anton Fedotov",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/doojonio/doojon/issues"
+  },
+  "homepage": "https://github.com/doojonio/doojon#readme",
+  "dependencies": {
+    "@mojojs/mojo": "0.0.1-alpha.6"
+  }
+}
