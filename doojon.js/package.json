@@ -21,6 +21,8 @@
   },
   "homepage": "https://github.com/doojonio/doojon#readme",
   "dependencies": {
-    "@mojojs/mojo": "0.0.1-alpha.6"
+    "@mojojs/mojo": "0.0.1-alpha.6",
+    "knex": "^0.95.5",
+    "pg": "^8.6.0"
   }
 }

@@ -1,8 +1,15 @@
+#!/usr/bin/env node
 import mojo from '@mojojs/mojo';
+import startup from './startup.js'
 
 const app = mojo();
 
-app.get('/', ctx => ctx.render({text: 'Hello, World!'}));
+try {
+  await startup(app);
+}
+catch (e) {
+  throw Error(`Unable to configure app: ${e}`)
+}
 
 app.start()
 
