@@ -1,3 +1,11 @@
 {
-    "test": "ok"
+    "model": {
+        "database": {
+            "user": "doojon",
+            "host": "db",
+            "database": "doojon",
+            "password": "password",
+            "port": 5432
+        }
+    }
 }

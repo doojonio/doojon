@@ -1,10 +1,7 @@
-import jsonConfigPlugin from '@mojojs/mojo';
-import path from 'path';
+import mojo from '@mojojs/mojo'
 
 export default async function startup(app) {
 
-  /* Coming soon
-  const file = path.resolve(app.home.toString(), '../doojon.json').toString();
-  app.plugin(jsonConfigPlugin, { file });
-  */
+  const configFile = new mojo.File(app.home.toString(), '../doojon.json');
+  Object.assign(app.config, await configFile.readFile().then(JSON.parse));
 }

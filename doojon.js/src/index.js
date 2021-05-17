@@ -8,7 +8,7 @@ try {
   await startup(app);
 }
 catch (e) {
-  throw Error(`Unable to configure app: ${e}`)
+  throw e;
 }
 
 app.start()

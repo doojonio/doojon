@@ -9,5 +9,9 @@ export default async function startup(app) {
 
   const stepImports = await Promise.all(promises);
 
-  stepImports.forEach(imports => imports.default(app))
+  for (let imports of stepImports) {
+
+    await imports.default(app);
+
+  }
 }
