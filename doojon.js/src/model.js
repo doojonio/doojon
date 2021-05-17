@@ -1,24 +1,24 @@
-import Knex from 'knex';
+import Pg from 'knex';
 
 export default class Model {
 
   constructor(conf) {
 
-    this._pg = new Knex({
+    this._pg = new Pg({
       client: 'pg',
       connection: conf.database
     });
 
-    this._dataservices = this._initDataservices();
-    this._services = this._initServices();
+    this._initDataservices();
+    this._initServices();
   }
 
   _initDataservices() {
-    return []
+    this._datservices = [];
   }
 
   _initServices() {
-    return []
+    this._services = [];
   }
 
 }
