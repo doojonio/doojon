@@ -1,5 +1,5 @@
 const SUBCOMMANDS = {
-  generate: generate
+  generate: cliGenerate
 };
 
 export default async function run(app, args) {
@@ -13,7 +13,6 @@ export default async function run(app, args) {
   await subcommand.call(app);
 }
 
-async function generate(app) {
+async function cliGenerate(app) {
 
-  console.log("Test");
 }

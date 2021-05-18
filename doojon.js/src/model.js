@@ -4,9 +4,10 @@ export default class Model {
 
   constructor(conf) {
 
-    this._pg = new Pg({
+    this._db = new Pg({
       client: 'pg',
-      connection: conf.database
+      connection: conf.database,
+      migrations: conf.migrations,
     });
 
     this._initDataservices();
