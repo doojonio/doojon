@@ -10,15 +10,26 @@ export default class Model {
       migrations: conf.migrations,
     });
 
+    [
+      'Handlers',
+      'Dataservices',
+      'Services'
+    ].forEach(serviceContainer => {
+      this[`_init${serviceContainer}`](conf)
+    })
+
     this._initDataservices();
     this._initServices();
   }
 
-  _initDataservices() {
+  _initHandlers(conf) {
+  }
+
+  _initDataservices(conf) {
     this._datservices = [];
   }
 
-  _initServices() {
+  _initServices(conf) {
     this._services = [];
   }
 
