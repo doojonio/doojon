@@ -7,5 +7,4 @@ export default async function startup(app) {
     directory: app.home.child('migrations').toString(),
   };
   app.model = new Model(app.config.model);
-  app.model._db.migrate.latest();
 }

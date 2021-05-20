@@ -1,14 +1,12 @@
 import Pg from 'knex';
+import Container from './breadboard.js';
 
 export default class Model {
 
   constructor(conf) {
 
-    this._db = new Pg({
-      client: 'pg',
-      connection: conf.database,
-      migrations: conf.migrations,
-    });
+    this._container = new Container();
+    this._conf = conf;
 
     [
       'Handlers',
@@ -17,16 +15,24 @@ export default class Model {
     ].forEach(serviceContainer => {
       this[`_init${serviceContainer}`](conf)
     })
-
-    this._initDataservices();
-    this._initServices();
   }
 
   _initHandlers(conf) {
+    const h = this._container.addContainer('h');
+
+    const dbBlock = () => {
+      return new Pg({
+        client: 'pg',
+        connection: this._conf.database,
+        migrations: this._conf.migrations,
+      })
+    };
+    dbBlock.bind(this);
+
+    h.addService('db', {block: dbBlock, isSingletone: true})
   }
 
   _initDataservices(conf) {
-    this._datservices = [];
   }
 
   _initServices(conf) {

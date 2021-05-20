@@ -1,5 +1,5 @@
 
-export class Container {
+export default class Container {
 
   constructor(parentContainer) {
     this._containers = {};
@@ -10,13 +10,13 @@ export class Container {
     }
   }
 
-  addService(serviceName, serviceClass, conf) {
+  addService(serviceName, conf) {
 
     if (this._services[serviceName]) {
       throw new Error(`service ${serviceName} already exists`);
     }
 
-    const service = new Service(serviceClass, conf, this);
+    const service = new Service(conf, this);
     this._services[serviceName] = service;
 
     return service;
@@ -34,21 +34,79 @@ export class Container {
     return container;
   }
 
+  getContainer(containerName) {
+    const container = this._containers[containerName];
+
+    if (!container) throw new Error(`no such container ${containerName}`);
+
+    return container;
+  }
+
+  getService(serviceName) {
+    const service = this._services[serviceName];
+
+    if (!service) throw new Error(`no such service ${service}`);
+
+    return service;
+  }
+
+  fetch(path, isContainer = false) {
+    path = path.split('/').filter(el => el);
+
+    if (path.length === 0) return this;
+
+    const lastEl = path.pop();
+
+    let currentContainer = this;
+    for (let containerName of path) {
+      currentContainer = currentContainer.getContainer(containerName);
+    }
+
+    if (isContainer) {
+      return currentContainer.getContainer(lastEl);
+    }
+
+    return currentContainer.getService(lastEl);
+  }
+
   resolve(path) {
+    return this.fetch(path).get();
   }
 }
 
-export class Service {
+class Service {
 
-  constructor(serviceClass, {isSingletone}, parentContainer) {
+  constructor(conf, parentContainer) {
 
-    if (!serviceClass) throw new Error('missing class for service')
     if (!parentContainer) throw new Error('missing parent container for service')
 
-    this._serviceClass = serviceClass;
-    this._isLocked = false;
-    this._isSingletone = isSingletone || false;
+    if (conf.block) {
+      this._block = conf.block
+    }
+    else if (conf.class) {
+      this._serviceClass = conf.class
+    }
+    else {
+      throw new Error('missing block or class')
+    }
+
+    this.isLocked = false;
+    this._isSingletone = conf.isSingletone || false;
     this._parentRef = new WeakRef(parentContainer);
+  }
+
+  get _rootContainer() {
+    let container = this._parentRef.deref();
+
+    while(container._parentRef) {
+      container = container._parentRef.deref();
+    }
+
+    return container;
+  }
+
+  get _deps() {
+    return this._serviceClass.prototype.deps;
   }
 
   get() {
@@ -57,8 +115,15 @@ export class Service {
       return this._instance;
     }
 
-    const deps = this._resolveDependencies();
-    const object = new this.serviceClass(deps);
+
+    let object;
+    if (this._block) {
+      object = this._block();
+    }
+    else {
+      const deps = this._resolveDependencies();
+      object = new this._serviceClass(deps);
+    }
 
     if (this._isSingletone) this._instance = object;
 
@@ -66,6 +131,26 @@ export class Service {
   }
 
   _resolveDependencies() {
-    //TODO
+
+    if (!this._deps) return {};
+
+    this.isLocked = true;
+    const root = this._rootContainer;
+    const resolvedDeps = {};
+
+    for (const [depName, depPath] of this._deps.entries()) {
+      if (!depPath.startsWith('/')) {
+        throw new Error(`dependency path should be absolute (${depPath})`);
+      }
+
+      const service = root.fetch(depPath);
+
+      if (service.isLocked) throw new Error(`circular dependency forbidden (${depName})`);
+
+      resolvedDeps[depName] = service.get();
+    }
+
+    return resolvedDeps;
   }
+
 }

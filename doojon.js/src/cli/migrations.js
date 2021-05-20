@@ -17,19 +17,23 @@ export default async function run(app, args) {
 
 async function cliAdd(app, args) {
 
-  app.model._db.migrate.make(args[0]);
+  const db = app.model._container.resolve('/h/db');
+  db.migrate.make(args[0]);
 }
 
 async function cliRun(app) {
 
-  app.model._db.migrate.latest().then(() => {
-    app.model._db.destroy()
+  const db = app.model._container.resolve('/h/db');
+
+  db.migrate.latest().then(() => {
+    db.destroy()
   });
 }
 
 async function cliRollback(app) {
 
-  await app.model._db.migrate.rollback().then(() => {
-    app.model._db.destroy()
+  const db = app.model._container.resolve('/h/db');
+  db.migrate.rollback().then(() => {
+    db.destroy()
   });
 }
