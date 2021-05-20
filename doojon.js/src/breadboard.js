@@ -25,7 +25,7 @@ export default class Container {
   addContainer(containerName) {
 
     if(this._containers[containerName]) {
-      throw new Error(`container ${containerName} already exists`)
+      throw new Error(`container ${containerName} already exists`);
     }
 
     const container = new Container(this);
@@ -78,16 +78,16 @@ class Service {
 
   constructor(conf, parentContainer) {
 
-    if (!parentContainer) throw new Error('missing parent container for service')
+    if (!parentContainer) throw new Error('missing parent container for service');
 
     if (conf.block) {
-      this._block = conf.block
+      this._block = conf.block;
     }
     else if (conf.class) {
-      this._serviceClass = conf.class
+      this._serviceClass = conf.class;
     }
     else {
-      throw new Error('missing block or class')
+      throw new Error('missing block or class');
     }
 
     this.isLocked = false;
@@ -106,7 +106,7 @@ class Service {
   }
 
   get _deps() {
-    return this._serviceClass.prototype.deps;
+    return this._serviceClass.deps;
   }
 
   get() {
@@ -127,7 +127,7 @@ class Service {
 
     if (this._isSingletone) this._instance = object;
 
-    return object
+    return object;
   }
 
   _resolveDependencies() {
@@ -138,7 +138,7 @@ class Service {
     const root = this._rootContainer;
     const resolvedDeps = {};
 
-    for (const [depName, depPath] of this._deps.entries()) {
+    for (const [depName, depPath] of Object.entries(this._deps)) {
       if (!depPath.startsWith('/')) {
         throw new Error(`dependency path should be absolute (${depPath})`);
       }
@@ -149,6 +149,8 @@ class Service {
 
       resolvedDeps[depName] = service.get();
     }
+
+    this.isLocked = false;
 
     return resolvedDeps;
   }

@@ -1,4 +1,4 @@
-import mojo from '@mojojs/mojo'
+import mojo from '@mojojs/mojo';
 
 export default async function startup(app) {
 

@@ -1,5 +1,6 @@
 import Pg from 'knex';
 import Container from './breadboard.js';
+import Dataservice from './model/dataservice.js';
 
 export default class Model {
 
@@ -13,8 +14,8 @@ export default class Model {
       'Dataservices',
       'Services'
     ].forEach(serviceContainer => {
-      this[`_init${serviceContainer}`](conf)
-    })
+      this[`_init${serviceContainer}`](conf);
+    });
   }
 
   _initHandlers(conf) {
@@ -25,14 +26,16 @@ export default class Model {
         client: 'pg',
         connection: this._conf.database,
         migrations: this._conf.migrations,
-      })
+      });
     };
     dbBlock.bind(this);
 
-    h.addService('db', {block: dbBlock, isSingletone: true})
+    h.addService('db', {block: dbBlock, isSingletone: true});
   }
 
-  _initDataservices(conf) {
+  _initDataservices() {
+    const ds = this._container.addContainer('ds');
+    ds.addService('ds', {isSingletone: true, class: Dataservice });
   }
 
   _initServices(conf) {
