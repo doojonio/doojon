@@ -9,13 +9,16 @@ export default class Model {
     this._container = new Container();
     this._conf = conf;
 
-    [
+    const steps = [
       'Handlers',
       'Dataservices',
       'Services'
-    ].forEach(serviceContainer => {
-      this[`_init${serviceContainer}`](conf);
-    });
+    ];
+
+    for (const step of steps) {
+      this[`_init${step}`](conf);
+    }
+
   }
 
   _initHandlers(conf) {

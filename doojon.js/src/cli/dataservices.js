@@ -30,9 +30,10 @@ async function cliGenerate(app) {
       .select()
       .from("information_schema.columns")
       .where({ table_name: table, table_schema: "public" });
-    columns.forEach((c) => {
-      c["data_type"] = _translate_data_type(c["data_type"]);
-    });
+
+    for (const col of columns) {
+      col["data_type"] = _translate_data_type(col["data_type"]);
+    }
 
     const primaryKeys = await _getPrimaryKeys(db, table);
 
@@ -71,7 +72,7 @@ async function _getPrimaryKeys(db, table) {
         "tc.constraint_name"
       );
     })
-    .join({ c: "information_schema.columns" }, function() {
+    .join({ c: "information_schema.columns" }, function () {
       this.on("c.table_schema", "=", "tc.constraint_schema")
         .andOn("tc.table_name", "=", "c.table_name")
         .andOn("ccu.column_name", "=", "c.column_name");
