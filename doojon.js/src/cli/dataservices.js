@@ -62,9 +62,9 @@ function _translate_data_type(type) {
 }
 
 async function _getPrimaryKeys(db, table) {
-  db.select("c.column_name")
-    .from("information_schema.table_constraints")
-    .as("tc")
+  return db
+    .select("c.column_name")
+    .from("information_schema.table_constraints as tc")
     .join({ ccu: "information_schema.constraint_column_usage" }, function () {
       this.on("ccu.constraint_schema", "=", "tc.constraint_schema").andOn(
         "ccu.constraint_name",
@@ -77,5 +77,5 @@ async function _getPrimaryKeys(db, table) {
         .andOn("tc.table_name", "=", "c.table_name")
         .andOn("ccu.column_name", "=", "c.column_name");
     })
-    .where({ constraint_type: "PRIMARY_KEY", "tc.table_name": table });
+    .where({ constraint_type: "PRIMARY KEY", "tc.table_name": table });
 }
