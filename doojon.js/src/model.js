@@ -1,24 +1,22 @@
 import Pg from 'knex';
 import Container from './breadboard.js';
 import Dataservice from './model/dataservice.js';
+import { schema } from './model/schema.js';
 
 export default class Model {
-
   constructor(conf) {
-
     this._container = new Container();
     this._conf = conf;
 
-    const steps = [
-      'Handlers',
-      'Dataservices',
-      'Services'
-    ];
+    const steps = ['Handlers', 'Dataservices', 'Services'];
 
     for (const step of steps) {
       this[`_init${step}`](conf);
     }
+  }
 
+  getDataservice(name) {
+    return this._container.resolve(`/ds/${name}`);
   }
 
   _initHandlers(conf) {
@@ -33,16 +31,17 @@ export default class Model {
     };
     dbBlock.bind(this);
 
-    h.addService('db', {block: dbBlock, isSingletone: true});
+    h.addService('db', { block: dbBlock, isSingletone: true });
+    const dbcont = h.addContainer('db');
+    dbcont.addService('schema', { block: () => schema, isSingletone: true });
   }
 
   _initDataservices() {
     const ds = this._container.addContainer('ds');
-    ds.addService('ds', {isSingletone: true, class: Dataservice });
+    ds.addService('ds', { isSingletone: true, class: Dataservice });
   }
 
   _initServices(conf) {
     this._services = [];
   }
-
 }

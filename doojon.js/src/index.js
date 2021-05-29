@@ -1,15 +1,13 @@
 #!/usr/bin/env node
 import mojo from '@mojojs/mojo';
-import startup from './startup.js'
+import startup from './startup.js';
 
 const app = mojo();
 
 try {
   await startup(app);
-}
-catch (e) {
+} catch (e) {
   throw e;
 }
 
-app.start()
-
+app.start();

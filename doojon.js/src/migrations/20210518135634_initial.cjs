@@ -1,6 +1,4 @@
-
-exports.up = function(knex) {
-
+exports.up = function (knex) {
   return knex.schema
     .raw('create extension if not exists "uuid-ossp";')
     .raw(generatingFunctionsSQL)
@@ -14,8 +12,14 @@ exports.up = function(knex) {
       table.text('title').notNullable();
       table.text('descr');
       table.uuid('proposed_by').notNullable().references('profiles.id');
-      table.timestamp('create_time', {useTz: true}).notNullable().defaultTo('now()');
-      table.timestamp('update_time', {useTz: true}).notNullable().defaultTo('now()');
+      table
+        .timestamp('create_time', { useTz: true })
+        .notNullable()
+        .defaultTo('now()');
+      table
+        .timestamp('update_time', { useTz: true })
+        .notNullable()
+        .defaultTo('now()');
     })
     .createTable('posts', table => {
       table.text('id').primary().defaultTo('generate_post_id()');
@@ -23,8 +27,14 @@ exports.up = function(knex) {
       table.text('title').notNullable();
       table.text('body').notNullable();
       table.uuid('writted_by').notNullable().references('profiles.id');
-      table.timestamp('create_time', {useTz: true}).notNullable().defaultTo('now()');
-      table.timestamp('update_time', {useTz: true}).notNullable().defaultTo('now()');
+      table
+        .timestamp('create_time', { useTz: true })
+        .notNullable()
+        .defaultTo('now()');
+      table
+        .timestamp('update_time', { useTz: true })
+        .notNullable()
+        .defaultTo('now()');
     })
     .createTable('post_likes', table => {
       table.text('post_id').notNullable().references('posts.id');
@@ -36,25 +46,30 @@ exports.up = function(knex) {
       table.text('post_id').notNullable().references('posts.id');
       table.text('message').notNullable();
       table.uuid('writed_by').notNullable().references('profiles.id');
-      table.timestamp('create_time', {useTz: true}).notNullable().defaultTo('now()');
-      table.timestamp('update_time', {useTz: true}).notNullable().defaultTo('now()');
+      table
+        .timestamp('create_time', { useTz: true })
+        .notNullable()
+        .defaultTo('now()');
+      table
+        .timestamp('update_time', { useTz: true })
+        .notNullable()
+        .defaultTo('now()');
     })
     .createTable('post_comment_likes', table => {
       table.text('comment_id').notNullable().references('post_comments.id');
       table.uuid('liked_by').notNullable().references('profiles.id');
       table.primary(['comment_id', 'liked_by']);
-    })
+    });
 };
 
-exports.down = function(knex) {
-
+exports.down = function (knex) {
   return knex.schema
     .dropTableIfExists('post_comment_likes')
     .dropTableIfExists('post_comments')
     .dropTableIfExists('post_likes')
     .dropTableIfExists('posts')
     .dropTableIfExists('challenges')
-    .dropTableIfExists('profiles')
+    .dropTableIfExists('profiles');
 };
 
 const generatingFunctionsSQL = `

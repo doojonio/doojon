@@ -1,6 +1,4 @@
-
 export default class Container {
-
   constructor(parentContainer) {
     this._containers = {};
     this._services = {};
@@ -11,7 +9,6 @@ export default class Container {
   }
 
   addService(serviceName, conf) {
-
     if (this._services[serviceName]) {
       throw new Error(`service ${serviceName} already exists`);
     }
@@ -23,8 +20,7 @@ export default class Container {
   }
 
   addContainer(containerName) {
-
-    if(this._containers[containerName]) {
+    if (this._containers[containerName]) {
       throw new Error(`container ${containerName} already exists`);
     }
 
@@ -75,18 +71,15 @@ export default class Container {
 }
 
 class Service {
-
   constructor(conf, parentContainer) {
-
-    if (!parentContainer) throw new Error('missing parent container for service');
+    if (!parentContainer)
+      throw new Error('missing parent container for service');
 
     if (conf.block) {
       this._block = conf.block;
-    }
-    else if (conf.class) {
+    } else if (conf.class) {
       this._serviceClass = conf.class;
-    }
-    else {
+    } else {
       throw new Error('missing block or class');
     }
 
@@ -98,7 +91,7 @@ class Service {
   get _rootContainer() {
     let container = this._parentRef.deref();
 
-    while(container._parentRef) {
+    while (container._parentRef) {
       container = container._parentRef.deref();
     }
 
@@ -110,17 +103,14 @@ class Service {
   }
 
   get() {
-
     if (this._isSingletone && this._instance) {
       return this._instance;
     }
 
-
     let object;
     if (this._block) {
       object = this._block();
-    }
-    else {
+    } else {
       const deps = this._resolveDependencies();
       object = new this._serviceClass(deps);
     }
@@ -131,7 +121,6 @@ class Service {
   }
 
   _resolveDependencies() {
-
     if (!this._deps) return {};
 
     this.isLocked = true;
@@ -145,7 +134,8 @@ class Service {
 
       const service = root.fetch(depPath);
 
-      if (service.isLocked) throw new Error(`circular dependency forbidden (${depName})`);
+      if (service.isLocked)
+        throw new Error(`circular dependency forbidden (${depName})`);
 
       resolvedDeps[depName] = service.get();
     }
@@ -154,5 +144,4 @@ class Service {
 
     return resolvedDeps;
   }
-
 }
