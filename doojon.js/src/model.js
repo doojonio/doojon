@@ -11,7 +11,7 @@ export default class Model {
     const steps = ['Handlers', 'Dataservices', 'Services'];
 
     for (const step of steps) {
-      this[`_init${step}`](conf);
+      this[`_init${step}`]();
     }
   }
 
@@ -19,7 +19,7 @@ export default class Model {
     return this._container.resolve(`/ds/${name}`);
   }
 
-  _initHandlers(conf) {
+  _initHandlers() {
     const h = this._container.addContainer('h');
 
     const dbBlock = () => {
@@ -41,7 +41,7 @@ export default class Model {
     ds.addService('ds', { isSingletone: true, class: Dataservice });
   }
 
-  _initServices(conf) {
+  _initServices() {
     this._services = [];
   }
 }
