@@ -8,6 +8,7 @@ export const schema = {
     },
     'id': {
       'type': 'string',
+      'is_primary_key': true,
     },
     'proposed_by': {
       'type': 'string',
@@ -22,9 +23,11 @@ export const schema = {
   'post_comment_likes': {
     'comment_id': {
       'type': 'string',
+      'is_primary_key': true,
     },
     'liked_by': {
       'type': 'string',
+      'is_primary_key': true,
     },
   },
   'post_comments': {
@@ -33,6 +36,7 @@ export const schema = {
     },
     'id': {
       'type': 'string',
+      'is_primary_key': true,
     },
     'message': {
       'type': 'string',
@@ -50,9 +54,11 @@ export const schema = {
   'post_likes': {
     'liked_by': {
       'type': 'string',
+      'is_primary_key': true,
     },
     'post_id': {
       'type': 'string',
+      'is_primary_key': true,
     },
   },
   'posts': {
@@ -67,6 +73,7 @@ export const schema = {
     },
     'id': {
       'type': 'string',
+      'is_primary_key': true,
     },
     'title': {
       'type': 'string',
@@ -81,6 +88,7 @@ export const schema = {
   'profiles': {
     'id': {
       'type': 'string',
+      'is_primary_key': true,
     },
     'reg_date': {
       'type': 'date',

@@ -19,6 +19,10 @@ export default class Container {
     return service;
   }
 
+  listServices() {
+    return Object.keys(this._services);
+  }
+
   addContainer(containerName) {
     if (this._containers[containerName]) {
       throw new Error(`container ${containerName} already exists`);

@@ -1,3 +1,4 @@
+import mojo from '@mojojs/mojo';
 import Pg from 'knex';
 import Container from './breadboard.js';
 import Dataservice from './model/dataservice.js';
@@ -7,11 +8,13 @@ export default class Model {
   constructor(conf) {
     this._container = new Container();
     this._conf = conf;
+  }
 
+  async init() {
     const steps = ['Handlers', 'Dataservices', 'Services'];
 
     for (const step of steps) {
-      this[`_init${step}`]();
+      await this[`_init${step}`]();
     }
   }
 
@@ -19,7 +22,15 @@ export default class Model {
     return this._container.resolve(`/ds/${name}`);
   }
 
-  _initHandlers() {
+  listDataservices() {
+    return this._container.fetch('/ds', true).listServices();
+  }
+
+  async closeHandlers() {
+    this._container.resolve('/h/db').destroy();
+  }
+
+  async _initHandlers() {
     const h = this._container.addContainer('h');
 
     const dbBlock = () => {
@@ -36,12 +47,16 @@ export default class Model {
     dbcont.addService('schema', { block: () => schema, isSingletone: true });
   }
 
-  _initDataservices() {
+  async _initDataservices() {
     const ds = this._container.addContainer('ds');
-    ds.addService('ds', { isSingletone: true, class: Dataservice });
+    const dsdir = new mojo.File(this._conf.dataservices.directory);
+
+    for await (const dsfile of dsdir.list()) {
+      const dsname = dsfile.basename('.js');
+      const dsclass = (await import(dsfile.toString())).default;
+      ds.addService(dsname, { isSingletone: true, class: dsclass });
+    }
   }
 
-  _initServices() {
-    this._services = [];
-  }
+  async _initServices() {}
 }

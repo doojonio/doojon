@@ -5,26 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Dataservices",
-            "program": "${workspaceFolder}/src/index.js",
-            "request": "launch",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "args": [
-                "dataservices",
-                "generate"
-            ],
-            "type": "pwa-node"
-        },
-        {
             "type": "pwa-node",
             "request": "launch",
             "name": "Migrations",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/src/index.js",
+            "program": "${workspaceFolder}/test/resource.js",
             "args": [
                 "migrations",
                 "run"

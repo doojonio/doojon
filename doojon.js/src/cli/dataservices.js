@@ -6,18 +6,31 @@ const SUBCOMMANDS = {
   generate: cliGenerate,
 };
 
-const DSENTITY_TEMPLATE = `
+const SCHEMA_TEMPLATE = `
   export const schema = {
   <% for (const table of tables) { -%>
     '<%= table['table_name'] %>': {
     <% for (const column of table['columns']) { -%>
       '<%=column['column_name']%>': {
         'type': '<%=column['data_type']%>',
+        <% if (column['is_primary_key']) { -%>
+        'is_primary_key': true,
+        <% } -%>
       },
     <% } %>
     },
   <% } %>
   };
+`;
+
+const DATASERVICE_TEMPLATE = `
+  import Dataservice from '../dataservice.js';
+
+  export default class <%=classname%> extends Dataservice {
+    static get _tablename() {
+      return '<%=tablename%>'
+    }
+  }
 `;
 
 const NOT_DS_TABLES = ['knex_migrations', 'knex_migrations_lock'];
@@ -37,7 +50,7 @@ async function cliGenerate(app) {
   const tables = await _getTables(db);
   tables.sort((a, b) => (a['table_name'] > b['table_name'] ? 1 : -1));
 
-  let schema = ejs.render(DSENTITY_TEMPLATE, { tables });
+  let schema = ejs.render(SCHEMA_TEMPLATE, { tables });
 
   await prettier
     .resolveConfig(app.home.dirname().child('.prettierrc.json').toString())
@@ -50,6 +63,35 @@ async function cliGenerate(app) {
     app.home.child('model/schema.js').toString()
   );
   await schemafile.writeFile(schema);
+
+  for (const table of tables) {
+    const filename = table['table_name'].split('_').join('') + '.js';
+    const dsfile = new mojo.File(
+      app.home.child(`model/dataservices/${filename}`).toString()
+    );
+
+    if (await dsfile.exists()) continue;
+
+    const classname =
+      table['table_name']
+        .split('_')
+        .map(p => p.charAt(0).toUpperCase() + p.slice(1))
+        .join('') + 'Dataservice';
+
+    let dscode = ejs.render(DATASERVICE_TEMPLATE, {
+      classname,
+      tablename: table['table_name'],
+    });
+
+    await prettier
+      .resolveConfig(app.home.dirname().child('.prettierrc.json').toString())
+      .then(options => {
+        options.parser = 'babel';
+        dscode = prettier.format(dscode, options);
+      });
+
+    await dsfile.writeFile(dscode);
+  }
 
   db.destroy();
 }
