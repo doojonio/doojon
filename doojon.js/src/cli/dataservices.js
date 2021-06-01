@@ -65,7 +65,7 @@ async function cliGenerate(app) {
   await schemafile.writeFile(schema);
 
   for (const table of tables) {
-    const filename = table['table_name'].split('_').join('') + '.js';
+    const filename = table['table_name'].split('_').join('-') + '.js';
     const dsfile = new mojo.File(
       app.home.child(`model/dataservices/${filename}`).toString()
     );

@@ -12,12 +12,12 @@ export default class Dataservice extends Service {
     throw new Error('_tablename is undefined');
   }
 
-  get _fields() {
+  get fields() {
     return this._dbschema[this.constructor._tablename];
   }
 
   get _primarykeys() {
-    return this._fields.filter(f => f['is_primary_key']);
+    return this.fields.filter(f => f['is_primary_key']);
   }
 
   async create(objects) {

@@ -23,6 +23,7 @@ export default class Container {
     return Object.keys(this._services);
   }
 
+
   addContainer(containerName) {
     if (this._containers[containerName]) {
       throw new Error(`container ${containerName} already exists`);
@@ -45,7 +46,7 @@ export default class Container {
   getService(serviceName) {
     const service = this._services[serviceName];
 
-    if (!service) throw new Error(`no such service ${service}`);
+    if (!service) throw new Error(`no such service ${serviceName}`);
 
     return service;
   }
