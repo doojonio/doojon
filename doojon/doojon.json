@@ -1,0 +1,24 @@
+{
+  "model": {
+    "database": {
+      "user": "doojon",
+      "host": "doojon_db",
+      "database": "doojon",
+      "password": "password",
+      "port": 5432
+    },
+    "couriers": {
+      "accounts": {
+        "protocol": "http",
+        "host": "accounts",
+        "port": 3000
+      }
+    }
+  },
+  "testtools": {
+    "authorizedClient": {
+      "testUserEmail": "doojontestuser@doojon.com",
+      "testUserPassword": "worldofwarcraft"
+    }
+  }
+}

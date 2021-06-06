@@ -1,0 +1,30 @@
+{
+  "name": "doojon",
+  "version": "0.0.1",
+  "description": "doojon.com",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx tap"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/doojonio/doojon.git"
+  },
+  "keywords": [
+    "doojon"
+  ],
+  "author": "Anton Fedotov",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/doojonio/doojon/issues"
+  },
+  "homepage": "https://github.com/doojonio/doojon#readme",
+  "dependencies": {
+    "@mojojs/mojo": "^0.0.1-alpha.6",
+    "ejs": "^3.1.6",
+    "knex": "^0.95.5",
+    "pg": "^8.6.0",
+    "prettier": "^2.3.0",
+    "tough-cookie": "^4.0.0"
+  }
+}

@@ -1,10 +1,8 @@
-FROM perl:5.32
+FROM node:16
 
-RUN cpanm Carton \
-    && mkdir -p /usr/src/app
+ADD . /usr/src/app
 WORKDIR /usr/src/app
 
-COPY cpanfile* /usr/src/app/
-RUN carton install
+RUN npm ci
 
-COPY . /usr/src/app
+ENTRYPOINT [ "./script/doojon.js", "server", "-l", "http://*:8080" ]

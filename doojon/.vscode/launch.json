@@ -1,28 +1,16 @@
-
-// Use IntelliSense to learn about possible attributes.
-// Hover to view descriptions of existing attributes.
-// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "perl",
-            "program": "${workspaceFolder}/script/doojon",
-            "args": ["daemon"],
-            "request": "launch",
-            "name": "Perl-Debug local",
-            "cwd": "${workspaceFolder}",
-            "env": {},
-            "stopOnEntry": false
-        },
-        {
-            "type": "perl",
-            "program": "${workspaceFolder}/t/resource.t",
-            "request": "launch",
-            "name": "Resource test",
-            "cwd": "${workspaceFolder}",
-            "env": {},
-            "stopOnEntry": false
-        },
-    ]
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "Migrations",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/test/resource.js",
+      "args": ["migrations", "run"]
+    }
+  ]
 }
