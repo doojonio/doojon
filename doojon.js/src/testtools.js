@@ -1,15 +1,14 @@
 const { Cookie } = require('tough-cookie');
 
 async function generateFreeTestUsername(app) {
-
   const profiles = app.model.getDataservice('profiles');
 
   let username;
   let userexists;
   do {
     username = 'testuser_' + Math.random().toString(36).substring(7);
-    userexists = await profiles.read({username});
-  } while (userexists.length != 0)
+    userexists = await profiles.read({ username });
+  } while (userexists.length !== 0);
 
   return username;
 }
@@ -39,10 +38,16 @@ async function newAuthorizedClient(app) {
   const domain = client.baseURL.hostname;
   authCookie.domain = domain;
 
-  await client.cookieJar.setCookie(new Cookie(authCookie), `http://accounts.${domain}/api/auth`);
+  await client.cookieJar.setCookie(
+    new Cookie(authCookie),
+    `http://accounts.${domain}/api/auth`
+  );
 
   const basicStop = client.stop;
-  client.stop = () => {accountsCourier.logout(); return basicStop.apply(client)};
+  client.stop = () => {
+    accountsCourier.logout();
+    return basicStop.apply(client);
+  };
 
   return client;
 }
