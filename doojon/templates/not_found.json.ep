@@ -1,3 +1,0 @@
-{
-    "error": "<%= stash('error') // 'Not found' %>"
-}

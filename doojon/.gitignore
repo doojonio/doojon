@@ -1,2 +1,2 @@
-local/
-.vscode/perl-lang
+node_modules/
+.nyc_output/

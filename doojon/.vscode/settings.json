@@ -1,7 +1,6 @@
 {
-    "perl.perlInc": ["/usr/src/apps/doojon/local/lib/perl5", "/usr/src/apps/doojon/lib"],
-    "perltidy-more.profile": ".../.perltidyrc",
-    "[perl]": {
-        "editor.defaultFormatter": "Kaktus.perltidy-more"
-    }
+  "[javascript]": {
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }
