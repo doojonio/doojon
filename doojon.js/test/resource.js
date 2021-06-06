@@ -12,16 +12,11 @@ tap.test('Resource', async t => {
   await t.test('Profiles', async t => {
     const username = await generateFreeTestUsername(app);
 
-    const profile = {
-      id: client.accountsAccount.id,
-      username: username,
-    };
-
     (
-      await client.deleteOk(`/api/1/resource/profiles?id=${profile.id}`)
-    ).statusIs(200);
+      await client.deleteOk(`/api/1/resource/profiles?id=${client.accountsAccount.id}`)
+    );
     (
-      await client.postOk('/api/1/resource/profiles', { json: profile })
+      await client.postOk('/api/1/resource/profiles', { json: { username } })
     ).statusIs(200);
     (
       await client.getOk(`/api/1/resource/profiles?username=${username}`)
@@ -32,8 +27,15 @@ tap.test('Resource', async t => {
       })
     ).statusIs(200);
     (
-      await client.deleteOk(`/api/1/resource/profiles?id=${profile.id}`)
+      await client.deleteOk(`/api/1/resource/profiles?id=${client.accountsAccount.id}`)
     ).statusIs(200);
+  });
+
+  await t.test('Challenges', async t => {
+    const challenge = {
+      title: 'Do not eat sugar 30 days',
+      descr: 'Try to live without sugar 30 days. The most challenging is...',
+    };
   });
 
   app.model.closeHandlers();

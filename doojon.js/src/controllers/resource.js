@@ -1,7 +1,12 @@
 class ResourceController {
   async create(ctx) {
     const ds = ctx.app.model.getDataservice(ctx.stash.dsname);
-    const ids = await ds.create(await ctx.req.json());
+    const objects = await ctx.req.json();
+
+    if (!await ds.checkBeforeCreate(objects))
+      return ctx.res.status(400).send('check before create has not passed');
+
+    const ids = await ds.create(objects);
     return ctx.render({ json: ids });
   }
 
@@ -10,6 +15,9 @@ class ResourceController {
     const fields = ds.fields;
 
     const searchquery = this._getFieldsFromQuery(ctx, fields);
+
+    if (!await ds.checkBeforeRead(searchquery))
+      return ctx.res.status(400).send('check before read has not passed');
 
     const objects = await ds.read(searchquery);
     return ctx.render({ json: objects });
@@ -22,6 +30,9 @@ class ResourceController {
     const filter = this._getFieldsFromQuery(ctx, fields);
     const newFields = await ctx.req.json();
 
+    if (!await ds.checkBeforeUpdate(filter, newFields))
+      return ctx.res.status(400).send('check before update has not passed');
+
     const ids = await ds.update(filter, newFields);
 
     return ctx.render({ json: ids });
@@ -32,6 +43,10 @@ class ResourceController {
     const fields = ds.fields;
 
     const filter = this._getFieldsFromQuery(ctx, fields);
+
+    if (!await ds.checkBeforeDelete(filter))
+      return ctx.res.status(400).send('check before delete has not passed');
+
     const ids = await ds.delete(filter);
 
     if (ids.length === 0) {

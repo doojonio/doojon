@@ -4,9 +4,10 @@ const Container = require('./breadboard');
 const schema = require('./model/schema');
 
 class Model {
-  constructor(conf) {
+  constructor(deps) {
     this._container = new Container();
-    this._conf = conf;
+    this._conf = deps.conf;
+    this._log = deps.log;
   }
 
   async init() {
@@ -19,6 +20,10 @@ class Model {
 
   getDataservice(name) {
     return this._container.resolve(`/ds/${name}`);
+  }
+
+  getService(name) {
+    return this._container.resolve(`/s/${name}`);
   }
 
   getCourier(name) {
@@ -59,8 +64,11 @@ class Model {
         connection: conf.database,
         migrations: conf.migrations,
       });
-
     h.addService('db', { block: dbBlock, isSingletone: true });
+
+    const log = this._log;
+    h.addService('log', { block: () => log, isSingletone: true })
+
     const dbcont = h.addContainer('db');
     dbcont.addService('schema', { block: () => schema, isSingletone: true });
   }
@@ -76,7 +84,16 @@ class Model {
     }
   }
 
-  async _initServices() {}
+  async _initServices() {
+    const s = this._container.addContainer('s');
+    const servicesDir = new File(this._conf.services.directory);
+
+    for await (const serviceFile of servicesDir.list()) {
+      const serviceName = serviceFile.basename('.js');
+      const serviceClass = require(serviceFile.toString());
+      s.addService(serviceName, { isSingletone: true, class: serviceClass });
+    }
+  }
 }
 
 module.exports = Model;

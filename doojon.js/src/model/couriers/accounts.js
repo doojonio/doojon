@@ -72,11 +72,24 @@ class AccountsCourier {
 
     const res = await this.ua.get(url);
 
-    if (res.status === 404) return undefined;
+    if (res.status === 404) return null;
 
     if (res.isError)
       throw new Error(
-        `error during creating account in accounts: ${res.statusMessage}`
+        `Error during creating account in accounts: ${res.statusMessage}`
+      );
+
+    return res.json();
+  }
+
+  async getSession(sessionId) {
+    const res = await this.ua.get('/api/session', {headers: {'X-Session': sessionId}});
+
+    if (res.status === 404) return null
+
+    if (res.isError)
+      throw new Error(
+        `Error during getting session from accounts: ${res.statusMessage}`
       );
 
     return res.json();

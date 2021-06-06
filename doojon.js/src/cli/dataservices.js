@@ -26,13 +26,12 @@ const SCHEMA_TEMPLATE = `
 const DATASERVICE_TEMPLATE = `
   const Dataservice = require('../dataservice');
 
-  class <%=classname%> extends Dataservice {
+  module.exports = class <%=classname%> extends Dataservice {
     static get _tablename() {
       return '<%=tablename%>'
     }
   }
 
-  module.exports = <%=classname%>;
 `;
 
 const NOT_DS_TABLES = ['knex_migrations', 'knex_migrations_lock'];
