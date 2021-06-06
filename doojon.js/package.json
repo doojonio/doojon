@@ -2,10 +2,9 @@
   "name": "doojon",
   "version": "0.0.1",
   "description": "doojon.com",
-  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx tap"
   },
   "repository": {
     "type": "git",
@@ -25,6 +24,7 @@
     "ejs": "^3.1.6",
     "knex": "^0.95.5",
     "pg": "^8.6.0",
-    "prettier": "^2.3.0"
+    "prettier": "^2.3.0",
+    "tough-cookie": "^4.0.0"
   }
 }

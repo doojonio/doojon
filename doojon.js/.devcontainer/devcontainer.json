@@ -2,7 +2,7 @@
 {
 	"name": "Node.js & PostgreSQL (Community)",
 	"dockerComposeFile": "docker-compose.yml",
-	"service": "app",
+	"service": "doojon",
 	"workspaceFolder": "/workspace/doojon.js",
 
 	// Set *default* container specific settings.json values on container create.
@@ -23,7 +23,8 @@
 	"extensions": [
 		"dbaeumer.vscode-eslint",
 		"mtxr.sqltools",
-		"mtxr.sqltools-driver-pg"
+		"mtxr.sqltools-driver-pg",
+		"esbenp.prettier-vscode"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

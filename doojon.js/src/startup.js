@@ -1,14 +1,16 @@
-import mojo from '@mojojs/mojo';
+const mojo = require('@mojojs/mojo');
 
 const STEPS = ['config', 'model', 'routes', 'cli'];
 
-export default async function startup() {
+async function startup() {
   const app = mojo();
 
   for (const step of STEPS) {
-    const imports = await import(`./startups/${step}.js`);
-    await imports.default(app);
+    const stepfunc = require(`./startups/${step}`);
+    await stepfunc(app);
   }
 
   return app;
 }
+
+module.exports = startup;

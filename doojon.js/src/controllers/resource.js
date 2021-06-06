@@ -1,37 +1,58 @@
-export default class ResourceController {
+class ResourceController {
   async create(ctx) {
-    ctx.render({ json: 'OK' });
+    const ds = ctx.app.model.getDataservice(ctx.stash.dsname);
+    const ids = await ds.create(await ctx.req.json());
+    return ctx.render({ json: ids });
   }
 
   async read(ctx) {
     const ds = ctx.app.model.getDataservice(ctx.stash.dsname);
     const fields = ds.fields;
 
-    const params = await ctx.params();
-    const searchquery = {};
-    for (const field of Object.keys(fields)) {
-      const value = params.get(field);
-
-      if (value !== null)
-        searchquery[field] = value;
-    }
-
-    if (Object.keys(searchquery).length === 0) {
-      return ctx.res.status(400).send('need fields to search');
-    }
+    const searchquery = this._getFieldsFromQuery(ctx, fields);
 
     const objects = await ds.read(searchquery);
-
-    console.log(objects);
-
     return ctx.render({ json: objects });
   }
 
   async update(ctx) {
-    ctx.render({ json: 'OK' });
+    const ds = ctx.app.model.getDataservice(ctx.stash.dsname);
+    const fields = ds.fields;
+
+    const filter = this._getFieldsFromQuery(ctx, fields);
+    const newFields = await ctx.req.json();
+
+    const ids = await ds.update(filter, newFields);
+
+    return ctx.render({ json: ids });
   }
 
   async delete(ctx) {
-    ctx.render({ json: 'OK' });
+    const ds = ctx.app.model.getDataservice(ctx.stash.dsname);
+    const fields = ds.fields;
+
+    const filter = this._getFieldsFromQuery(ctx, fields);
+    const ids = await ds.delete(filter);
+
+    if (ids.length === 0) {
+      return ctx.res.status(404).send('no items to delete');
+    }
+
+    return ctx.render({ json: ids });
+  }
+
+  _getFieldsFromQuery(ctx, fields) {
+    const fieldsFromQuery = {};
+
+    for (const fieldname of Object.keys(fields)) {
+      const field = ctx.req.query.get(fieldname);
+      if (field !== null) {
+        fieldsFromQuery[fieldname] = field;
+      }
+    }
+
+    return fieldsFromQuery;
   }
 }
+
+module.exports = ResourceController;

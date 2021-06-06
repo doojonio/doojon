@@ -1,4 +1,4 @@
-export default class Container {
+class Container {
   constructor(parentContainer) {
     this._containers = {};
     this._services = {};
@@ -22,7 +22,6 @@ export default class Container {
   listServices() {
     return Object.keys(this._services);
   }
-
 
   addContainer(containerName) {
     if (this._containers[containerName]) {
@@ -150,3 +149,5 @@ class Service {
     return resolvedDeps;
   }
 }
+
+module.exports = Container;

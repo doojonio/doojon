@@ -1,7 +1,9 @@
-import Dataservice from '../dataservice.js';
+const Dataservice = require('../dataservice');
 
-export default class ChallengesDataservice extends Dataservice {
+class ChallengesDataservice extends Dataservice {
   static get _tablename() {
     return 'challenges';
   }
 }
+
+module.exports = ChallengesDataservice;

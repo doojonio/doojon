@@ -1,6 +1,6 @@
-import Service from './service.js';
+const Service = require('./service');
 
-export default class Dataservice extends Service {
+class Dataservice extends Service {
   static get deps() {
     return {
       _db: '/h/db',
@@ -17,16 +17,39 @@ export default class Dataservice extends Service {
   }
 
   get _primarykeys() {
-    return this.fields.filter(f => f['is_primary_key']);
+    const fields = this.fields;
+    const pkeys = [];
+
+    for (const colname of Object.keys(fields)) {
+      if (this.fields[colname]['is_primary_key']) pkeys.push(colname);
+    }
+
+    return pkeys;
   }
 
   async create(objects) {
     return this._db(this.constructor._tablename)
-      .create(objects)
+      .insert(objects)
       .returning(this._primarykeys);
   }
 
   async read(where) {
     return this._db.select().from(this.constructor._tablename).where(where);
   }
+
+  async update(where, newFields) {
+    return this._db(this.constructor._tablename)
+      .where(where)
+      .update(newFields)
+      .returning(this._primarykeys);
+  }
+
+  async delete(where) {
+    return this._db(this.constructor._tablename)
+      .delete()
+      .where(where)
+      .returning(this._primarykeys);
+  }
 }
+
+module.exports = Dataservice;

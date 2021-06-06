@@ -1,6 +1,8 @@
-import mojo from '@mojojs/mojo';
+const { jsonConfigPlugin } = require('@mojojs/mojo');
 
-export default async function startup(app) {
+async function configStartup(app) {
   const file = app.home.sibling('doojon.json').toString();
-  app.plugin(mojo.jsonConfigPlugin, { file });
+  app.plugin(jsonConfigPlugin, { file });
 }
+
+module.exports = configStartup;

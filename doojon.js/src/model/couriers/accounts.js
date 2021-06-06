@@ -1,6 +1,6 @@
-import mojo from '@mojojs/mojo';
+const { Client } = require('@mojojs/mojo');
 
-export default class AccountsCourier {
+class AccountsCourier {
   constructor(conf) {
     for (const required of ['protocol', 'host', 'port']) {
       if (!conf[required]) throw new Error(`${required} is required`);
@@ -11,21 +11,76 @@ export default class AccountsCourier {
     const port = conf.port;
     const baseURL = new URL(`${proto}://${host}:${port}`);
 
-    this.ua = new mojo.Client({ name: 'Accounts Courier', baseURL });
+    this.ua = new Client({ name: 'Accounts Courier', baseURL });
+    // do not throw error on domain 'accounts' for example
+    this.ua.cookieJar.rejectPublicSuffixes = false;
   }
 
   async auth(creds) {
-    for (const required of ['username', 'password']) {
+    for (const required of ['email', 'password']) {
       if (!creds[required]) throw new Error(`${required} is required`);
     }
 
     const res = await this.ua.post('/api/auth', {
-      json: creds
-    })
+      json: creds,
+    });
 
     if (res.isError)
-      throw new Error(`error during request to accounts: ${res.statusMessage}`);
+      throw new Error(`error during auth to accounts: ${res.statusMessage}`);
+
+    return res.json();
+  }
+
+  async logout() {
+    if ((await this.ua.cookieJar.serialize()).cookies.length === 0) return;
+
+    const res = await this.ua.delete('/api/logout');
+
+    if (res.isError)
+      throw new Error(`error during logout in accounts: ${res.statusMessage}`);
+
+    await this.ua.cookieJar.removeAllCookies();
+
+    return res.json();
+  }
+
+  async createAccount(account) {
+    for (const required of ['email', 'password']) {
+      if (!account[required]) throw new Error(`${required} is required`);
+    }
+
+    const res = await this.ua.post('/api/account', { json: account });
+
+    if (res.isError)
+      throw new Error(
+        `error during creating account in accounts: ${res.statusMessage}`
+      );
+
+    return res.json();
+  }
+
+  async getAccount(by) {
+    const url = new URL('/api/account', this.ua.baseURL);
+
+    if (by.id) {
+      url.searchParams.append('id', by.id);
+    } else if (by.email) {
+      url.searchParams.append('email', by.email);
+    } else {
+      throw new Error('id or email required');
+    }
+
+    const res = await this.ua.get(url);
+
+    if (res.status === 404) return undefined;
+
+    if (res.isError)
+      throw new Error(
+        `error during creating account in accounts: ${res.statusMessage}`
+      );
 
     return res.json();
   }
 }
+
+module.exports = AccountsCourier;

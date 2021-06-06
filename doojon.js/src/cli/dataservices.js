@@ -1,13 +1,13 @@
-import ejs from 'ejs';
-import mojo from '@mojojs/mojo';
-import prettier from 'prettier';
+const ejs = require('ejs');
+const mojo = require('@mojojs/mojo');
+const prettier = require('prettier');
 
 const SUBCOMMANDS = {
   generate: cliGenerate,
 };
 
 const SCHEMA_TEMPLATE = `
-  export const schema = {
+  module.exports = {
   <% for (const table of tables) { -%>
     '<%= table['table_name'] %>': {
     <% for (const column of table['columns']) { -%>
@@ -24,18 +24,20 @@ const SCHEMA_TEMPLATE = `
 `;
 
 const DATASERVICE_TEMPLATE = `
-  import Dataservice from '../dataservice.js';
+  const Dataservice = require('../dataservice');
 
-  export default class <%=classname%> extends Dataservice {
+  class <%=classname%> extends Dataservice {
     static get _tablename() {
       return '<%=tablename%>'
     }
   }
+
+  module.exports = <%=classname%>;
 `;
 
 const NOT_DS_TABLES = ['knex_migrations', 'knex_migrations_lock'];
 
-export default async function run(app, args) {
+async function run(app, args) {
   const subcommand = SUBCOMMANDS[args[1]];
 
   if (!subcommand) {
@@ -65,7 +67,7 @@ async function cliGenerate(app) {
   await schemafile.writeFile(schema);
 
   for (const table of tables) {
-    const filename = table['table_name'].split('_').join('-') + '.js';
+    const filename = table['table_name'] + '.js';
     const dsfile = new mojo.File(
       app.home.child(`model/dataservices/${filename}`).toString()
     );
@@ -167,3 +169,5 @@ async function _getPrimaryKeys(db, table) {
     })
     .where({ 'constraint_type': 'PRIMARY KEY', 'tc.table_name': table });
 }
+
+module.exports = run;

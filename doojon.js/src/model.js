@@ -1,17 +1,16 @@
-import mojo from '@mojojs/mojo';
-import Pg from 'knex';
-import Container from './breadboard.js';
-import Dataservice from './model/dataservice.js';
-import { schema } from './model/schema.js';
+const { File } = require('@mojojs/mojo');
+const Pg = require('knex');
+const Container = require('./breadboard');
+const schema = require('./model/schema');
 
-export default class Model {
+class Model {
   constructor(conf) {
     this._container = new Container();
     this._conf = conf;
   }
 
   async init() {
-    const steps = ['Handlers', 'Dataservices', 'Services'];
+    const steps = ['Couriers', 'Handlers', 'Dataservices', 'Services'];
 
     for (const step of steps) {
       await this[`_init${step}`]();
@@ -22,6 +21,10 @@ export default class Model {
     return this._container.resolve(`/ds/${name}`);
   }
 
+  getCourier(name) {
+    return this._container.resolve(`/c/${name}`);
+  }
+
   listDataservices() {
     return this._container.fetch('/ds', true).listServices();
   }
@@ -30,17 +33,32 @@ export default class Model {
     this._container.resolve('/h/db').destroy();
   }
 
+  async _initCouriers() {
+    const c = this._container.addContainer('c');
+    const couriersdir = new File(this._conf.couriers.directory);
+
+    for await (const courierfile of couriersdir.list()) {
+      const couriername = courierfile.basename('.js');
+      const courierclass = require(courierfile.toString());
+      const courierconf = this._conf.couriers[couriername];
+
+      if (!courierconf)
+        throw new Error(`missing conf for courier ${couriername}`);
+
+      c.addService(couriername, { block: () => new courierclass(courierconf) });
+    }
+  }
+
   async _initHandlers() {
     const h = this._container.addContainer('h');
+    const conf = this._conf;
 
-    const dbBlock = () => {
-      return new Pg({
+    const dbBlock = () =>
+      new Pg({
         client: 'pg',
-        connection: this._conf.database,
-        migrations: this._conf.migrations,
+        connection: conf.database,
+        migrations: conf.migrations,
       });
-    };
-    dbBlock.bind(this);
 
     h.addService('db', { block: dbBlock, isSingletone: true });
     const dbcont = h.addContainer('db');
@@ -49,14 +67,16 @@ export default class Model {
 
   async _initDataservices() {
     const ds = this._container.addContainer('ds');
-    const dsdir = new mojo.File(this._conf.dataservices.directory);
+    const dsdir = new File(this._conf.dataservices.directory);
 
     for await (const dsfile of dsdir.list()) {
       const dsname = dsfile.basename('.js');
-      const dsclass = (await import(dsfile.toString())).default;
+      const dsclass = require(dsfile.toString());
       ds.addService(dsname, { isSingletone: true, class: dsclass });
     }
   }
 
   async _initServices() {}
 }
+
+module.exports = Model;

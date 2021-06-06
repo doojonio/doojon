@@ -1,4 +1,4 @@
-export default async function startup(app) {
+async function routesStartup(app) {
   const api = app.any('/api/1/');
 
   const resourse = api.any('/resource');
@@ -17,3 +17,5 @@ export default async function startup(app) {
     deleteroute.pattern.defaults.dsname = ds;
   }
 }
+
+module.exports = routesStartup;

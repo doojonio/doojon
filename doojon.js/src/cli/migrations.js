@@ -4,7 +4,7 @@ const SUBCOMMANDS = {
   rollback: cliRollback,
 };
 
-export default async function run(app, args) {
+async function run(app, args) {
   const subcommand = SUBCOMMANDS[args[1]];
 
   if (!subcommand) {
@@ -33,3 +33,5 @@ async function cliRollback(app) {
     db.destroy();
   });
 }
+
+module.exports = run;

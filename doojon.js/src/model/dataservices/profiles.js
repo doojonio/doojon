@@ -1,7 +1,9 @@
-import Dataservice from '../dataservice.js';
+const Dataservice = require('../dataservice');
 
-export default class ProfilesDataservice extends Dataservice {
+class ProfilesDataservice extends Dataservice {
   static get _tablename() {
     return 'profiles';
   }
 }
+
+module.exports = ProfilesDataservice;

@@ -1,4 +1,4 @@
-export const schema = {
+module.exports = {
   'challenges': {
     'create_time': {
       'type': 'timestamp',
