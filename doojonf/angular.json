@@ -1,12 +1,9 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
-  "cli": {
-    "analytics": "8e39955b-e838-4f7e-8b5a-1704f58b8d1f"
-  },
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "accounts-fe": {
+    "doojonf": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -23,7 +20,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/accounts-fe",
+            "outputPath": "dist/doojonf",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -75,10 +72,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "accounts-fe:build:production"
+              "browserTarget": "doojonf:build:production"
             },
             "development": {
-              "browserTarget": "accounts-fe:build:development"
+              "browserTarget": "doojonf:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -86,7 +83,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "accounts-fe:build"
+            "browserTarget": "doojonf:build"
           }
         },
         "test": {
@@ -110,5 +107,5 @@
       }
     }
   },
-  "defaultProject": "accounts-fe"
+  "defaultProject": "doojonf"
 }
