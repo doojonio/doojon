@@ -1,0 +1,10 @@
+[database]
+url = "postgres://accounts:password@accounts_db/accounts"
+
+[redis]
+url = "redis://accounts_redis"
+
+[web]
+listen = "0.0.0.0:8080"
+domain = "accounts"
+secure = false

@@ -1,0 +1,20 @@
+---
+services:
+  accounts:
+    build: "."
+    command: sleep infinity
+    volumes:
+      - "../../:/workspace"
+  accounts_db:
+    image: postgres
+    volumes:
+      - accounts-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=accounts
+      - POSTGRES_DATABASE=accounts
+      - POSTGRES_PASSWORD=password
+  accounts_redis:
+    image: redis
+
+volumes:
+  accounts-data:

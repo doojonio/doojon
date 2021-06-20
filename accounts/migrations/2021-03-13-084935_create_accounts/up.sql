@@ -6,5 +6,7 @@ create table accounts (
     password text not null,
     first_name text,
     last_name text,
-    birthday date
+    birthday date,
+    create_time timestamptz not null default now(),
+    update_time timestamptz not null default now()
 );
