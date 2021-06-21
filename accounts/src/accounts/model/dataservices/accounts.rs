@@ -1,4 +1,4 @@
-use chrono::NaiveDate;
+use chrono::prelude::*;
 use diesel::prelude::*;
 use pbkdf2::{
   password_hash::{PasswordHasher, SaltString},
@@ -21,7 +21,7 @@ impl AccountsDataservice {
   }
 
   pub fn create(&self, mut account: CreatableAccount) -> ReadableAccount {
-    use crate::model::schema::accounts::dsl::*;
+    use self::accounts::dsl::*;
 
     let salt = SaltString::generate(&mut OsRng);
     let hash = Pbkdf2
@@ -33,11 +33,39 @@ impl AccountsDataservice {
 
     let created_account: ReadableAccount = diesel::insert_into(accounts)
       .values(account)
-      .returning((id, email, first_name, last_name, birthday))
+      .returning((
+        id,
+        email,
+        first_name,
+        last_name,
+        birthday,
+        create_time,
+        update_time,
+      ))
       .get_result(&self._pool.get().unwrap())
       .unwrap();
 
     created_account
+  }
+
+  pub fn read_by_id(&self, account_id: uuid::Uuid) -> ReadableAccount {
+    use self::accounts::dsl::*;
+
+    let account: ReadableAccount = accounts
+      .filter(id.eq(account_id))
+      .select((
+        id,
+        email,
+        first_name,
+        last_name,
+        birthday,
+        create_time,
+        update_time,
+      ))
+      .first(&self._pool.get().unwrap())
+      .unwrap();
+
+    account
   }
 }
 
@@ -58,4 +86,6 @@ pub struct ReadableAccount {
   pub first_name: Option<String>,
   pub last_name: Option<String>,
   pub birthday: Option<NaiveDate>,
+  pub create_time: DateTime<Utc>,
+  pub update_time: DateTime<Utc>,
 }
