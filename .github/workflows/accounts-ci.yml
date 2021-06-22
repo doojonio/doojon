@@ -27,7 +27,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./accounts
-          file: ./accounts/dockerfile
+          file: ./accounts/Dockerfile
           push: true
           tags: |
             ${{ github.repository_owner }}/accounts:latest
