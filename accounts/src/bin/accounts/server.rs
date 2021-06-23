@@ -5,7 +5,12 @@ pub fn subcommand() -> clap::App<'static, 'static> {
 }
 
 pub async fn run(app: accounts::App) -> std::io::Result<()> {
-  let listen = app.config.web.listen.clone();
+  let conf = &app.config.web.server;
+
+  let listen = conf.listen.clone();
+  let workers = conf.workers;
+  let max_connections = conf.max_connections;
+
   let app_pointer = web::Data::new(app);
 
   HttpServer::new(move || {
@@ -14,6 +19,8 @@ pub async fn run(app: accounts::App) -> std::io::Result<()> {
       .configure(accounts::api)
   })
   .bind(listen)?
+  .workers(workers)
+  .max_connections(max_connections)
   .run()
   .await
 }

@@ -42,7 +42,22 @@ pub struct RedisConfig {
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct WebConfig {
+  pub server: ServerConfig,
+  pub auth_cookie: AuthCookieConfig,
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct ServerConfig {
   pub listen: String,
+  pub workers: usize,
+  pub max_connections: usize,
+}
+
+#[derive(Deserialize, Debug, Clone)]
+pub struct AuthCookieConfig {
+  pub name: String,
   pub domain: String,
   pub secure: bool,
+  pub http_only: bool,
+  pub expires_after_days: i64,
 }

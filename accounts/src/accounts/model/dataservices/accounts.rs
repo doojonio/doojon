@@ -10,6 +10,8 @@ use std::sync::Arc;
 
 use super::DatabaseConnectionPool;
 use crate::model::schema::accounts;
+use crate::model::schema::sessions;
+use crate::model::ServiceError;
 
 pub struct AccountsDataservice {
   _pool: Arc<DatabaseConnectionPool>,
@@ -20,7 +22,7 @@ impl AccountsDataservice {
     AccountsDataservice { _pool: pool }
   }
 
-  pub fn create(&self, mut account: CreatableAccount) -> ReadableAccount {
+  pub fn create(&self, mut account: CreatableAccount) -> Result<ReadableAccount, ServiceError> {
     use self::accounts::dsl::*;
 
     let salt = SaltString::generate(&mut OsRng);
@@ -42,13 +44,12 @@ impl AccountsDataservice {
         create_time,
         update_time,
       ))
-      .get_result(&self._pool.get().unwrap())
-      .unwrap();
+      .get_result(&self._pool.get().unwrap())?;
 
-    created_account
+    Ok(created_account)
   }
 
-  pub fn read_by_id(&self, account_id: uuid::Uuid) -> ReadableAccount {
+  pub fn read_by_id(&self, account_id: uuid::Uuid) -> Result<ReadableAccount, ServiceError> {
     use self::accounts::dsl::*;
 
     let account: ReadableAccount = accounts
@@ -62,10 +63,46 @@ impl AccountsDataservice {
         create_time,
         update_time,
       ))
-      .first(&self._pool.get().unwrap())
-      .unwrap();
+      .first(&self._pool.get().unwrap())?;
 
-    account
+    Ok(account)
+  }
+
+  pub fn read_account_by_sid(&self, sid: uuid::Uuid) -> Result<ReadableAccount, ServiceError> {
+    let account: ReadableAccount = sessions::table
+      .inner_join(
+        self::accounts::table.on(
+          sessions::account_id
+            .eq(self::accounts::id)
+            .and(sessions::id.eq(sid)),
+        ),
+      )
+      .select((
+        self::accounts::id,
+        self::accounts::email,
+        self::accounts::first_name,
+        self::accounts::last_name,
+        self::accounts::birthday,
+        self::accounts::create_time,
+        self::accounts::update_time,
+      ))
+      .first(&self._pool.get().unwrap())?;
+
+    Ok(account)
+  }
+
+  pub fn read_id_and_password_by_email(
+    &self,
+    acc_email: &String,
+  ) -> Result<ReadableAccountWithIdAndPassword, ServiceError> {
+    use self::accounts::dsl::*;
+
+    let acc: ReadableAccountWithIdAndPassword = accounts
+      .filter(email.eq(acc_email))
+      .select((id, password))
+      .first(&self._pool.get().unwrap())?;
+
+    Ok(acc)
   }
 }
 
@@ -88,4 +125,10 @@ pub struct ReadableAccount {
   pub birthday: Option<NaiveDate>,
   pub create_time: DateTime<Utc>,
   pub update_time: DateTime<Utc>,
+}
+
+#[derive(Queryable, Serialize)]
+pub struct ReadableAccountWithIdAndPassword {
+  pub id: uuid::Uuid,
+  pub password: String,
 }

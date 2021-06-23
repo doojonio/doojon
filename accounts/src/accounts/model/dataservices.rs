@@ -5,13 +5,19 @@ use std::sync::Arc;
 use crate::Config;
 
 mod accounts;
-pub use accounts::{AccountsDataservice, CreatableAccount, ReadableAccount};
+pub use self::accounts::{AccountsDataservice, CreatableAccount, ReadableAccount};
+
+mod sessions;
+pub use sessions::{
+  CreatableSession, ReadableSessionWithoutAccountId, ReadableSessionWithoutId, SessionsDataservice,
+};
 
 type DatabaseConnectionManager = ConnectionManager<PgConnection>;
 type DatabaseConnectionPool = r2d2::Pool<DatabaseConnectionManager>;
 
 pub struct Dataservices {
-  accounts: AccountsDataservice,
+  pub accounts: Arc<AccountsDataservice>,
+  pub sessions: Arc<SessionsDataservice>,
 }
 
 impl Dataservices {
@@ -20,12 +26,9 @@ impl Dataservices {
     let pool: DatabaseConnectionPool = r2d2::Pool::new(manager).unwrap();
     let pool_pointer = Arc::new(pool);
 
-    let accounts = AccountsDataservice::new(pool_pointer.clone());
+    let accounts = Arc::new(AccountsDataservice::new(pool_pointer.clone()));
+    let sessions = Arc::new(SessionsDataservice::new(pool_pointer.clone()));
 
-    Dataservices { accounts }
-  }
-
-  pub fn get_accounts(&self) -> &AccountsDataservice {
-    &self.accounts
+    Dataservices { accounts, sessions }
   }
 }

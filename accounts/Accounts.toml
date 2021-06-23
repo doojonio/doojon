@@ -4,7 +4,14 @@ url = "postgres://accounts:password@accounts_db/accounts"
 [redis]
 url = "redis://accounts_redis"
 
-[web]
+[web.server]
 listen = "0.0.0.0:8080"
+workers = 1
+max_connections = 25_000
+
+[web.auth_cookie]
 domain = "accounts"
+expires_after_days = 365
+http_only = true
+name = "SID"
 secure = false

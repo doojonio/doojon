@@ -20,7 +20,7 @@ async fn main() {
   if let Some(_) = matches.subcommand_matches("server") {
     return match server::run(app).await {
       Ok(_) => (),
-      Err(_) => eprintln!("Unable to start server"),
+      Err(e) => eprintln!("Unable to start server: {}", e),
     };
   }
 
