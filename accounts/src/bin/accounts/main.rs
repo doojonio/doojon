@@ -5,6 +5,8 @@ mod server;
 
 #[aweb::main]
 async fn main() {
+  log4rs::init_file("Log4rs.toml", Default::default()).unwrap();
+
   let matches = clap::App::new("Accounts CLI")
     .subcommand(server::subcommand())
     .subcommand(migrations::subcommand())

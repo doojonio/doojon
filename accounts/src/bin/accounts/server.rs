@@ -1,3 +1,4 @@
+use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer};
 
 pub fn subcommand() -> clap::App<'static, 'static> {
@@ -16,6 +17,7 @@ pub async fn run(app: accounts::App) -> std::io::Result<()> {
   HttpServer::new(move || {
     App::new()
       .app_data(app_pointer.clone())
+      .wrap(Logger::default())
       .configure(accounts::api)
   })
   .bind(listen)?

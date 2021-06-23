@@ -6,7 +6,7 @@ url = "redis://accounts_redis"
 
 [web.server]
 listen = "0.0.0.0:8080"
-workers = 1
+workers = 192
 max_connections = 25_000
 
 [web.auth_cookie]
