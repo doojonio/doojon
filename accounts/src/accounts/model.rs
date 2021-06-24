@@ -19,7 +19,7 @@ pub struct Model {
 impl Model {
   pub fn new(config: &Config) -> Model {
     let dataservices = Dataservices::new(&config);
-    let services = Services::new(&config, &dataservices);
+    let services = Services::new(&dataservices);
 
     Model {
       dataservices,

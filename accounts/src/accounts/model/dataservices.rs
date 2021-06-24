@@ -2,6 +2,8 @@ use diesel::r2d2::ConnectionManager;
 use diesel::PgConnection;
 use std::sync::Arc;
 
+embed_migrations!();
+
 use crate::Config;
 
 mod accounts;
@@ -18,6 +20,8 @@ type DatabaseConnectionPool = r2d2::Pool<DatabaseConnectionManager>;
 pub struct Dataservices {
   pub accounts: Arc<AccountsDataservice>,
   pub sessions: Arc<SessionsDataservice>,
+
+  _pool: Arc<DatabaseConnectionPool>,
 }
 
 impl Dataservices {
@@ -29,6 +33,15 @@ impl Dataservices {
     let accounts = Arc::new(AccountsDataservice::new(pool_pointer.clone()));
     let sessions = Arc::new(SessionsDataservice::new(pool_pointer.clone()));
 
-    Dataservices { accounts, sessions }
+    Dataservices {
+      accounts,
+      sessions,
+      _pool: pool_pointer,
+    }
+  }
+
+  pub fn run_embedded_migrations(&self) {
+    embedded_migrations::run_with_output(&self._pool.get().unwrap(), &mut std::io::stdout())
+      .unwrap();
   }
 }

@@ -5,4 +5,5 @@ COPY . .
 
 RUN cargo build --release
 
-CMD ["cargo", "run", "--release"]
+ENTRYPOINT ["cargo", "run", "--release", "--"]
+CMD ["server", "--with-migrations"]

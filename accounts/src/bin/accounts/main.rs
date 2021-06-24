@@ -19,8 +19,8 @@ async fn main() {
   }
 
   let app = accounts::App::new(config);
-  if let Some(_) = matches.subcommand_matches("server") {
-    return match server::run(app).await {
+  if let Some(ref matches) = matches.subcommand_matches("server") {
+    return match server::run(app, &matches).await {
       Ok(_) => (),
       Err(e) => eprintln!("Unable to start server: {}", e),
     };

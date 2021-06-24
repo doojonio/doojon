@@ -19,6 +19,7 @@ actix-web = "3.3.2"
 chrono = { version = "0.4.19", features = ["serde"] }
 clap = "2.33.3"
 diesel = { version = "1.4.7", features = ["postgres", "r2d2", "chrono", "uuidv07"] }
+diesel_migrations = "1.4.0"
 log4rs = { version = "1.0.0", features = ["toml_format"] }
 pbkdf2 = "0.8.0"
 r2d2 = "0.8.9"
