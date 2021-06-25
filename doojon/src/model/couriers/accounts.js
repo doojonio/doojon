@@ -1,6 +1,6 @@
-const { Client } = require('@mojojs/mojo');
+import { Client } from '@mojojs/core';
 
-class AccountsCourier {
+export default class AccountsCourier {
   constructor(conf) {
     for (const required of ['protocol', 'host', 'port']) {
       if (!conf[required]) throw new Error(`${required} is required`);
@@ -21,7 +21,7 @@ class AccountsCourier {
       if (!creds[required]) throw new Error(`${required} is required`);
     }
 
-    const res = await this.ua.post('/api/auth', {
+    const res = await this.ua.post('/api/1/auth', {
       json: creds,
     });
 
@@ -34,7 +34,7 @@ class AccountsCourier {
   async logout() {
     if ((await this.ua.cookieJar.serialize()).cookies.length === 0) return;
 
-    const res = await this.ua.delete('/api/logout');
+    const res = await this.ua.delete('/api/1/logout');
 
     if (res.isError)
       throw new Error(`error during logout in accounts: ${res.statusMessage}`);
@@ -49,7 +49,7 @@ class AccountsCourier {
       if (!account[required]) throw new Error(`${required} is required`);
     }
 
-    const res = await this.ua.post('/api/account', { json: account });
+    const res = await this.ua.post('/api/1/accounts', { json: account });
 
     if (res.isError)
       throw new Error(
@@ -60,7 +60,7 @@ class AccountsCourier {
   }
 
   async getAccount(by) {
-    const url = new URL('/api/account', this.ua.baseURL);
+    const url = new URL('/api/1/accounts', this.ua.baseURL);
 
     if (by.id) {
       url.searchParams.append('id', by.id);
@@ -83,7 +83,7 @@ class AccountsCourier {
   }
 
   async getSession(sessionId) {
-    const res = await this.ua.get('/api/session', {headers: {'X-Session': sessionId}});
+    const res = await this.ua.get('/api/1/session', {headers: {'X-Session': sessionId}});
 
     if (res.status === 404) return null
 
@@ -95,5 +95,3 @@ class AccountsCourier {
     return res.json();
   }
 }
-
-module.exports = AccountsCourier;

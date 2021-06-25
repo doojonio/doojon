@@ -1,13 +1,13 @@
-const ejs = require('ejs');
-const mojo = require('@mojojs/mojo');
-const prettier = require('prettier');
+import ejs from 'ejs';
+import { File } from '@mojojs/core';
+import prettier from 'prettier';
 
 const SUBCOMMANDS = {
   generate: cliGenerate,
 };
 
 const SCHEMA_TEMPLATE = `
-  module.exports = {
+  export const schema = {
   <% for (const table of tables) { -%>
     '<%= table['table_name'] %>': {
     <% for (const column of table['columns']) { -%>
@@ -24,9 +24,9 @@ const SCHEMA_TEMPLATE = `
 `;
 
 const DATASERVICE_TEMPLATE = `
-  const Dataservice = require('../dataservice');
+  import { Dataservice } from '../dataservice.js';
 
-  module.exports = class <%=classname%> extends Dataservice {
+  export default class <%=classname%> extends Dataservice {
     static get _tablename() {
       return '<%=tablename%>'
     }
@@ -36,7 +36,7 @@ const DATASERVICE_TEMPLATE = `
 
 const NOT_DS_TABLES = ['knex_migrations', 'knex_migrations_lock'];
 
-async function run(app, args) {
+export default async function run(app, args) {
   const subcommand = SUBCOMMANDS[args[1]];
 
   if (!subcommand) {
@@ -54,21 +54,21 @@ async function cliGenerate(app) {
   let schema = ejs.render(SCHEMA_TEMPLATE, { tables });
 
   await prettier
-    .resolveConfig(app.home.dirname().child('.prettierrc.json').toString())
+    .resolveConfig(app.home.child('.prettierrc.json').toString())
     .then(options => {
       options.parser = 'babel';
       schema = prettier.format(schema, options);
     });
 
-  const schemafile = new mojo.File(
-    app.home.child('model/schema.js').toString()
+  const schemafile = new File(
+    app.home.child('src/model/schema.js').toString()
   );
   await schemafile.writeFile(schema);
 
   for (const table of tables) {
     const filename = table['table_name'] + '.js';
-    const dsfile = new mojo.File(
-      app.home.child(`model/dataservices/${filename}`).toString()
+    const dsfile = new File(
+      app.home.child(`src/model/dataservices/${filename}`).toString()
     );
 
     if (await dsfile.exists()) continue;
@@ -85,7 +85,7 @@ async function cliGenerate(app) {
     });
 
     await prettier
-      .resolveConfig(app.home.dirname().child('.prettierrc.json').toString())
+      .resolveConfig(app.home.child('.prettierrc.json').toString())
       .then(options => {
         options.parser = 'babel';
         dscode = prettier.format(dscode, options);
@@ -168,5 +168,3 @@ async function _getPrimaryKeys(db, table) {
     })
     .where({ 'constraint_type': 'PRIMARY KEY', 'tc.table_name': table });
 }
-
-module.exports = run;

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const startup = require('../src/startup');
+import { startup } from '../src/lib.js';
 
 (async function main() {
   const app = await startup();

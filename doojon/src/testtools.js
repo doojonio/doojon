@@ -1,6 +1,6 @@
-const { Cookie } = require('tough-cookie');
+import { Cookie } from 'tough-cookie';
 
-async function generateFreeTestUsername(app) {
+export async function generateFreeTestUsername(app) {
   const profiles = app.model.getDataservice('profiles');
 
   let username;
@@ -13,7 +13,7 @@ async function generateFreeTestUsername(app) {
   return username;
 }
 
-async function newAuthorizedClient(app) {
+export async function newAuthorizedClient(app) {
   const conf = app.config.testtools.authorizedClient;
   const client = await app.newTestClient();
 
@@ -51,5 +51,3 @@ async function newAuthorizedClient(app) {
 
   return client;
 }
-
-module.exports = { newAuthorizedClient, generateFreeTestUsername };

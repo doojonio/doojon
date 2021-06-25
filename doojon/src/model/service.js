@@ -1,4 +1,4 @@
-class Service {
+export class Service {
   static get deps() {
     return {};
   }
@@ -9,5 +9,3 @@ class Service {
     }
   }
 }
-
-module.exports = Service;

@@ -1,6 +1,6 @@
-const Service = require('../service');
+import { Service } from '../service.js';
 
-module.exports = class StateService extends Service {
+export default class StateService extends Service {
   _currentUser = null;
 
   static get deps() {

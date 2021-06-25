@@ -1,7 +1,7 @@
-const Dataservice = require('../dataservice');
+import { Dataservice } from '../dataservice.js';
 
-module.exports = class PostsDataservice extends Dataservice {
+export default class PostsDataservice extends Dataservice {
   static get _tablename() {
     return 'posts';
   }
-};
+}

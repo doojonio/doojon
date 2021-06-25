@@ -1,4 +1,4 @@
-class ResourceController {
+export default class ResourceController {
   async create(ctx) {
     const ds = ctx.app.model.getDataservice(ctx.stash.dsname);
     const objects = await ctx.req.json();
@@ -69,5 +69,3 @@ class ResourceController {
     return fieldsFromQuery;
   }
 }
-
-module.exports = ResourceController;

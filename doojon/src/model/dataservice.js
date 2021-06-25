@@ -1,6 +1,6 @@
-const Service = require('./service');
+import { Service } from './service.js';
 
-class Dataservice extends Service {
+export class Dataservice extends Service {
   static get deps() {
     return Object.assign(
       {
@@ -91,5 +91,3 @@ class Dataservice extends Service {
       .returning(this._primarykeys);
   }
 }
-
-module.exports = Dataservice;

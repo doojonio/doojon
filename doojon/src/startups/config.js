@@ -1,20 +1,17 @@
-const { jsonConfigPlugin } = require('@mojojs/mojo');
+import { jsonConfigPlugin } from '@mojojs/core';
 
-async function configStartup(app) {
-  const file = app.home.sibling('doojon.json').toString();
-  app.plugin(jsonConfigPlugin, { file });
-  app.config.model.migrations = {
-    directory: app.home.child('migrations').toString(),
+export default async function configStartup(app) {
+  app.plugin(jsonConfigPlugin, { file: 'doojon.json' });
+  app.config.migrations = {
+    directory: app.home.child('src/migrations').toString(),
   };
-  app.config.model.dataservices = {
-    directory: app.home.child('model/dataservices').toString(),
+  app.config.dataservices = {
+    directory: app.home.child('src/model/dataservices').toString(),
   };
-  app.config.model.services = {
-    directory: app.home.child('model/services').toString(),
+  app.config.services = {
+    directory: app.home.child('src/model/services').toString(),
   };
-  app.config.model.couriers.directory = app.home
-    .child('model/couriers')
+  app.config.couriers.directory = app.home
+    .child('src/model/couriers')
     .toString();
 }
-
-module.exports = configStartup;

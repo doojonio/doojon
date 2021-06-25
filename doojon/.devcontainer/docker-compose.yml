@@ -4,7 +4,7 @@ services:
   doojon:
     build:
       context: .
-      dockerfile: dockerfile
+      dockerfile: Dockerfile
       args:
         # [Choice] Node.js version: 16, 14, 12, 10
         VARIANT: 16

@@ -1,4 +1,4 @@
-class Container {
+export class Container {
   constructor(parentContainer) {
     this._containers = {};
     this._services = {};
@@ -149,5 +149,3 @@ class Service {
     return resolvedDeps;
   }
 }
-
-module.exports = Container;

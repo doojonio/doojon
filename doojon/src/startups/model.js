@@ -1,8 +1,8 @@
-const Model = require('../model');
+import { Model } from '../model.js';
 
-module.exports = async function modelStartup(app) {
+export default async function modelStartup(app) {
   app.model = new Model({
-    conf: app.config.model,
+    conf: app.config,
     log: app.log
   });
   await app.model.init();

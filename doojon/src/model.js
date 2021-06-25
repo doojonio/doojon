@@ -1,9 +1,9 @@
-const { File } = require('@mojojs/mojo');
-const Pg = require('knex');
-const Container = require('./breadboard');
-const schema = require('./model/schema');
+import { File } from '@mojojs/core';
+import Pg from 'knex';
+import { Container } from './breadboard.js';
+import { schema } from './model/schema.js';
 
-class Model {
+export class Model {
   constructor(deps) {
     this._container = new Container();
     this._conf = deps.conf;
@@ -44,7 +44,7 @@ class Model {
 
     for await (const courierfile of couriersdir.list()) {
       const couriername = courierfile.basename('.js');
-      const courierclass = require(courierfile.toString());
+      const courierclass = ( await import(courierfile.toString()) ).default;
       const courierconf = this._conf.couriers[couriername];
 
       if (!courierconf)
@@ -79,7 +79,7 @@ class Model {
 
     for await (const dsfile of dsdir.list()) {
       const dsname = dsfile.basename('.js');
-      const dsclass = require(dsfile.toString());
+      const dsclass = ( await import(dsfile.toString()) ).default;
       ds.addService(dsname, { isSingletone: true, class: dsclass });
     }
   }
@@ -90,10 +90,8 @@ class Model {
 
     for await (const serviceFile of servicesDir.list()) {
       const serviceName = serviceFile.basename('.js');
-      const serviceClass = require(serviceFile.toString());
+      const serviceClass = ( await import(serviceFile.toString()) ).default;
       s.addService(serviceName, { isSingletone: true, class: serviceClass });
     }
   }
 }
-
-module.exports = Model;

@@ -1,8 +1,6 @@
-async function cliStartup(app) {
-  for await (let module of app.home.child('cli').list()) {
-    const command = require(module.toString());
+export default async function cliStartup(app) {
+  for await (let module of app.home.child('src/cli').list()) {
+    const command = ( await import(module.toString()) ).default;
     app.cli.addCommand(module.basename('.js'), command);
   }
 }
-
-module.exports = cliStartup;

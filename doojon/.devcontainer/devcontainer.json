@@ -3,7 +3,7 @@
   "name": "Node.js & PostgreSQL (Community)",
   "dockerComposeFile": "docker-compose.yml",
   "service": "doojon",
-  "workspaceFolder": "/workspace/doojon.js",
+  "workspaceFolder": "/workspace/doojon",
 
   // Set *default* container specific settings.json values on container create.
   "settings": {

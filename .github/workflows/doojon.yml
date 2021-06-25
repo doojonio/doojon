@@ -27,7 +27,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: ./doojon
-          file: ./doojon/dockerfile
+          file: ./doojon/Dockerfile
           push: true
           tags: |
             ${{ github.repository_owner }}/doojon:latest

@@ -1,4 +1,4 @@
-module.exports = class ApiController {
+export class ApiController {
   async underEverything(ctx) {
     const authcookie = ctx.req.getCookie('auth');
 

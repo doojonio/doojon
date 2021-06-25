@@ -1,9 +1,9 @@
-const tap = require('tap');
-const startup = require('../src/startup');
-const {
+import tap from 'tap';
+import { startup } from '../src/lib.js';
+import {
   newAuthorizedClient,
   generateFreeTestUsername,
-} = require('../src/testtools');
+} from '../src/testtools.js';
 
 tap.test('Resource', async t => {
   const app = await startup();
