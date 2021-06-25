@@ -12,6 +12,10 @@ path = "src/accounts/lib.rs"
 name = "accounts"
 path = "src/bin/accounts/main.rs"
 
+[features]
+default = ["testing"]
+testing = ["test_account_api"]
+test_account_api = []
 
 [dependencies]
 actix-rt = "2.2.0"
@@ -20,9 +24,11 @@ chrono = { version = "0.4.19", features = ["serde"] }
 clap = "2.33.3"
 diesel = { version = "1.4.7", features = ["postgres", "r2d2", "chrono", "uuidv07"] }
 diesel_migrations = "1.4.0"
+log = "0.4.14"
 log4rs = { version = "1.0.0", features = ["toml_format"] }
 pbkdf2 = "0.8.0"
 r2d2 = "0.8.9"
+rand = "0.8.4"
 rand_core = { version = "0.6.3", features = ["std"] }
 serde = "1.0.126"
 time = { version = "0.2.27", features = ["std"] }

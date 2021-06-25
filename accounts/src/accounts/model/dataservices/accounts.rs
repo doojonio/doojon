@@ -104,6 +104,20 @@ impl AccountsDataservice {
 
     Ok(acc)
   }
+
+  pub fn is_email_uniq(&self, acc_email: &String) -> Result<bool, ServiceError> {
+    use self::accounts::dsl::*;
+    let result = accounts
+      .filter(email.eq(acc_email))
+      .select(email)
+      .first::<String>(&self._pool.get().unwrap());
+
+    match result {
+      Ok(_) => Ok(false),
+      Err(diesel::result::Error::NotFound) => Ok(true),
+      Err(others) => Err(ServiceError::from(others)),
+    }
+  }
 }
 
 #[derive(Insertable, Deserialize)]

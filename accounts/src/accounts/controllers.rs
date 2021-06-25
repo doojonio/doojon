@@ -5,6 +5,9 @@ use crate::model::ServiceError;
 pub mod accounts;
 pub mod auth;
 
+#[cfg(feature = "test_account_api")]
+pub mod test_account;
+
 pub enum ControllerError {
   NotFound,
   Conflict,

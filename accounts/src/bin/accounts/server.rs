@@ -1,3 +1,4 @@
+use accounts::webapp;
 use actix_web::middleware::Logger;
 use actix_web::{web, App, HttpServer};
 
@@ -22,15 +23,10 @@ pub async fn run(app: accounts::App, matches: &clap::ArgMatches<'static>) -> std
 
   let app_pointer = web::Data::new(app);
 
-  HttpServer::new(move || {
-    App::new()
-      .app_data(app_pointer.clone())
-      .wrap(Logger::default())
-      .configure(accounts::api)
-  })
-  .bind(listen)?
-  .workers(workers)
-  .max_connections(max_connections)
-  .run()
-  .await
+  HttpServer::new(move || webapp!(app_pointer))
+    .bind(listen)?
+    .workers(workers)
+    .max_connections(max_connections)
+    .run()
+    .await
 }

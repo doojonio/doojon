@@ -12,4 +12,7 @@ pub fn api(cfg: &mut ServiceConfig) {
     .route("/api/1/auth", post().to(auth::auth))
     .route("/api/1/logout", delete().to(auth::logout))
     .route("/api/1/current_user", get().to(auth::get_current_user));
+
+  #[cfg(feature = "test_account_api")]
+  cfg.route("/api/1/test_account", get().to(test_account::create));
 }
