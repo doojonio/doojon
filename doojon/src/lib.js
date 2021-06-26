@@ -1,6 +1,6 @@
 import mojo from '@mojojs/core';
 
-const STEPS = ['config', 'model', 'routes', 'cli'];
+const STEPS = ['config', 'model', 'helpers', 'routes', 'cli'];
 
 export async function startup() {
   const app = mojo();

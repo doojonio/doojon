@@ -13,9 +13,6 @@ tap.test('Resource', async t => {
     const username = await generateFreeTestUsername(app);
 
     (
-      await client.deleteOk(`/api/1/resource/profiles?id=${client.accountsAccount.id}`)
-    );
-    (
       await client.postOk('/api/1/resource/profiles', { json: { username } })
     ).statusIs(200);
     (

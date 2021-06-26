@@ -1,4 +1,5 @@
 import { Client } from '@mojojs/core';
+import { Cookie } from 'tough-cookie';
 
 export default class AccountsCourier {
   constructor(conf) {
@@ -11,15 +12,13 @@ export default class AccountsCourier {
     const port = conf.port;
     const baseURL = new URL(`${proto}://${host}:${port}`);
 
+    this._host = conf.host;
     this.ua = new Client({ name: 'Accounts Courier', baseURL });
     // do not throw error on domain 'accounts' for example
     this.ua.cookieJar.rejectPublicSuffixes = false;
   }
 
   async auth(creds) {
-    for (const required of ['email', 'password']) {
-      if (!creds[required]) throw new Error(`${required} is required`);
-    }
 
     const res = await this.ua.post('/api/1/auth', {
       json: creds,
@@ -28,7 +27,7 @@ export default class AccountsCourier {
     if (res.isError)
       throw new Error(`error during auth to accounts: ${res.statusMessage}`);
 
-    return res.json();
+    return;
   }
 
   async logout() {
@@ -41,20 +40,26 @@ export default class AccountsCourier {
 
     await this.ua.cookieJar.removeAllCookies();
 
-    return res.json();
+    return;
   }
 
   async createAccount(account) {
-    for (const required of ['email', 'password']) {
-      if (!account[required]) throw new Error(`${required} is required`);
-    }
-
     const res = await this.ua.post('/api/1/accounts', { json: account });
 
     if (res.isError)
       throw new Error(
         `error during creating account in accounts: ${res.statusMessage}`
       );
+
+    return res.json();
+  }
+
+  async createTestAccount() {
+
+    const res = await this.ua.post('/api/1/test_account');
+
+    if (res.isError)
+      throw new Error(`error during creating test account: ${res.statusMessage}`);
 
     return res.json();
   }
@@ -82,10 +87,13 @@ export default class AccountsCourier {
     return res.json();
   }
 
-  async getSession(sessionId) {
-    const res = await this.ua.get('/api/1/session', {headers: {'X-Session': sessionId}});
+  async getAccountBySession(sessionId) {
+    let authCookie = new Cookie({key: 'SID', value: sessionId, domain: this._host});
+    this.ua.cookieJar.setCookie(authCookie, this.ua.baseURL);
 
-    if (res.status === 404) return null
+    const res = await this.ua.get('/api/1/current_user_account');
+
+    if (res.status === 401) return null
 
     if (res.isError)
       throw new Error(

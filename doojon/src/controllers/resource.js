@@ -3,10 +3,17 @@ export default class ResourceController {
     const ds = ctx.app.model.getDataservice(ctx.stash.dsname);
     const objects = await ctx.req.json();
 
-    if (!await ds.checkBeforeCreate(objects))
-      return ctx.res.status(400).send('check before create has not passed');
+    const state = await ctx.getState(ctx);
 
-    const ids = await ds.create(objects);
+    try {
+      await ds.checkBeforeCreate(state, objects)
+    }
+    catch (e) {
+      ctx.app.log.debug(`Error during check for creating: ${e}`)
+      return ctx.res.status(400).send(`check before creating has not passed: ${e}`);
+    }
+
+    const ids = await ds.create(state, objects);
     return ctx.render({ json: ids });
   }
 
@@ -15,11 +22,17 @@ export default class ResourceController {
     const fields = ds.fields;
 
     const searchquery = this._getFieldsFromQuery(ctx, fields);
+    const state = await ctx.getState(ctx);
 
-    if (!await ds.checkBeforeRead(searchquery))
-      return ctx.res.status(400).send('check before read has not passed');
+    try {
+      await ds.checkBeforeRead(state, searchquery)
+    }
+    catch (e) {
+      ctx.app.log.debug(`Error during check for reading: ${e}`)
+      return ctx.res.status(400).send(`check before read has not passed ${e}`);
+    }
 
-    const objects = await ds.read(searchquery);
+    const objects = await ds.read(state, searchquery);
     return ctx.render({ json: objects });
   }
 
@@ -30,10 +43,17 @@ export default class ResourceController {
     const filter = this._getFieldsFromQuery(ctx, fields);
     const newFields = await ctx.req.json();
 
-    if (!await ds.checkBeforeUpdate(filter, newFields))
-      return ctx.res.status(400).send('check before update has not passed');
+    const state = await ctx.getState(ctx);
 
-    const ids = await ds.update(filter, newFields);
+    try {
+      await ds.checkBeforeUpdate(state, filter, newFields)
+    }
+    catch (e) {
+      ctx.app.log.debug(`Error during check for updating: ${e}`)
+      return ctx.res.status(400).send(`check before update has not passed ${e}`);
+    }
+
+    const ids = await ds.update(state, filter, newFields);
 
     return ctx.render({ json: ids });
   }
@@ -44,10 +64,17 @@ export default class ResourceController {
 
     const filter = this._getFieldsFromQuery(ctx, fields);
 
-    if (!await ds.checkBeforeDelete(filter))
-      return ctx.res.status(400).send('check before delete has not passed');
+    const state = await ctx.getState(ctx);
 
-    const ids = await ds.delete(filter);
+    try {
+      await ds.checkBeforeDelete(state, filter)
+    }
+    catch (e) {
+      ctx.app.log.debug(`Error during check for deleting: ${e}`)
+      return ctx.res.status(400).send(`check before delete has not passed: ${e}`);
+    }
+
+    const ids = await ds.delete(state, filter);
 
     if (ids.length === 0) {
       return ctx.res.status(404).send('no items to delete');

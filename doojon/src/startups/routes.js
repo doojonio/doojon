@@ -1,7 +1,7 @@
 export default async function routesStartup(app) {
   const api = app.any('/api/1/');
 
-  const resourse = api.under('/resource').to('api#underEverything');
+  const resourse = api.any('/resource');
 
   const dss = app.model.listDataservices();
   for (const ds of dss) {

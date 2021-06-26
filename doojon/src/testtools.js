@@ -7,30 +7,22 @@ export async function generateFreeTestUsername(app) {
   let userexists;
   do {
     username = 'testuser_' + Math.random().toString(36).substring(7);
-    userexists = await profiles.read({ username });
+    userexists = await profiles.read({}, { username });
   } while (userexists.length !== 0);
 
   return username;
 }
 
 export async function newAuthorizedClient(app) {
-  const conf = app.config.testtools.authorizedClient;
   const client = await app.newTestClient();
 
   const accountsCourier = app.model.getCourier('accounts');
-  let account = await accountsCourier.getAccount({ email: conf.testUserEmail });
-  if (!account)
-    account = await accountsCourier.createAccount({
-      email: conf.testUserEmail,
-      password: conf.testUserPassword,
-    });
-  await accountsCourier.auth({
-    email: conf.testUserEmail,
-    password: conf.testUserPassword,
-  });
+  let account = await accountsCourier.createTestAccount();
 
-  const jar = await accountsCourier.ua.cookieJar.serialize();
-  const authCookie = jar.cookies.filter(c => c.key === 'auth')[0];
+  let authCookieName = app.config.web.authCookie.name;
+  const authCookie = (
+    await accountsCourier.ua.cookieJar.getCookies(accountsCourier.ua.baseURL)
+  ).filter(c => c.key === authCookieName)[0].clone();
 
   client.accountsSession = authCookie.value;
   client.accountsAccount = account;

@@ -1,4 +1,9 @@
 {
+  "web": {
+    "authCookie": {
+      "name": "SID"
+    }
+  },
   "database": {
     "user": "doojon",
     "host": "doojon_db",
