@@ -18,12 +18,14 @@ impl SessionsDataservice {
 
   pub fn create(
     &self,
-    acc_id: uuid::Uuid,
+    acc_id: &uuid::Uuid,
   ) -> Result<ReadableSessionWithoutAccountId, ServiceError> {
     use self::sessions::dsl::*;
     Ok(
       diesel::insert_into(sessions)
-        .values(CreatableSession { account_id: acc_id })
+        .values(CreatableSession {
+          account_id: acc_id.clone(),
+        })
         .returning((id, create_time))
         .get_result(&self._pool.get().unwrap())?,
     )

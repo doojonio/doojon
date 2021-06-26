@@ -48,7 +48,7 @@ impl TestAccountService {
 
 #[derive(serde::Serialize)]
 pub struct TestAccount {
-  id: uuid::Uuid,
-  email: String,
-  password: String,
+  pub id: uuid::Uuid,
+  pub email: String,
+  pub password: String,
 }

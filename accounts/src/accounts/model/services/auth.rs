@@ -35,6 +35,6 @@ impl AuthService {
       return Err(ServiceError::Unauthorized);
     }
 
-    self._sessions.create(acc.id)
+    self._sessions.create(&acc.id)
   }
 }
