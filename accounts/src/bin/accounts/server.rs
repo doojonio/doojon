@@ -1,6 +1,5 @@
 use accounts::webapp;
-use actix_web::middleware::Logger;
-use actix_web::{web, App, HttpServer};
+use actix_web::{web, HttpServer};
 
 pub fn subcommand() -> clap::App<'static, 'static> {
   clap::App::new("server").about("start accounts server").arg(
