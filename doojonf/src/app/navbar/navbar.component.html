@@ -1,3 +1,22 @@
 <mat-toolbar color="primary">
-    <p>Doojon</p>
+    <a routerLink="" class="name">Doojon</a>
+    <span class="spacer"></span>
+    <p class="profile">
+        <a *ngIf="userStatus && userStatus != 'AUTHORIZED'" routerLink="signup" mat-flat-button color="accent">Sign up</a>
+        <ng-template [ngIf]="userStatus == 'AUTHORIZED'">
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu>
+                <a mat-menu-item routerLink="{{username}}">
+                    <mat-icon>account_box</mat-icon>
+                    Profile
+                </a>
+                <button (click)="logout()" mat-menu-item>
+                    <mat-icon>logout</mat-icon>
+                    Sign out
+                </button>
+            </mat-menu>
+        </ng-template>
+    </p>
 </mat-toolbar>

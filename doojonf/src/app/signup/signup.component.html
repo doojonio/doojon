@@ -1,0 +1,80 @@
+<div class="container">
+  <mat-card class="signup">
+    <mat-card-header
+      ><mat-card-title>Create new profile</mat-card-title></mat-card-header
+    >
+    <mat-card-content>
+      <mat-stepper linear orientation="vertical">
+        <ng-template [ngIf]="!authorizedButWithoutProfile">
+          <mat-step [stepControl]="accountForm">
+            <form class="fields-container" [formGroup]="accountForm">
+              <ng-template matStepLabel>Account information</ng-template>
+              <mat-form-field appearance="outline">
+                <mat-label>Email</mat-label>
+                <input type="email" formControlName="email" matInput required />
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Password</mat-label>
+                <input type="password" formControlName="password" matInput />
+              </mat-form-field>
+              <button mat-raised-button color="primary" matStepperNext>
+                Next
+              </button>
+            </form>
+          </mat-step>
+          <mat-step>
+            <form class="fields-container" [formGroup]="doojonForm">
+              <ng-template matStepLabel>Choose username</ng-template>
+              <mat-form-field appearance="outline">
+                <mat-label>Username</mat-label>
+                <input
+                  type="text"
+                  formControlName="username"
+                  matInput
+                  required
+                />
+              </mat-form-field>
+              <button
+                mat-raised-button
+                color="primary"
+                matStepperNext
+                [disabled]="!canBeFinished()"
+                (click)="finish()"
+              >
+                Finish
+              </button>
+            </form>
+          </mat-step>
+        </ng-template>
+        <ng-template [ngIf]="authorizedButWithoutProfile">
+          <mat-step>
+            <form class="fields-container" [formGroup]="doojonForm">
+              <ng-template matStepLabel>Choose username</ng-template>
+              <mat-form-field appearance="outline">
+                <mat-label>Username</mat-label>
+                <input
+                  type="text"
+                  formControlName="username"
+                  matInput
+                  required
+                />
+              </mat-form-field>
+              <button
+                mat-raised-button
+                color="primary"
+                matStepperNext
+                [disabled]="!canBeFinishedWithoutAccount()"
+                (click)="finishWithoutAccount()"
+              >
+                Finish
+              </button>
+            </form>
+          </mat-step>
+        </ng-template>
+      </mat-stepper>
+    </mat-card-content>
+    <mat-card-footer>
+      <span>Already have an account? <a routerLink="/login">Login</a></span>
+    </mat-card-footer>
+  </mat-card>
+</div>

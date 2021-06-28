@@ -10,7 +10,7 @@ workers = 6
 max_connections = 25_000
 
 [web.auth_cookie]
-domain = "accounts"
+domain = "localhost"
 expires_after_days = 365
 http_only = true
 name = "SID"

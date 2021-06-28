@@ -9,7 +9,7 @@ export default class ProfilesDataservice extends Dataservice {
     if (!Array.isArray(profiles))
       profiles = [profiles]
 
-    if (!state.getUser())
+    if (!state.getAccount())
       throw new Error("current user is not authorized");
 
     if (profiles.length !== 1)
@@ -17,7 +17,7 @@ export default class ProfilesDataservice extends Dataservice {
   }
 
   async _preCreateModify(state, profiles) {
-    const user = state.getUser();
+    const user = state.getAccount();
     const profile = profiles[0];
     profile.id = user.id;
   }

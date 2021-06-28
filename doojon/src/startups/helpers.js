@@ -19,7 +19,7 @@ async function _stateFromCtxHelper(ctx) {
   if (!acc)
     return state;
 
-  state.setUser(acc);
+  state.setAccount(acc);
 
   return state;
 }

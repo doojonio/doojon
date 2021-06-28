@@ -4,7 +4,14 @@
 
 export const environment = {
   production: false,
-  configLocation: 'assets/doojonf.json'
+  apis: {
+    doojon: {
+      endpoint: '/api/doojon/'
+    },
+    accounts: {
+      endpoint: '/api/accounts/'
+    }
+  }
 };
 
 /*

@@ -1,8 +1,9 @@
 export default async function routesStartup(app) {
   const api = app.any('/api/1/');
 
-  const resourse = api.any('/resource');
+  api.get('uinfo').to('id#getUserInfo');
 
+  const resourse = api.any('/resource');
   const dss = app.model.listDataservices();
   for (const ds of dss) {
     const postroute = resourse.post(`/${ds}`).to('resource#create');

@@ -1,26 +1,23 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { tap } from 'rxjs/operators';
+
 import { environment as env } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ConfigService {
-  private _configLocation: string;
-  private _config: Config | undefined;
+  private _apisConfig: ApisConfig;
 
-  constructor(private _http: HttpClient) {
-    this._configLocation = env.configLocation;
+  constructor() {
+    this._apisConfig = env.apis;
   }
 
-  getConfig(): Observable<Config> {
-    if (this._config !== undefined) return of(this._config);
+  getAccountsApiConfig(): AccountsApiConfig {
+    return this._apisConfig.accounts;
+  }
 
-    return this._http
-      .get<Config>(this._configLocation)
-      .pipe(tap(config => (this._config = config)));
+  getDoojonApiConfig(): DoojonApiConfig {
+    return this._apisConfig.doojon;
   }
 }
 
