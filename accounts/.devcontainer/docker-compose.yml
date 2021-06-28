@@ -15,6 +15,9 @@ services:
       - POSTGRES_PASSWORD=password
   accounts_redis:
     image: redis
-
 volumes:
   accounts-data:
+networks:
+  default:
+    external: true
+    name: doojondev

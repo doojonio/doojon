@@ -1,0 +1,19 @@
+version: "3"
+services:
+  doojonf:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        - VARIANT=16
+    command: sleep infinity
+    volumes:
+      - ../../:/workspace/
+volumes:
+  accounts-data:
+  doojon-data:
+
+networks:
+  default:
+    external: true
+    name: doojondev

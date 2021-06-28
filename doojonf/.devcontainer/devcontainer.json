@@ -1,10 +1,8 @@
  {
 	"name": "Angular",
-	"build": {
-		"dockerfile": "dockerfile",
-		// Update 'VARIANT' to pick a Node version: 12, 14, 16
-		"args": { "VARIANT": "14" }
-	},
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "doojonf",
+	"workspaceFolder": "/workspace/doojonf",
 
 	// Set *default* container specific settings.json values on container create.
 	// "settings": {
