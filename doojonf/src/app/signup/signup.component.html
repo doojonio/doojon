@@ -17,7 +17,7 @@
                 <mat-label>Password</mat-label>
                 <input type="password" formControlName="password" matInput />
               </mat-form-field>
-              <button mat-raised-button color="primary" matStepperNext>
+              <button mat-raised-button color="primary" [disabled]="!accountForm.valid" matStepperNext>
                 Next
               </button>
             </form>

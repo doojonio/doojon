@@ -1,4 +1,5 @@
 import { Dataservice } from '../dataservice.js';
+import { ID_STATUS_NOPROFILE } from '../services/id.js';
 
 export default class ProfilesDataservice extends Dataservice {
   static get _tablename() {
@@ -9,16 +10,15 @@ export default class ProfilesDataservice extends Dataservice {
     if (!Array.isArray(profiles))
       profiles = [profiles]
 
-    if (!state.getAccount())
-      throw new Error("current user is not authorized");
+    if (state.getUserInfo().status != ID_STATUS_NOPROFILE )
+      throw new Error("User is not authorized or already has an account");
 
     if (profiles.length !== 1)
       throw new Error("number of profiles to create is not 1")
   }
 
   async _preCreateModify(state, profiles) {
-    const user = state.getAccount();
-    const profile = profiles[0];
-    profile.id = user.id;
+    const account = state.getUserInfo().account;
+    profiles[0].id = account.id;
   }
 }

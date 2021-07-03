@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { mapTo, tap } from 'rxjs/operators';
-import { ConfigService, DoojonApiConfig } from './config.service';
+import { BehaviorSubject } from 'rxjs';
+import { ConfigService, DoojonApiConfig } from '../config.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +17,7 @@ export class IdService {
     this._api = config.getDoojonApiConfig();
   }
 
-  getUserInfo(opts?: {forceRefresh?: Boolean}): Observable<UserInfo | undefined> {
+  getUserInfo(opts?: {forceRefresh?: Boolean}): BehaviorSubject<UserInfo | undefined> {
     if (opts?.forceRefresh || this._uinfoSubject.value === undefined) {
       const url = this._api.endpoint + '/uinfo';
       this._http.get<UserInfo>(url).subscribe(uinfo => {
@@ -26,7 +25,7 @@ export class IdService {
       });
     };
 
-    return this._uinfoSubject.asObservable();
+    return this._uinfoSubject;
   }
 
   onLogout() {

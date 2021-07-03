@@ -6,20 +6,12 @@ export default async function addHelpers(app) {
 
 async function _stateFromCtxHelper(ctx) {
   const state = new State(ctx.app.log);
+  const idService = ctx.app.model.getService('id');
 
   let authCookieName = ctx.app.config.web.authCookie.name;
   const session = ctx.req.getCookie(authCookieName);
 
-  if ( !session ) return state;
-
-  ctx.log.trace('Found auth cookie');
-  const accounts = ctx.app.model.getCourier('accounts');
-  const acc = await accounts.getAccountBySession(session);
-
-  if (!acc)
-    return state;
-
-  state.setAccount(acc);
+  state.setUserInfo(await idService.collectUserInformationBySession(session))
 
   return state;
 }

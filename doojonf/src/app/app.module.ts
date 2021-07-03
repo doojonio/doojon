@@ -10,7 +10,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { NavbarComponent } from './navbar/navbar.component';
 import { LoginComponent } from './login/login.component';
 import { SignupComponent } from './signup/signup.component';
-import { LCommonComponent } from './l-common/l-common.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -20,6 +19,14 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { FeedComponent } from './feed/feed.component';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { SidenavComponent } from './sidenav/sidenav.component';
+import { MatListModule } from '@angular/material/list';
+import { ChallengeEditorComponent } from './challenge-editor/challenge-editor.component';
+import { NewPersonalChallengeComponent } from './new-personal-challenge/new-personal-challenge.component';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+
 
 @NgModule({
   declarations: [
@@ -27,7 +34,10 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     NavbarComponent,
     LoginComponent,
     SignupComponent,
-    LCommonComponent
+    FeedComponent,
+    SidenavComponent,
+    ChallengeEditorComponent,
+    NewPersonalChallengeComponent,
   ],
   imports: [
     BrowserModule,
@@ -44,6 +54,9 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     MatIconModule,
     MatMenuModule,
     MatSnackBarModule,
+    MatSidenavModule,
+    MatListModule,
+    MatSlideToggleModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

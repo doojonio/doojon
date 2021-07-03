@@ -1,8 +1,13 @@
 <mat-toolbar color="primary">
+    <button mat-icon-button (click)="toggleSidenav()"><mat-icon>menu</mat-icon></button>
     <a routerLink="" class="name">Doojon</a>
     <span class="spacer"></span>
     <p class="profile">
-        <a *ngIf="userStatus && userStatus != 'AUTHORIZED'" routerLink="signup" mat-flat-button color="accent">Sign up</a>
+        <ng-template [ngIf]="userStatus && userStatus != 'AUTHORIZED'">
+            <a class="signup-button" routerLink="/signup" mat-button>Sign up</a>
+            <span style="font-size: 14px">or</span>
+            <a class="signup-button" routerLink="/login" mat-button>Login</a>
+        </ng-template>
         <ng-template [ngIf]="userStatus == 'AUTHORIZED'">
             <button mat-icon-button [matMenuTriggerFor]="menu">
                 <mat-icon>more_vert</mat-icon>

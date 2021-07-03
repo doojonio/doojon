@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ConfigService, DoojonApiConfig } from './config.service';
+import { ConfigService, DoojonApiConfig } from '../config.service';
 
 @Injectable({
   providedIn: 'root',

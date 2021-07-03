@@ -1,15 +1,18 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LCommonComponent } from './l-common/l-common.component';
+import { FeedComponent } from './feed/feed.component';
 import { LoginComponent } from './login/login.component';
+import { NewPersonalChallengeComponent } from './new-personal-challenge/new-personal-challenge.component';
 import { SignupComponent } from './signup/signup.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: LCommonComponent,
-    children: [
-    ],
+    component: FeedComponent,
+  },
+  {
+    path: 'new',
+    component: NewPersonalChallengeComponent,
   },
   {
     path: 'login',

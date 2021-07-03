@@ -1,0 +1,45 @@
+:host {
+    display: block;
+    width: 600px;
+    height: 100%;
+}
+
+mat-card {
+    height: 100%;
+    width: 100%;
+
+    textarea {
+        width: 100%;
+        border: none;
+        outline: none;
+        font-family: inherit;
+    }
+}
+
+mat-card-header {
+    padding-bottom: 20px;
+}
+
+.options {
+    padding: 10px;
+}
+
+.buttons {
+    padding-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.title {
+    font-size: 24px;
+}
+
+.description {
+    font-size: 16px;
+}
+
+.spacer {
+    flex: 1 1;
+}
+

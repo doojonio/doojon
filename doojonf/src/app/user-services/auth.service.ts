@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { AccountsApiConfig, ConfigService } from './config.service';
+import { AccountsApiConfig, ConfigService } from '../config.service';
 import { IdService } from './id.service';
 @Injectable({
   providedIn: 'root',

@@ -1,60 +1,106 @@
 exports.up = function (knex) {
   return knex.schema
     .raw('create extension if not exists "uuid-ossp";')
-    .raw(generatingFunctionsSQL)
+    .raw('create extension if not exists "pgcrypto";')
+    .raw(shortIdTrigger)
     .createTable('profiles', table => {
       table.uuid('id').primary();
-      table.text('username').unique();
-      table.date('reg_date').unique();
+      table.text('username').unique().notNullable();
+      table.timestamp('create_time').defaultTo('now()').notNullable();
     })
     .createTable('challenges', table => {
-      table.text('id').primary().defaultTo('generate_challenge_id()');
+      table.text('id').primary();
       table.text('title').notNullable();
-      table.text('descr');
+      table.text('description');
       table.uuid('proposed_by').notNullable().references('profiles.id');
+      table.bool('is_public').notNullable().defaultTo('false');
+      table.bool('is_hidden').notNullable().defaultTo('false');
       table
         .timestamp('create_time', { useTz: true })
         .notNullable()
         .defaultTo('now()');
+      table.timestamp('update_time', { useTz: true });
+    })
+    .raw(
+      `CREATE TRIGGER trigger_challenges_genid BEFORE INSERT ON challenges FOR EACH ROW EXECUTE PROCEDURE unique_short_id();`
+    )
+    .createTable('challenge_proposals', table => {
+      table.text('id').primary();
+      table.text('challenge_id').references('challenges.id');
+      table.timestamp('create_time').notNullable().defaultTo('now()');
+    })
+    .raw(
+      `CREATE TRIGGER trigger_challenge_proposals_genid BEFORE INSERT ON challenge_proposals
+      FOR EACH ROW EXECUTE PROCEDURE unique_short_id();`
+    )
+    .createTable('challenge_proposal_likes', table => {
+      table.text('proposal_id').references('challenge_proposals.id');
+      table.uuid('liked_by').references('profiles.id');
+      table.primary(['proposal_id', 'liked_by']);
+    })
+    .createTable('challenge_proposal_comments', table => {
+      table.text('id').primary();
       table
-        .timestamp('update_time', { useTz: true })
-        .notNullable()
-        .defaultTo('now()');
+        .text('proposal_id')
+        .references('challenge_proposals.id')
+        .notNullable();
+      table
+        .text('parent_comment_id')
+        .references('challenge_proposal_comments.id');
+      table.text('text').notNullable();
+      table.uuid('written_by').references('profiles.id').notNullable();
+      table
+        .timestamp('create_time', { useTz: true })
+        .defaultTo('now()')
+        .notNullable();
+      table.timestamp('update_time', { useTz: true });
+    })
+    .raw(
+      `CREATE TRIGGER trigger_challenge_proposal_comments_genid BEFORE INSERT ON challenge_proposal_comments
+      FOR EACH ROW EXECUTE PROCEDURE unique_short_id()`
+    )
+    .createTable('challenge_proposal_comment_likes', table => {
+      table.text('comment_id').references('challenge_proposal_comments.id');
+      table.uuid('liked_by').references('profiles.id');
+      table.primary(['comment_id', 'liked_by'])
     })
     .createTable('posts', table => {
-      table.text('id').primary().defaultTo('generate_post_id()');
+      table.text('id').primary();
       table.text('challenge_id').notNullable().references('challenges.id');
       table.text('title').notNullable();
       table.text('body').notNullable();
-      table.uuid('writted_by').notNullable().references('profiles.id');
+      table.uuid('written_by').notNullable().references('profiles.id');
       table
         .timestamp('create_time', { useTz: true })
         .notNullable()
         .defaultTo('now()');
-      table
-        .timestamp('update_time', { useTz: true })
-        .notNullable()
-        .defaultTo('now()');
+      table.timestamp('update_time', { useTz: true });
     })
+    .raw(
+      `CREATE TRIGGER trigger_posts_genid BEFORE INSERT ON posts
+      FOR EACH ROW EXECUTE PROCEDURE unique_short_id()`
+    )
     .createTable('post_likes', table => {
       table.text('post_id').notNullable().references('posts.id');
       table.uuid('liked_by').notNullable().references('profiles.id');
       table.primary(['post_id', 'liked_by']);
     })
     .createTable('post_comments', table => {
-      table.text('id').primary().defaultTo('generate_post_comment_id()');
+      table.text('id').primary();
       table.text('post_id').notNullable().references('posts.id');
-      table.text('message').notNullable();
-      table.uuid('writed_by').notNullable().references('profiles.id');
+      table.text('parent_comment_id').references('post_comments.id');
+      table.text('text').notNullable();
+      table.uuid('written_by').notNullable().references('profiles.id');
       table
         .timestamp('create_time', { useTz: true })
         .notNullable()
         .defaultTo('now()');
-      table
-        .timestamp('update_time', { useTz: true })
-        .notNullable()
-        .defaultTo('now()');
+      table.timestamp('update_time', { useTz: true });
     })
+    .raw(
+      `CREATE TRIGGER trigger_post_comments_genid BEFORE INSERT ON post_comments
+      FOR EACH ROW EXECUTE PROCEDURE unique_short_id()`
+    )
     .createTable('post_comment_likes', table => {
       table.text('comment_id').notNullable().references('post_comments.id');
       table.uuid('liked_by').notNullable().references('profiles.id');
@@ -64,74 +110,83 @@ exports.up = function (knex) {
 
 exports.down = function (knex) {
   return knex.schema
+    .raw(`
+      DROP TRIGGER IF EXISTS trigger_post_comments_genid ON post_comments;
+      DROP TRIGGER IF EXISTS trigger_posts_genid ON posts;
+      DROP TRIGGER IF EXISTS trigger_challenge_proposal_comments_genid ON challenge_proposal_comments;
+      DROP TRIGGER IF EXISTS trigger_challenge_proposals_genid ON challenge_proposals;
+      DROP TRIGGER IF EXISTS trigger_challenges_genid ON challenges;
+    `)
     .dropTableIfExists('post_comment_likes')
     .dropTableIfExists('post_comments')
     .dropTableIfExists('post_likes')
     .dropTableIfExists('posts')
+    .dropTableIfExists('challenge_proposal_comment_likes')
+    .dropTableIfExists('challenge_proposal_comments')
+    .dropTableIfExists('challenge_proposal_likes')
+    .dropTableIfExists('challenge_proposals')
     .dropTableIfExists('challenges')
     .dropTableIfExists('profiles');
 };
 
-const generatingFunctionsSQL = `
-create or replace function generate_random_string(length integer) returns text as
-$$
-declare
-  chars text[] := '{0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z}';
-  result text := '';
-  i integer := 0;
-begin
-  if length < 0 then
-    raise exception 'Given length cannot be less than 0';
-  end if;
-  for i in 1..length loop
-    result := result || chars[1+random()*(array_length(chars, 1)-1)];
-  end loop;
-  return result;
-end;
-$$ language plpgsql;
+const shortIdTrigger = `
+-- Create a trigger function that takes no arguments.
+-- Trigger functions automatically have OLD, NEW records
+-- and TG_TABLE_NAME as well as others.
+CREATE OR REPLACE FUNCTION unique_short_id()
+RETURNS TRIGGER AS $$
 
-create or replace function generate_challenge_id() returns text as
-$$
-declare
-  length integer := 11;
-  new_id text := '';
-begin
-  new_id = generate_random_string(length);
-  loop
-    exit when not exists(select id from challenges where id = new_id);
-    new_id = generate_random_string(length);
-  end loop;
-  return new_id;
-end;
-$$ language plpgsql;
+ -- Declare the variables we'll be using.
+DECLARE
+  key TEXT;
+  qry TEXT;
+  found TEXT;
+BEGIN
 
-create or replace function generate_post_id() returns text as
-$$
-declare
-  length integer := 11;
-  new_id text := '';
-begin
-  new_id = generate_random_string(length);
-  loop
-    exit when not exists(select id from posts where id = new_id);
-    new_id = generate_random_string(length);
-  end loop;
-  return new_id;
-end;
-$$ language plpgsql;
+  -- generate the first part of a query as a string with safely
+  -- escaped table name, using || to concat the parts
+  qry := 'SELECT id FROM ' || quote_ident(TG_TABLE_NAME) || ' WHERE id=';
 
-create or replace function generate_post_comment_id() returns text as
-$$
-declare
-  length integer := 11;
-  new_id text := '';
-begin
-  new_id = generate_random_string(length);
-  loop
-    exit when not exists(select id from post_comments where id = new_id);
-    new_id = generate_random_string(length);
-  end loop;
-  return new_id;
-end;
-$$ language plpgsql;
+  -- This loop will probably only run once per call until we've generated
+  -- millions of ids.
+  LOOP
+
+    -- Generate our string bytes and re-encode as a base64 string.
+    key := encode(gen_random_bytes(6), 'base64');
+
+    -- Base64 encoding contains 2 URL unsafe characters by default.
+    -- The URL-safe version has these replacements.
+    key := replace(key, '/', '_'); -- url safe replacement
+    key := replace(key, '+', '-'); -- url safe replacement
+
+    -- Concat the generated key (safely quoted) with the generated query
+    -- and run it.
+    -- SELECT id FROM "test" WHERE id='blahblah' INTO found
+    -- Now "found" will be the duplicated id or NULL.
+    EXECUTE qry || quote_literal(key) INTO found;
+
+    -- Check to see if found is NULL.
+    -- If we checked to see if found = NULL it would always be FALSE
+    -- because (NULL = NULL) is always FALSE.
+    IF found IS NULL THEN
+
+      -- If we didn't find a collision then leave the LOOP.
+      EXIT;
+    END IF;
+
+    -- We haven't EXITed yet, so return to the top of the LOOP
+    -- and try again.
+  END LOOP;
+
+  -- NEW and OLD are available in TRIGGER PROCEDURES.
+  -- NEW is the mutated row that will actually be INSERTed.
+  -- We're replacing id, regardless of what it was before
+  -- with our key variable.
+  NEW.id = key;
+
+  -- The RECORD returned here is what will actually be INSERTed,
+  -- or what the next trigger will get if there is one.
+  RETURN NEW;
+END;
+$$ language 'plpgsql';
 `;

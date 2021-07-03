@@ -1,18 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { AccountsService, CreatableAccount } from '../accounts.service';
-import { AuthService } from '../auth.service';
-import { IdService, IdStatus } from '../id.service';
-import { CreatableProfile, ProfilesService } from '../profiles.service';
+import { Subscription } from 'rxjs';
+import { AccountsService, CreatableAccount } from '../user-services/accounts.service';
+import { AuthService } from '../user-services/auth.service';
+import { IdService, IdStatus } from '../user-services/id.service';
+import { CreatableProfile, ProfilesService } from '../user-services/profiles.service';
 
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss'],
 })
-export class SignupComponent implements OnInit {
+export class SignupComponent implements OnInit, OnDestroy {
   accountForm = this._fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
@@ -25,6 +26,8 @@ export class SignupComponent implements OnInit {
 
   authorizedButWithoutProfile?: Boolean;
 
+  private _uninfoSubs?: Subscription;
+
   constructor(
     private _accounts: AccountsService,
     private _auth: AuthService,
@@ -36,7 +39,7 @@ export class SignupComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this._id.getUserInfo().subscribe(uinfo => {
+    this._uninfoSubs = this._id.getUserInfo().subscribe(uinfo => {
       if (uinfo?.status === IdStatus.AUTHORIZED) {
         return this._router.navigate([uinfo.profile?.username]);
       }
@@ -47,6 +50,10 @@ export class SignupComponent implements OnInit {
 
       return 1;
     });
+  }
+
+  ngOnDestroy() {
+    this._uninfoSubs?.unsubscribe();
   }
 
   canBeFinished(): Boolean {
@@ -72,9 +79,7 @@ export class SignupComponent implements OnInit {
         .authWithPassword(account.email, account.password)
         .subscribe(_ => {
           this._profiles.createProfile(profile).subscribe(_ => {
-            this._id.getUserInfo({ forceRefresh: true }).subscribe(uinfo => {
-              this._router.navigate([uinfo?.profile?.username || '']);
-            });
+            this._id.getUserInfo({ forceRefresh: true });
           }, this.onError)
         }, this.onError)
     }, this.onError);
@@ -85,9 +90,7 @@ export class SignupComponent implements OnInit {
 
     this.creatingIsInProcess = true;
     this._profiles.createProfile(profile).subscribe(_ => {
-      this._id.getUserInfo({ forceRefresh: true }).subscribe(uinfo => {
-        this._router.navigate([uinfo?.profile?.username]);
-      });
+      this._id.getUserInfo({ forceRefresh: true });
     });
   }
 

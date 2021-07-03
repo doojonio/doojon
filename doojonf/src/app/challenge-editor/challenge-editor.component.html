@@ -1,0 +1,36 @@
+<mat-card [formGroup]="form">
+  <mat-card-header>
+    <textarea
+      cdkTextareaAutosize
+      class="title"
+      #title
+      placeholder="Challenge title"
+      formControlName="title"
+    ></textarea>
+  </mat-card-header>
+  <mat-card-content>
+    <textarea
+      formControlName="description"
+      cdkTextareaAutosize
+      cdkAutosizeMinRows="3"
+      placeholder="Steps or advices"
+      class="description"
+    ></textarea>
+  </mat-card-content>
+  <mat-card-actions>
+    <div class="options">
+      <mat-slide-toggle formControlName="is_hidden">Hidden</mat-slide-toggle>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="buttons">
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="!canFinish()"
+        (click)="finish()"
+      >
+        Finish
+      </button>
+    </div>
+  </mat-card-actions>
+</mat-card>

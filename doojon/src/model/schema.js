@@ -1,14 +1,76 @@
 export const schema = {
+  'challenge_proposal_comment_likes': {
+    'comment_id': {
+      'type': 'string',
+      'is_primary_key': true,
+    },
+    'liked_by': {
+      'type': 'string',
+      'is_primary_key': true,
+    },
+  },
+  'challenge_proposal_comments': {
+    'create_time': {
+      'type': 'timestamp',
+    },
+    'id': {
+      'type': 'string',
+      'is_primary_key': true,
+    },
+    'parent_comment_id': {
+      'type': 'string',
+    },
+    'proposal_id': {
+      'type': 'string',
+    },
+    'text': {
+      'type': 'string',
+    },
+    'update_time': {
+      'type': 'timestamp',
+    },
+    'written_by': {
+      'type': 'string',
+    },
+  },
+  'challenge_proposal_likes': {
+    'liked_by': {
+      'type': 'string',
+      'is_primary_key': true,
+    },
+    'proposal_id': {
+      'type': 'string',
+      'is_primary_key': true,
+    },
+  },
+  'challenge_proposals': {
+    'challenge_id': {
+      'type': 'string',
+    },
+    'create_time': {
+      'type': 'timestamp',
+    },
+    'id': {
+      'type': 'string',
+      'is_primary_key': true,
+    },
+  },
   'challenges': {
     'create_time': {
       'type': 'timestamp',
     },
-    'descr': {
+    'description': {
       'type': 'string',
     },
     'id': {
       'type': 'string',
       'is_primary_key': true,
+    },
+    'is_hidden': {
+      'type': 'boolean',
+    },
+    'is_public': {
+      'type': 'boolean',
     },
     'proposed_by': {
       'type': 'string',
@@ -38,16 +100,19 @@ export const schema = {
       'type': 'string',
       'is_primary_key': true,
     },
-    'message': {
+    'parent_comment_id': {
       'type': 'string',
     },
     'post_id': {
       'type': 'string',
     },
+    'text': {
+      'type': 'string',
+    },
     'update_time': {
       'type': 'timestamp',
     },
-    'writed_by': {
+    'written_by': {
       'type': 'string',
     },
   },
@@ -81,17 +146,17 @@ export const schema = {
     'update_time': {
       'type': 'timestamp',
     },
-    'writted_by': {
+    'written_by': {
       'type': 'string',
     },
   },
   'profiles': {
+    'create_time': {
+      'type': 'timestamp',
+    },
     'id': {
       'type': 'string',
       'is_primary_key': true,
-    },
-    'reg_date': {
-      'type': 'date',
     },
     'username': {
       'type': 'string',

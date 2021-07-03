@@ -1,16 +1,16 @@
 export class State {
-  _account = null;
+  _userinfo = undefined;
 
   constructor(log) {
     this._log = log
   }
 
-  getAccount() {
-    return this._account;
+  getUserInfo() {
+    return this._userinfo;
   }
 
-  setAccount(account) {
-    this._log.trace(`Setting account (id: ${account.id}, email: ${account.email})`);
-    this._account = account;
+  setUserInfo(uinfo) {
+    this._log.trace(`Setting user info (status: ${uinfo.status})`);
+    this._userinfo = uinfo;
   }
 }

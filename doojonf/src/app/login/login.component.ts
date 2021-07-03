@@ -1,22 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { AuthService } from '../auth.service';
-import { IdService, IdStatus } from '../id.service';
+import { Subscription } from 'rxjs';
+import { AuthService } from '../user-services/auth.service';
+import { IdService, IdStatus } from '../user-services/id.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   loginForm = this._fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]],
   });
-
   isLoggining = false;
+
+  private _uinfoSubs?: Subscription;
 
   constructor(
     private _id: IdService,
@@ -27,7 +29,7 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this._id.getUserInfo().subscribe(uinfo => {
+    this._uinfoSubs = this._id.getUserInfo().subscribe(uinfo => {
       if (uinfo?.status === IdStatus.AUTHORIZED) {
         return this._router.navigate([uinfo.profile?.username]);
       } else if (uinfo?.status === IdStatus.NOPROFILE) {
@@ -36,6 +38,10 @@ export class LoginComponent implements OnInit {
 
       return 1;
     });
+  }
+
+  ngOnDestroy() {
+    this._uinfoSubs?.unsubscribe();
   }
 
   loginCanBeDone(): Boolean {
@@ -51,9 +57,7 @@ export class LoginComponent implements OnInit {
     this.isLoggining = true;
     this._auth.authWithPassword(form.email, form.password).subscribe(
       _ => {
-        this._id.getUserInfo({ forceRefresh: true }).subscribe(uinfo => {
-          this._router.navigate([uinfo?.profile?.username || '']);
-        });
+        this._id.getUserInfo({ forceRefresh: true });
       },
       err => {
         this.isLoggining = false;
