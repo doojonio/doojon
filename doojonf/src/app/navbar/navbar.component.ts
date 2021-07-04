@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../user-services/auth.service';
@@ -14,6 +14,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   username?: string;
   @Input()
   sidenav?: MatSidenav
+  @Output()
+  toggleStaticSidenav = new EventEmitter();
 
   private _uinfoSubs?: Subscription;
 
@@ -36,6 +38,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   toggleSidenav() {
-    this.sidenav?.toggle();
+    if (this.sidenav) {
+      this.sidenav?.toggle();
+      return;
+    }
+
+    this.toggleStaticSidenav.emit();
   }
 }

@@ -1,7 +1,13 @@
 <mat-nav-list color="primary">
-    <ng-template [ngIf]="uinfo?.status === 'AUTHORIZED'">
-        <a mat-list-item routerLink="/new"><mat-icon>add</mat-icon><span>New personal challenge</span></a>
-        <a mat-list-item routerLink="/newpub"><mat-icon>add_box</mat-icon><span>Propose new public challenge</span></a>
-        <mat-divider></mat-divider>
-    </ng-template>
+  <ng-template [ngIf]="uinfo?.status === 'AUTHORIZED'">
+    <a mat-list-item routerLink="/new"
+      ><mat-icon>add</mat-icon
+      ><span *ngIf="!short">New personal challenge</span></a
+    >
+    <a mat-list-item routerLink="/newpub"
+      ><mat-icon>add_box</mat-icon
+      ><span *ngIf="!short">Propose new public challenge</span></a
+    >
+    <mat-divider></mat-divider>
+  </ng-template>
 </mat-nav-list>

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { IdService, UserInfo } from '../user-services/id.service';
 
@@ -10,6 +10,9 @@ import { IdService, UserInfo } from '../user-services/id.service';
 export class SidenavComponent implements OnInit, OnDestroy {
   private _uinfoSubs?: Subscription;
   uinfo?: UserInfo;
+
+  @Input()
+  short = false;
 
   constructor(
     private _id: IdService,

@@ -1,0 +1,11 @@
+<div class="navbar-placeholder"></div>
+<app-navbar [sidenav]="sidenav"></app-navbar>
+<mat-sidenav-container>
+    <mat-sidenav fixedInViewport fixedTopGap="64" #sidenav>
+        <app-sidenav></app-sidenav>
+    </mat-sidenav>
+    <mat-sidenav-content>
+        <router-outlet></router-outlet>
+    </mat-sidenav-content>
+</mat-sidenav-container>
+

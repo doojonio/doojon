@@ -1,7 +1,11 @@
+$sidenav-width: 300px;
+$sidenav-short-width: 56px;
+
 mat-nav-list {
     a {
-        mat-icon {
-            margin-right: 10px;
+        font-size: 14px;
+        span {
+            margin-left: 10px;
         }
     }
 }

@@ -1,0 +1,62 @@
+@use '../../sidenav/sidenav.component.scss' as sidenav;
+
+:host {
+    flex: 1 1;
+    display: flex;
+    flex-flow: column nowrap;
+
+}
+
+.navbar-placeholder {
+    height: 64px;
+}
+
+app-navbar {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    visibility: visible;
+    z-index: 3;
+}
+
+.page-container {
+    flex: 1 1;
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+.sidenav-placeholder {
+    width: sidenav.$sidenav-width;
+}
+
+.sidenav-placeholder-short {
+    width: sidenav.$sidenav-short-width;
+}
+
+.sidenav, .sidenav-short {
+    height: 100%;
+    position: fixed;
+    top: 64px;
+    left: 0;
+
+    display: flex;
+    flex-flow: row nowrap;
+
+    app-sidenav {
+        flex: 1 1;
+    }
+}
+
+.sidenav-short {
+    width: sidenav.$sidenav-short-width;
+}
+
+.sidenav {
+    width: sidenav.$sidenav-width;
+}
+
+.route-content {
+    flex: 1 1;
+}
+

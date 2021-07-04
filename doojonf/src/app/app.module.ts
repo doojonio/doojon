@@ -26,6 +26,8 @@ import { MatListModule } from '@angular/material/list';
 import { ChallengeEditorComponent } from './challenge-editor/challenge-editor.component';
 import { NewPersonalChallengeComponent } from './new-personal-challenge/new-personal-challenge.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { StaticSidebarComponent } from './layouts/static-sidebar/static-sidebar.component';
+import { MovingSidebarComponent } from './layouts/moving-sidebar/moving-sidebar.component';
 
 
 @NgModule({
@@ -38,6 +40,8 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     SidenavComponent,
     ChallengeEditorComponent,
     NewPersonalChallengeComponent,
+    StaticSidebarComponent,
+    MovingSidebarComponent,
   ],
   imports: [
     BrowserModule,
