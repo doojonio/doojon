@@ -28,6 +28,7 @@ import { NewPersonalChallengeComponent } from './new-personal-challenge/new-pers
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { StaticSidebarComponent } from './layouts/static-sidebar/static-sidebar.component';
 import { MovingSidebarComponent } from './layouts/moving-sidebar/moving-sidebar.component';
+import { ShowComponent } from './show/show.component';
 
 
 @NgModule({
@@ -42,6 +43,7 @@ import { MovingSidebarComponent } from './layouts/moving-sidebar/moving-sidebar.
     NewPersonalChallengeComponent,
     StaticSidebarComponent,
     MovingSidebarComponent,
+    ShowComponent,
   ],
   imports: [
     BrowserModule,

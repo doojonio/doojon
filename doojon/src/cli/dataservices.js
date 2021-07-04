@@ -98,7 +98,7 @@ async function cliGenerate(app) {
 }
 
 function _translate_data_type(type) {
-  if (type === 'boolean' || type === 'date') {
+  if (type === 'boolean' || type === 'date' || type === 'ARRAY') {
     return type;
   } else if (/character|text|uuid/.test(type)) {
     return 'string';

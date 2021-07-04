@@ -1,4 +1,4 @@
-@use '../../sidenav/sidenav.component.scss' as sidenav;
+@use '../../style-vars.scss' as vars;
 
 :host {
     flex: 1 1;
@@ -27,11 +27,11 @@ app-navbar {
 }
 
 .sidenav-placeholder {
-    width: sidenav.$sidenav-width;
+    width: vars.$sidenav-width;
 }
 
 .sidenav-placeholder-short {
-    width: sidenav.$sidenav-short-width;
+    width: vars.$sidenav-short-width;
 }
 
 .sidenav, .sidenav-short {
@@ -49,11 +49,11 @@ app-navbar {
 }
 
 .sidenav-short {
-    width: sidenav.$sidenav-short-width;
+    width: vars.$sidenav-short-width;
 }
 
 .sidenav {
-    width: sidenav.$sidenav-width;
+    width: vars.$sidenav-width;
 }
 
 .route-content {

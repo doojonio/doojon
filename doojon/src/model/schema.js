@@ -72,7 +72,13 @@ export const schema = {
     'is_public': {
       'type': 'boolean',
     },
+    'personal_tag': {
+      'type': 'string',
+    },
     'proposed_by': {
+      'type': 'string',
+    },
+    'public_tag': {
       'type': 'string',
     },
     'title': {
@@ -127,18 +133,18 @@ export const schema = {
     },
   },
   'posts': {
-    'body': {
-      'type': 'string',
-    },
-    'challenge_id': {
-      'type': 'string',
-    },
     'create_time': {
       'type': 'timestamp',
     },
     'id': {
       'type': 'string',
       'is_primary_key': true,
+    },
+    'tags': {
+      'type': 'ARRAY',
+    },
+    'text': {
+      'type': 'string',
     },
     'title': {
       'type': 'string',

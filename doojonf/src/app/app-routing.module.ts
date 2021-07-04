@@ -5,6 +5,7 @@ import { MovingSidebarComponent } from './layouts/moving-sidebar/moving-sidebar.
 import { StaticSidebarComponent } from './layouts/static-sidebar/static-sidebar.component';
 import { LoginComponent } from './login/login.component';
 import { NewPersonalChallengeComponent } from './new-personal-challenge/new-personal-challenge.component';
+import { ShowComponent } from './show/show.component';
 import { SignupComponent } from './signup/signup.component';
 
 const routes: Routes = [
@@ -34,6 +35,10 @@ const routes: Routes = [
         path: 'signup',
         component: SignupComponent,
       },
+      {
+        path: 'show',
+        component: ShowComponent,
+      }
     ],
   },
   {

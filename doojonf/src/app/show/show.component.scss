@@ -1,0 +1,28 @@
+@use '../style-vars.scss' as vars;
+
+:host {
+  height: 100%;
+}
+
+.show-container {
+  height: 100%;
+  display: grid;
+  grid-template-columns: auto vars.$challenge-container-width auto;
+  grid-template-rows: 50px auto auto;
+  grid-template-areas:
+    '. .         .'
+    '. challenge .'
+    '. .         .';
+}
+
+.challenge-container {
+  grid-area: challenge;
+}
+
+.challenge-title {
+  font-size: vars.$challenge-title-size;
+}
+
+.challenge-description {
+  min-height: vars.$challenge-description-size * 3;
+}

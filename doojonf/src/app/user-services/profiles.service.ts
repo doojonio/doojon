@@ -13,12 +13,23 @@ export class ProfilesService {
     this._apiCfg = conf.getDoojonApiConfig();
   }
 
-  createProfile(profile: CreatableProfile): Observable<any> {
+  createProfile(profile: CreatableProfile): Observable<ProfileCreateReturning[]> {
     const url = this._apiCfg.endpoint + '/resource/profiles';
-    return this._http.post(url, profile, { responseType: 'text' });
+    return this._http.post<ProfileCreateReturning[]>(url, profile);
   }
 }
 
 export interface CreatableProfile {
   username: string;
 }
+
+export interface ReadableProifle {
+  id: string,
+  username: string,
+  create_time: string,
+}
+
+export interface ProfileCreateReturning {
+  id: string;
+}
+

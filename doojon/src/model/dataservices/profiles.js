@@ -11,7 +11,7 @@ export default class ProfilesDataservice extends Dataservice {
       profiles = [profiles]
 
     if (state.getUserInfo().status != ID_STATUS_NOPROFILE )
-      throw new Error("User is not authorized or already has an account");
+      throw new Error("User is not authorized or already has an profile");
 
     if (profiles.length !== 1)
       throw new Error("number of profiles to create is not 1")

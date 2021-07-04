@@ -78,7 +78,7 @@ export class SignupComponent implements OnInit, OnDestroy {
       this._auth
         .authWithPassword(account.email, account.password)
         .subscribe(_ => {
-          this._profiles.createProfile(profile).subscribe(_ => {
+          this._profiles.createProfile(profile).subscribe(ids => {
             this._id.getUserInfo({ forceRefresh: true });
           }, this.onError)
         }, this.onError)
@@ -89,7 +89,7 @@ export class SignupComponent implements OnInit, OnDestroy {
     const profile = this.doojonForm.value as CreatableProfile;
 
     this.creatingIsInProcess = true;
-    this._profiles.createProfile(profile).subscribe(_ => {
+    this._profiles.createProfile(profile).subscribe(ids => {
       this._id.getUserInfo({ forceRefresh: true });
     });
   }

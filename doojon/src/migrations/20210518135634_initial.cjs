@@ -6,20 +6,22 @@ exports.up = function (knex) {
     .createTable('profiles', table => {
       table.uuid('id').primary();
       table.text('username').unique().notNullable();
-      table.timestamp('create_time').defaultTo('now()').notNullable();
+      table.timestamp('create_time').defaultTo(knex.fn.now()).notNullable();
     })
     .createTable('challenges', table => {
       table.text('id').primary();
       table.text('title').notNullable();
       table.text('description');
+      table.text('personal_tag');
+      table.text('public_tag').unique();
       table.uuid('proposed_by').notNullable().references('profiles.id');
       table.bool('is_public').notNullable().defaultTo('false');
       table.bool('is_hidden').notNullable().defaultTo('false');
       table
-        .timestamp('create_time', { useTz: true })
+        .timestamp('create_time')
         .notNullable()
-        .defaultTo('now()');
-      table.timestamp('update_time', { useTz: true });
+        .defaultTo(knex.fn.now());
+      table.timestamp('update_time');
     })
     .raw(
       `CREATE TRIGGER trigger_challenges_genid BEFORE INSERT ON challenges FOR EACH ROW EXECUTE PROCEDURE unique_short_id();`
@@ -27,7 +29,7 @@ exports.up = function (knex) {
     .createTable('challenge_proposals', table => {
       table.text('id').primary();
       table.text('challenge_id').references('challenges.id');
-      table.timestamp('create_time').notNullable().defaultTo('now()');
+      table.timestamp('create_time').notNullable().defaultTo(knex.fn.now());
     })
     .raw(
       `CREATE TRIGGER trigger_challenge_proposals_genid BEFORE INSERT ON challenge_proposals
@@ -50,10 +52,10 @@ exports.up = function (knex) {
       table.text('text').notNullable();
       table.uuid('written_by').references('profiles.id').notNullable();
       table
-        .timestamp('create_time', { useTz: true })
-        .defaultTo('now()')
+        .timestamp('create_time')
+        .defaultTo(knex.fn.now())
         .notNullable();
-      table.timestamp('update_time', { useTz: true });
+      table.timestamp('update_time');
     })
     .raw(
       `CREATE TRIGGER trigger_challenge_proposal_comments_genid BEFORE INSERT ON challenge_proposal_comments
@@ -66,15 +68,15 @@ exports.up = function (knex) {
     })
     .createTable('posts', table => {
       table.text('id').primary();
-      table.text('challenge_id').notNullable().references('challenges.id');
       table.text('title').notNullable();
-      table.text('body').notNullable();
+      table.specificType('tags', 'text[]');
+      table.text('text').notNullable();
       table.uuid('written_by').notNullable().references('profiles.id');
       table
-        .timestamp('create_time', { useTz: true })
+        .timestamp('create_time')
         .notNullable()
-        .defaultTo('now()');
-      table.timestamp('update_time', { useTz: true });
+        .defaultTo(knex.fn.now());
+      table.timestamp('update_time');
     })
     .raw(
       `CREATE TRIGGER trigger_posts_genid BEFORE INSERT ON posts
@@ -92,10 +94,10 @@ exports.up = function (knex) {
       table.text('text').notNullable();
       table.uuid('written_by').notNullable().references('profiles.id');
       table
-        .timestamp('create_time', { useTz: true })
+        .timestamp('create_time')
         .notNullable()
-        .defaultTo('now()');
-      table.timestamp('update_time', { useTz: true });
+        .defaultTo(knex.fn.now());
+      table.timestamp('update_time');
     })
     .raw(
       `CREATE TRIGGER trigger_post_comments_genid BEFORE INSERT ON post_comments
@@ -156,8 +158,9 @@ BEGIN
 
     -- Base64 encoding contains 2 URL unsafe characters by default.
     -- The URL-safe version has these replacements.
-    key := replace(key, '/', '_'); -- url safe replacement
-    key := replace(key, '+', '-'); -- url safe replacement
+    key := replace(key, '/', 's'); -- url safe replacement
+    key := replace(key, '+', 'p'); -- url safe replacement
+    key := replace(key, '=', 'e'); -- url safe replacement
 
     -- Concat the generated key (safely quoted) with the generated query
     -- and run it.

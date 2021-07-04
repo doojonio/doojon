@@ -1,6 +1,8 @@
+@use '../style-vars.scss' as vars;
+
 :host {
     display: block;
-    width: 600px;
+    width: vars.$challenge-container-width;
     height: 100%;
 }
 
@@ -32,14 +34,9 @@ mat-card-header {
 }
 
 .title {
-    font-size: 24px;
+    font-size: vars.$challenge-title-size
 }
 
 .description {
-    font-size: 16px;
+    font-size: vars.$challenge-description-size
 }
-
-.spacer {
-    flex: 1 1;
-}
-

@@ -7,7 +7,7 @@ export default class ChallengesDataservice extends Dataservice {
   }
 
   checkBeforeCreate(state) {
-    if (state.getUserInfo().status != ID_STATUS_AUTHORIZED) {
+    if (state.getUserInfo().status !== ID_STATUS_AUTHORIZED) {
       throw new Error('user is not authorized')
     }
   }
