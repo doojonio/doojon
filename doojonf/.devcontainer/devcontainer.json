@@ -13,7 +13,8 @@
 	"extensions": [
 		"dbaeumer.vscode-eslint",
 		"esbenp.prettier-vscode",
-		"angular.ng-template"
+		"angular.ng-template",
+		"mrmlnc.vscode-scss"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

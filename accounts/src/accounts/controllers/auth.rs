@@ -1,11 +1,11 @@
 use actix_web::{
-  cookie::Cookie,
   web::{Data, Json},
   HttpMessage, HttpRequest, HttpResponse,
 };
 use serde::Deserialize;
 
 use super::ControllerError;
+use crate::helpers;
 use crate::App;
 
 pub async fn auth(
@@ -20,19 +20,7 @@ pub async fn auth(
 
   let cfg = &app.config.web.auth_cookie;
 
-  let now = time::OffsetDateTime::now_utc();
-  let expires_after = time::Duration::days(cfg.expires_after_days);
-  let expires = now + expires_after;
-
-  let sid = session.id.to_simple().to_string().to_uppercase();
-
-  let auth_cookie = Cookie::build(&cfg.name, sid)
-    .domain(&cfg.domain)
-    .secure(cfg.secure)
-    .path("/")
-    .http_only(cfg.http_only)
-    .expires(expires)
-    .finish();
+  let auth_cookie = helpers::build_auth_cookie(cfg, &session);
 
   Ok(HttpResponse::Ok().cookie(auth_cookie).finish())
 }

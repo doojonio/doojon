@@ -1,12 +1,23 @@
 export const schema = {
-  'challenge_proposal_comment_likes': {
-    'comment_id': {
+  'challenge_comments': {
+    'challenge_id': {
+      'type': 'string',
+    },
+    'create_time': {
+      'type': 'timestamp',
+    },
+    'id': {
       'type': 'string',
       'is_primary_key': true,
     },
-    'liked_by': {
+    'parent_id': {
       'type': 'string',
-      'is_primary_key': true,
+    },
+    'text': {
+      'type': 'string',
+    },
+    'update_time': {
+      'type': 'timestamp',
     },
   },
   'challenge_proposal_comments': {
@@ -16,9 +27,6 @@ export const schema = {
     'id': {
       'type': 'string',
       'is_primary_key': true,
-    },
-    'parent_comment_id': {
-      'type': 'string',
     },
     'proposal_id': {
       'type': 'string',
@@ -31,16 +39,6 @@ export const schema = {
     },
     'written_by': {
       'type': 'string',
-    },
-  },
-  'challenge_proposal_likes': {
-    'liked_by': {
-      'type': 'string',
-      'is_primary_key': true,
-    },
-    'proposal_id': {
-      'type': 'string',
-      'is_primary_key': true,
     },
   },
   'challenge_proposals': {
@@ -154,6 +152,16 @@ export const schema = {
     },
     'written_by': {
       'type': 'string',
+    },
+  },
+  'profile_favorite_challenges': {
+    'challenge_id': {
+      'type': 'string',
+      'is_primary_key': true,
+    },
+    'profile_id': {
+      'type': 'string',
+      'is_primary_key': true,
     },
   },
   'profiles': {

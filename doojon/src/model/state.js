@@ -1,16 +1,7 @@
+export const ID_STATUS_UNAUTHORIZED = 'UNAUTHORIZED';
+export const ID_STATUS_NOPROFILE = 'NOPROFILE';
+export const ID_STATUS_AUTHORIZED = 'AUTHORIZED';
+
 export class State {
-  _userinfo = undefined;
-
-  constructor(log) {
-    this._log = log
-  }
-
-  getUserInfo() {
-    return this._userinfo;
-  }
-
-  setUserInfo(uinfo) {
-    this._log.trace(`Setting user info (status: ${uinfo.status})`);
-    this._userinfo = uinfo;
-  }
+  uinfo = undefined;
 }

@@ -1,8 +1,5 @@
 import { Service } from '../service.js';
-
-export const ID_STATUS_UNAUTHORIZED = 'UNAUTHORIZED';
-export const ID_STATUS_NOPROFILE = 'NOPROFILE';
-export const ID_STATUS_AUTHORIZED = 'AUTHORIZED';
+import { ID_STATUS_NOPROFILE, ID_STATUS_UNAUTHORIZED, ID_STATUS_AUTHORIZED } from '../state.js';
 
 export default class IdService extends Service {
   static get deps() {

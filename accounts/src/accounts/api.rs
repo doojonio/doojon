@@ -9,6 +9,10 @@ pub fn api(cfg: &mut ServiceConfig) {
         .route(get().to(accounts::read))
         .route(post().to(accounts::create)),
     )
+    .route(
+      "/api/1/accounts/is_email_available",
+      get().to(accounts::is_email_available),
+    )
     .route("/api/1/auth", post().to(auth::auth))
     .route("/api/1/logout", delete().to(auth::logout))
     .route(

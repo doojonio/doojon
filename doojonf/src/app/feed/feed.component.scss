@@ -1,0 +1,21 @@
+:host {
+    height: 100%;
+    display: grid;
+    grid-template-columns: auto 800px auto;
+    grid-template-rows: 100%;
+    grid-template-areas: '. feed .';
+}
+
+.feed-container {
+    grid-area: feed;
+}
+
+.feed-write-post-container {
+    padding: 10px;
+
+    textarea {
+        width: 100%;
+        outline: none;
+        border: none;
+    }
+}

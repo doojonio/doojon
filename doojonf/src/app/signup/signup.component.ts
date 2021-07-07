@@ -3,10 +3,17 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { AccountsService, CreatableAccount } from '../user-services/accounts.service';
-import { AuthService } from '../user-services/auth.service';
+import {
+  AccountsService,
+  CreatableAccount,
+} from '../user-services/accounts.service';
 import { IdService, IdStatus } from '../user-services/id.service';
-import { CreatableProfile, ProfilesService } from '../user-services/profiles.service';
+import {
+  CreatableProfile,
+  ProfilesService,
+} from '../user-services/profiles.service';
+import { UniqueEmailValidator } from './unique-email-validator';
+import { UniqueUsernameValidator } from './unique-username-validator';
 
 @Component({
   selector: 'app-signup',
@@ -15,11 +22,38 @@ import { CreatableProfile, ProfilesService } from '../user-services/profiles.ser
 })
 export class SignupComponent implements OnInit, OnDestroy {
   accountForm = this._fb.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', Validators.required],
+    email: [
+      '',
+      {
+        updateOn: 'blur',
+        validators: [
+          Validators.required,
+          Validators.email,
+          Validators.minLength(6),
+        ],
+        asyncValidators: [this._emailUniqueValidator],
+      },
+    ],
+    password: [
+      '',
+      [Validators.required, Validators.minLength(6), Validators.maxLength(40)],
+    ],
   });
   doojonForm = this._fb.group({
-    username: ['', [Validators.required]],
+    username: [
+      '',
+      {
+        updateOn: 'blur',
+        validators: [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(18),
+        ],
+        asyncValidators: [
+          this._usernameUniqueValidator,
+        ]
+      },
+    ],
   });
 
   creatingIsInProcess: Boolean = false;
@@ -30,12 +64,13 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   constructor(
     private _accounts: AccountsService,
-    private _auth: AuthService,
     private _profiles: ProfilesService,
     private _fb: FormBuilder,
     private _router: Router,
     private _id: IdService,
-    private _snackbar: MatSnackBar
+    private _snackbar: MatSnackBar,
+    private _emailUniqueValidator: UniqueEmailValidator,
+    private _usernameUniqueValidator: UniqueUsernameValidator,
   ) {}
 
   ngOnInit(): void {
@@ -74,15 +109,11 @@ export class SignupComponent implements OnInit, OnDestroy {
 
     this.creatingIsInProcess = true;
 
-    this._accounts.createAccount(account).subscribe(_ => {
-      this._auth
-        .authWithPassword(account.email, account.password)
-        .subscribe(_ => {
-          this._profiles.createProfile(profile).subscribe(ids => {
-            this._id.getUserInfo({ forceRefresh: true });
-          }, this.onError)
-        }, this.onError)
-    }, this.onError);
+    this._accounts.createAccount(account, { authorize: true }).subscribe(_ => {
+      this._profiles.createProfile(profile).subscribe(ids => {
+        this._id.getUserInfo({ forceRefresh: true });
+      }, this.onError.bind(this));
+    }, this.onError.bind(this));
   }
 
   finishWithoutAccount() {

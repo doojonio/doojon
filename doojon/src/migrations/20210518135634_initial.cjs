@@ -26,6 +26,23 @@ exports.up = function (knex) {
     .raw(
       `CREATE TRIGGER trigger_challenges_genid BEFORE INSERT ON challenges FOR EACH ROW EXECUTE PROCEDURE unique_short_id();`
     )
+    .createTable('profile_favorite_challenges', table => {
+      table.uuid('profile_id').notNullable().references('profiles.id');
+      table.text('challenge_id').notNullable().references('challenges.id');
+      table.primary(['profile_id', 'challenge_id']);
+    })
+    .createTable('challenge_comments', table => {
+      table.text('id').primary();
+      table.text('challenge_id').notNullable().references('challenges.id');
+      table.text('parent_id').references('challenge_comments.id');
+      table.text('text').notNullable();
+      table.timestamp('create_time').notNullable().defaultTo(knex.fn.now());
+      table.timestamp('update_time');
+    })
+    .raw(
+      `CREATE TRIGGER trigger_challenge_comments_genid BEFORE INSERT ON challenge_comments
+      FOR EACH ROW EXECUTE PROCEDURE unique_short_id()`
+    )
     .createTable('challenge_proposals', table => {
       table.text('id').primary();
       table.text('challenge_id').references('challenges.id');
@@ -35,20 +52,12 @@ exports.up = function (knex) {
       `CREATE TRIGGER trigger_challenge_proposals_genid BEFORE INSERT ON challenge_proposals
       FOR EACH ROW EXECUTE PROCEDURE unique_short_id();`
     )
-    .createTable('challenge_proposal_likes', table => {
-      table.text('proposal_id').references('challenge_proposals.id');
-      table.uuid('liked_by').references('profiles.id');
-      table.primary(['proposal_id', 'liked_by']);
-    })
     .createTable('challenge_proposal_comments', table => {
       table.text('id').primary();
       table
         .text('proposal_id')
         .references('challenge_proposals.id')
         .notNullable();
-      table
-        .text('parent_comment_id')
-        .references('challenge_proposal_comments.id');
       table.text('text').notNullable();
       table.uuid('written_by').references('profiles.id').notNullable();
       table
@@ -61,11 +70,6 @@ exports.up = function (knex) {
       `CREATE TRIGGER trigger_challenge_proposal_comments_genid BEFORE INSERT ON challenge_proposal_comments
       FOR EACH ROW EXECUTE PROCEDURE unique_short_id()`
     )
-    .createTable('challenge_proposal_comment_likes', table => {
-      table.text('comment_id').references('challenge_proposal_comments.id');
-      table.uuid('liked_by').references('profiles.id');
-      table.primary(['comment_id', 'liked_by'])
-    })
     .createTable('posts', table => {
       table.text('id').primary();
       table.text('title').notNullable();
@@ -123,10 +127,10 @@ exports.down = function (knex) {
     .dropTableIfExists('post_comments')
     .dropTableIfExists('post_likes')
     .dropTableIfExists('posts')
-    .dropTableIfExists('challenge_proposal_comment_likes')
     .dropTableIfExists('challenge_proposal_comments')
-    .dropTableIfExists('challenge_proposal_likes')
     .dropTableIfExists('challenge_proposals')
+    .dropTableIfExists('challenge_comments')
+    .dropTableIfExists('profile_favorite_challenges')
     .dropTableIfExists('challenges')
     .dropTableIfExists('profiles');
 };

@@ -2,7 +2,8 @@ export default async function routesStartup(app) {
   const api = app.any('/api/1/');
 
   api.get('uinfo').to('id#getUserInfo');
-  api.get('/resource/challenges/linked').to('challenges#getChallengeWithLinkedInformation');
+  api.get('/resource/challenges/common').to('challenges#getChallengeCommonInfo');
+  api.get('/resource/profiles/is_username_available').to('profiles#isUsernameAvailable');
 
   _resourceRoutes(app, api);
 }

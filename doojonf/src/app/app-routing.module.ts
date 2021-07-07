@@ -11,22 +11,12 @@ import { SignupComponent } from './signup/signup.component';
 const routes: Routes = [
   {
     path: '',
-    component: StaticSidebarComponent,
+    component: MovingSidebarComponent,
     children: [
       {
         path: '',
         component: FeedComponent,
       },
-      {
-        path: 'new',
-        component: NewPersonalChallengeComponent,
-      },
-    ]
-  },
-  {
-    path: '',
-    component: MovingSidebarComponent,
-    children: [
       {
         path: 'login',
         component: LoginComponent,

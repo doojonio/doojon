@@ -29,6 +29,8 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import { StaticSidebarComponent } from './layouts/static-sidebar/static-sidebar.component';
 import { MovingSidebarComponent } from './layouts/moving-sidebar/moving-sidebar.component';
 import { ShowComponent } from './show/show.component';
+import { MatTabsModule } from '@angular/material/tabs';
+import { PostEditorComponent } from './post-editor/post-editor.component';
 
 
 @NgModule({
@@ -44,6 +46,7 @@ import { ShowComponent } from './show/show.component';
     StaticSidebarComponent,
     MovingSidebarComponent,
     ShowComponent,
+    PostEditorComponent,
   ],
   imports: [
     BrowserModule,
@@ -63,6 +66,7 @@ import { ShowComponent } from './show/show.component';
     MatSidenavModule,
     MatListModule,
     MatSlideToggleModule,
+    MatTabsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

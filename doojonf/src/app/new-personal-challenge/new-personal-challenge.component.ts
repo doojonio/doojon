@@ -18,7 +18,7 @@ export class NewPersonalChallengeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._uinfoSubs = this._id.getUserInfo().subscribe(uinfo => {
-      if (uinfo?.status !== IdStatus.AUTHORIZED) {
+      if (uinfo !== undefined && uinfo.status !== IdStatus.AUTHORIZED) {
         this._router.navigate(['/login'])
       }
     });

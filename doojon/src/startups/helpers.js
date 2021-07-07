@@ -1,4 +1,4 @@
-import { State } from "../model/state.js";
+import { State } from '../model/state.js';
 
 export default async function addHelpers(app) {
   app.addHelper('getState', _stateFromCtxHelper);
@@ -11,7 +11,7 @@ async function _stateFromCtxHelper(ctx) {
   let authCookieName = ctx.app.config.web.authCookie.name;
   const session = ctx.req.getCookie(authCookieName);
 
-  state.setUserInfo(await idService.collectUserInformationBySession(session))
+  state.uinfo = await idService.collectUserInformationBySession(session);
 
   return state;
 }

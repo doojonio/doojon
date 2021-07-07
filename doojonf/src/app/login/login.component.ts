@@ -30,6 +30,8 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._uinfoSubs = this._id.getUserInfo().subscribe(uinfo => {
+      console.log(uinfo);
+
       if (uinfo?.status === IdStatus.AUTHORIZED) {
         return this._router.navigate([uinfo.profile?.username]);
       } else if (uinfo?.status === IdStatus.NOPROFILE) {
@@ -57,6 +59,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.isLoggining = true;
     this._auth.authWithPassword(form.email, form.password).subscribe(
       _ => {
+        this.isLoggining = false;
         this._id.getUserInfo({ forceRefresh: true });
       },
       err => {

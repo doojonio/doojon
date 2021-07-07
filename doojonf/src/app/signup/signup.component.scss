@@ -37,10 +37,8 @@
     flex-flow: column nowrap;
     justify-content: flex-start;
     align-items: flex-start;
-}
 
-.required-fields {
     mat-form-field {
-        margin-right: 1.34375em;
+        margin-bottom: 10px;
     }
 }

@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ConfigService, DoojonApiConfig } from '../config.service';
-import { ReadableProifle } from '../user-services/profiles.service';
 
 @Injectable({
   providedIn: 'root'
@@ -30,15 +29,18 @@ export class ChallengesService {
     );
   }
 
-  readChallengeWithLinkedInformation(id: string): Observable<ChallengeWithLinkedInformation> {
-    const url = this._api.endpoint + '/resource/challenges/linked';
-    return this._http.get<ChallengeWithLinkedInformation>(url, {params: {id: id}});
+  getChallengeCommonInfo(id: string): Observable<ChallengeCommonInformation> {
+    const url = this._api.endpoint + '/resource/challenges/common';
+    return this._http.get<ChallengeCommonInformation>(url, {params: {id: id}});
   }
 }
 
-export interface ChallengeWithLinkedInformation {
-  challenge: ReadableChallenge,
-  proposed_by: ReadableProifle,
+export interface ChallengeCommonInformation {
+  id: string,
+  title: string,
+  description: string,
+  proposed_by_username: string,
+  in_favorite?: boolean,
 }
 
 export interface ReadableChallenge {
