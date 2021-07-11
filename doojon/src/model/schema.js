@@ -138,6 +138,9 @@ export const schema = {
       'type': 'string',
       'is_primary_key': true,
     },
+    'is_hidden': {
+      'type': 'boolean',
+    },
     'tags': {
       'type': 'ARRAY',
     },

@@ -72,9 +72,10 @@ exports.up = function (knex) {
     )
     .createTable('posts', table => {
       table.text('id').primary();
-      table.text('title').notNullable();
+      table.text('title');
       table.specificType('tags', 'text[]');
       table.text('text').notNullable();
+      table.bool('is_hidden').notNullable().defaultTo('false');
       table.uuid('written_by').notNullable().references('profiles.id');
       table
         .timestamp('create_time')

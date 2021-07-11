@@ -1,5 +1,16 @@
-<textarea
-    cdkTextareaAutosize
-    cdkAutosizeMinRows="3"
-    placeholder="How is your challenges?"
-></textarea>
+<form [formGroup]="form">
+  <mat-form-field appearance="standard" floatLabel="never">
+    <textarea
+      formControlName="text"
+      matInput
+      cdkTextareaAutosize
+      cdkAutosizeMinRows="3"
+      placeholder="How is your challenges?"
+    ></textarea>
+  </mat-form-field>
+  <div class="actions">
+    <mat-slide-toggle formControlName="is_hidden">Hide</mat-slide-toggle>
+    <span spacer></span>
+    <button (click)="post()" [disabled]="!canPost()" mat-raised-button color="primary">Post</button>
+  </div>
+</form>

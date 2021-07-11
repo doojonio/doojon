@@ -1,10 +1,12 @@
 :host {
     display: block;
-    padding: 10px;
+    padding: 0 10px;
 }
 
-textarea {
+mat-form-field {
     width: 100%;
-    outline: none;
-    border: none;
+}
+
+.actions {
+    display: flex;
 }

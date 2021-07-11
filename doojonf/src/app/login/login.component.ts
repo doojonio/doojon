@@ -30,8 +30,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this._uinfoSubs = this._id.getUserInfo().subscribe(uinfo => {
-      console.log(uinfo);
-
       if (uinfo?.status === IdStatus.AUTHORIZED) {
         return this._router.navigate([uinfo.profile?.username]);
       } else if (uinfo?.status === IdStatus.NOPROFILE) {

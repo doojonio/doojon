@@ -1,6 +1,5 @@
 <div class="feed-container">
-  <div class="feed-post-creator">
+  <div *ngIf="(uinfo$ | async)?.status === 'AUTHORIZED'" class="feed-post-creator">
     <app-post-editor></app-post-editor>
-    <mat-divider></mat-divider>
   </div>
 </div>
