@@ -1,7 +1,7 @@
   <button mat-icon-button (click)="toggleSidenav()">
     <mat-icon>menu</mat-icon>
   </button>
-  <a mat-button routerLink="/" class="name">Doojon</a>
+  <a mat-button routerLink="/" class="name"><mat-icon svgIcon="logo" style="margin-right: 10px"></mat-icon>Doojon</a>
   <span spacer></span>
   <p class="profile">
     <ng-template [ngIf]="userStatus && userStatus != 'AUTHORIZED'">

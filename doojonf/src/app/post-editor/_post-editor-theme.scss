@@ -3,15 +3,24 @@
 
 @mixin color($conf) {
     $fg: map.get($conf, foreground);
+    $bg: map.get($conf, background);
 
-    .feed-container {
-        border-left: 1px solid mat.get-color-from-palette($fg, divider);
-        border-right: 1px solid mat.get-color-from-palette($fg, divider);
+    app-post-editor {
+        textarea {
+            background-color: mat.get-color-from-palette($bg, background);
+            color: mat.get-color-from-palette($fg, text);
+        }
     }
 }
 
 @mixin typography($conf) {
 
+    app-post-editor {
+        textarea {
+            font-family: mat.font-family($conf);
+            font-size: mat.font-size($conf, 'body-1');
+        }
+    }
 }
 
 @mixin theme($theme) {

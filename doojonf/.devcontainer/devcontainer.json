@@ -14,7 +14,8 @@
 		"dbaeumer.vscode-eslint",
 		"esbenp.prettier-vscode",
 		"angular.ng-template",
-		"mrmlnc.vscode-scss"
+		"mrmlnc.vscode-scss",
+		"jock.svg"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
