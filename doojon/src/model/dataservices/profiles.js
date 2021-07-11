@@ -6,6 +6,12 @@ export default class ProfilesDataservice extends Dataservice {
     return 'profiles';
   }
 
+  static get _customdeps() {
+    return {
+      _conf: '/conf',
+    }
+  }
+
   async checkBeforeCreate(state, profiles) {
     if (!Array.isArray(profiles)) profiles = [profiles];
 
@@ -14,6 +20,10 @@ export default class ProfilesDataservice extends Dataservice {
 
     if (profiles.length !== 1)
       throw new Error('number of profiles to create is not 1');
+
+    if (!this.isUsernameAvailable(profiles[0].username)) {
+      throw new Error('username is not available');
+    }
   }
 
   async _preCreateModify(state, profiles) {
@@ -22,6 +32,9 @@ export default class ProfilesDataservice extends Dataservice {
   }
 
   async isUsernameAvailable(username) {
+    if (this._conf.profiles.forbiddenUsernames.includes(username))
+      return false;
+
     const result = await this._db('profiles').select(1).where({ username });
 
     return result.length === 0;

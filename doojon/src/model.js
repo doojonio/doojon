@@ -6,7 +6,10 @@ import { schema } from './model/schema.js';
 export class Model {
   constructor(deps) {
     this._container = new Container();
+
     this._conf = deps.conf;
+    this._container.addService('conf', { block: () => deps.conf });
+
     this._log = deps.log;
   }
 
@@ -44,7 +47,7 @@ export class Model {
 
     for await (const courierfile of couriersdir.list()) {
       const couriername = courierfile.basename('.js');
-      const courierclass = ( await import(courierfile.toString()) ).default;
+      const courierclass = (await import(courierfile.toString())).default;
       const courierconf = this._conf.couriers[couriername];
 
       if (!courierconf)
@@ -67,7 +70,7 @@ export class Model {
     h.addService('db', { block: dbBlock, isSingletone: true });
 
     const log = this._log;
-    h.addService('log', { block: () => log, isSingletone: true })
+    h.addService('log', { block: () => log, isSingletone: true });
 
     const dbcont = h.addContainer('db');
     dbcont.addService('schema', { block: () => schema, isSingletone: true });
@@ -79,7 +82,7 @@ export class Model {
 
     for await (const dsfile of dsdir.list()) {
       const dsname = dsfile.basename('.js');
-      const dsclass = ( await import(dsfile.toString()) ).default;
+      const dsclass = (await import(dsfile.toString())).default;
       ds.addService(dsname, { isSingletone: true, class: dsclass });
     }
   }
@@ -90,7 +93,7 @@ export class Model {
 
     for await (const serviceFile of servicesDir.list()) {
       const serviceName = serviceFile.basename('.js');
-      const serviceClass = ( await import(serviceFile.toString()) ).default;
+      const serviceClass = (await import(serviceFile.toString())).default;
       s.addService(serviceName, { isSingletone: true, class: serviceClass });
     }
   }

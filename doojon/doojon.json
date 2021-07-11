@@ -23,5 +23,16 @@
       "testUserEmail": "doojontestuser@doojon.com",
       "testUserPassword": "worldofwarcraft"
     }
+  },
+  "profiles": {
+    "forbiddenUsernames": [
+      "api",
+      "show",
+      "login",
+      "signup",
+      "signin",
+      "settings",
+      "explore"
+    ]
   }
 }
