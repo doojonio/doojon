@@ -23,7 +23,7 @@
     .feed-write-post-container {
         textarea {
             font-family: mat.font-family($conf);
-            font-size: mat.font-size($conf, 'title');
+            font-size: mat.font-size($conf, 'body-1');
         }
     }
 }
