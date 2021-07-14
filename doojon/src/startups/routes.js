@@ -4,6 +4,7 @@ export default async function routesStartup(app) {
   api.get('uinfo').to('id#getUserInfo');
   api.get('/resource/challenges/common').to('challenges#getChallengeCommonInfo');
   api.get('/resource/profiles/is_username_available').to('profiles#isUsernameAvailable');
+  api.get('/resource/events/following').to('events#getEventsFromFollowing');
 
   _resourceRoutes(app, api);
 }

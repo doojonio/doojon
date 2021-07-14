@@ -8,18 +8,29 @@ const SUBCOMMANDS = {
 
 const SCHEMA_TEMPLATE = `
   export const schema = {
-  <% for (const table of tables) { -%>
-    '<%= table['table_name'] %>': {
-    <% for (const column of table['columns']) { -%>
-      '<%=column['column_name']%>': {
-        'type': '<%=column['data_type']%>',
-        <% if (column['is_primary_key']) { -%>
-        'is_primary_key': true,
-        <% } -%>
+    'tables': {
+    <% for (const table of schema.tables) { -%>
+      '<%= table['table_name'] %>': {
+      <% for (const column of table['columns']) { -%>
+        '<%=column['column_name']%>': {
+          'type': '<%=column['data_type']%>',
+          <% if (column['is_primary_key']) { -%>
+          'is_primary_key': true,
+          <% } -%>
+        },
+      <% } %>
       },
     <% } %>
     },
-  <% } %>
+    'enums': {
+      <% for (const enumName of Object.keys(schema.enums)) { -%>
+        '<%= enumName %>': [
+        <% for (const el of schema.enums[enumName]) { -%>
+          '<%=el%>',
+        <% } -%>
+        ],
+      <% } %>
+    }
   };
 `;
 
@@ -48,10 +59,11 @@ export default async function run(app, args) {
 
 async function cliGenerate(app) {
   const db = app.model._container.resolve('/h/db');
-  const tables = await _getTables(db);
+  const schemaDef = await _getSchema(db);
+  const tables = schemaDef.tables;
   tables.sort((a, b) => (a['table_name'] > b['table_name'] ? 1 : -1));
 
-  let schema = ejs.render(SCHEMA_TEMPLATE, { tables });
+  let schema = ejs.render(SCHEMA_TEMPLATE, { schema: schemaDef });
 
   await prettier
     .resolveConfig(app.home.child('.prettierrc.json').toString())
@@ -115,13 +127,15 @@ function _translate_data_type(type) {
   throw new Error(`Unable to translate type ${type}`);
 }
 
-async function _getTables(db) {
+async function _getSchema(db) {
   let tables = await db
     .select('table_name')
     .from('information_schema.tables')
     .where({ 'table_schema': 'public' });
 
   tables = tables.filter(t => !NOT_DS_TABLES.includes(t['table_name']));
+
+  const enums = {};
 
   for (let table of tables) {
     const tablename = table['table_name'];
@@ -132,7 +146,19 @@ async function _getTables(db) {
       .where({ 'table_name': tablename, 'table_schema': 'public' });
 
     for (const col of columns) {
-      col['data_type'] = _translate_data_type(col['data_type']);
+      if (col['data_type'] !== 'USER-DEFINED' ) {
+        col['data_type'] = _translate_data_type(col['data_type']);
+        continue;
+      }
+
+      const customEnum = col['udt_name'];
+      col['data_type'] = customEnum;
+
+      if (enums[customEnum])
+        continue;
+
+      const customEnumDefinition = await db.select(db.raw(`unnest(enum_range(NULL::${customEnum}))`));
+      enums[customEnum] = customEnumDefinition.map(e => e.unnest);
     }
 
     const primaryKeys = await _getPrimaryKeys(db, tablename);
@@ -147,7 +173,7 @@ async function _getTables(db) {
     table['columns'] = columns;
   }
 
-  return tables;
+  return { tables, enums };
 }
 
 async function _getPrimaryKeys(db, table) {

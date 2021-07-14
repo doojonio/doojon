@@ -1,3 +1,5 @@
+import { NotAuthorizedError } from '../model/errors.js';
+
 export default class ResourceController {
   async create(ctx) {
     const ds = ctx.app.model.getDataservice(ctx.stash.dsname);
@@ -9,6 +11,9 @@ export default class ResourceController {
       await ds.checkBeforeCreate(state, objects)
     }
     catch (e) {
+      if (e instanceof NotAuthorizedError)
+        return ctx.res.status(401).send(`User is not authorized`);
+
       ctx.app.log.debug(`Error during check for creating: ${e}`)
       return ctx.res.status(400).send(`check before creating has not passed: ${e}`);
     }
@@ -28,6 +33,9 @@ export default class ResourceController {
       await ds.checkBeforeRead(state, searchquery)
     }
     catch (e) {
+      if (e instanceof NotAuthorizedError)
+        return ctx.res.status(401).send(`User is not authorized`);
+
       ctx.app.log.debug(`Error during check for reading: ${e}`)
       return ctx.res.status(400).send(`check before read has not passed ${e}`);
     }
@@ -49,6 +57,9 @@ export default class ResourceController {
       await ds.checkBeforeUpdate(state, filter, newFields)
     }
     catch (e) {
+      if (e instanceof NotAuthorizedError)
+        return ctx.res.status(401).send(`User is not authorized`);
+
       ctx.app.log.debug(`Error during check for updating: ${e}`)
       return ctx.res.status(400).send(`check before update has not passed ${e}`);
     }
@@ -70,6 +81,9 @@ export default class ResourceController {
       await ds.checkBeforeDelete(state, filter)
     }
     catch (e) {
+      if (e instanceof NotAuthorizedError)
+        return ctx.res.status(401).send(`User is not authorized`);
+
       ctx.app.log.debug(`Error during check for deleting: ${e}`)
       return ctx.res.status(400).send(`check before delete has not passed: ${e}`);
     }

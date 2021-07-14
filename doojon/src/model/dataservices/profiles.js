@@ -1,4 +1,5 @@
 import { Dataservice } from '../dataservice.js';
+import { NotAuthorizedError } from '../errors.js';
 import { ID_STATUS_NOPROFILE } from '../state.js';
 
 export default class ProfilesDataservice extends Dataservice {
@@ -9,6 +10,7 @@ export default class ProfilesDataservice extends Dataservice {
   static get _customdeps() {
     return {
       _conf: '/conf',
+      _events: '/ds/events',
     }
   }
 
@@ -16,7 +18,7 @@ export default class ProfilesDataservice extends Dataservice {
     if (!Array.isArray(profiles)) profiles = [profiles];
 
     if (state.uinfo.status != ID_STATUS_NOPROFILE)
-      throw new Error('User is not authorized or already has an profile');
+      throw new NotAuthorizedError();
 
     if (profiles.length !== 1)
       throw new Error('number of profiles to create is not 1');
@@ -26,9 +28,12 @@ export default class ProfilesDataservice extends Dataservice {
     }
   }
 
-  async _preCreateModify(state, profiles) {
+  async _preCreate(state, profiles) {
     const account = state.uinfo.account;
     profiles[0].id = account.id;
+  }
+
+  async checkBeforeRead(state, where) {
   }
 
   async isUsernameAvailable(username) {

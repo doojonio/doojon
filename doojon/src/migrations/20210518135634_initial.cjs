@@ -1,12 +1,17 @@
-exports.up = function (knex) {
-  return knex.schema
+exports.up = function (db) {
+  return db.schema
     .raw('create extension if not exists "uuid-ossp";')
     .raw('create extension if not exists "pgcrypto";')
     .raw(shortIdTrigger)
     .createTable('profiles', table => {
       table.uuid('id').primary();
       table.text('username').unique().notNullable();
-      table.timestamp('create_time').defaultTo(knex.fn.now()).notNullable();
+      table.timestamp('create_time').notNullable().defaultTo(db.fn.now());
+    })
+    .createTable('followers', table => {
+      table.uuid('follower').notNullable().references('profiles.id');
+      table.uuid('profile').notNullable().references('profiles.id');
+      table.primary(['follower', 'profile']);
     })
     .createTable('challenges', table => {
       table.text('id').primary();
@@ -17,10 +22,6 @@ exports.up = function (knex) {
       table.uuid('proposed_by').notNullable().references('profiles.id');
       table.bool('is_public').notNullable().defaultTo('false');
       table.bool('is_hidden').notNullable().defaultTo('false');
-      table
-        .timestamp('create_time')
-        .notNullable()
-        .defaultTo(knex.fn.now());
       table.timestamp('update_time');
     })
     .raw(
@@ -36,7 +37,6 @@ exports.up = function (knex) {
       table.text('challenge_id').notNullable().references('challenges.id');
       table.text('parent_id').references('challenge_comments.id');
       table.text('text').notNullable();
-      table.timestamp('create_time').notNullable().defaultTo(knex.fn.now());
       table.timestamp('update_time');
     })
     .raw(
@@ -46,7 +46,6 @@ exports.up = function (knex) {
     .createTable('challenge_proposals', table => {
       table.text('id').primary();
       table.text('challenge_id').references('challenges.id');
-      table.timestamp('create_time').notNullable().defaultTo(knex.fn.now());
     })
     .raw(
       `CREATE TRIGGER trigger_challenge_proposals_genid BEFORE INSERT ON challenge_proposals
@@ -60,10 +59,6 @@ exports.up = function (knex) {
         .notNullable();
       table.text('text').notNullable();
       table.uuid('written_by').references('profiles.id').notNullable();
-      table
-        .timestamp('create_time')
-        .defaultTo(knex.fn.now())
-        .notNullable();
       table.timestamp('update_time');
     })
     .raw(
@@ -77,46 +72,49 @@ exports.up = function (knex) {
       table.text('text').notNullable();
       table.bool('is_hidden').notNullable().defaultTo('false');
       table.uuid('written_by').notNullable().references('profiles.id');
-      table
-        .timestamp('create_time')
-        .notNullable()
-        .defaultTo(knex.fn.now());
       table.timestamp('update_time');
     })
     .raw(
       `CREATE TRIGGER trigger_posts_genid BEFORE INSERT ON posts
       FOR EACH ROW EXECUTE PROCEDURE unique_short_id()`
     )
-    .createTable('post_likes', table => {
-      table.text('post_id').notNullable().references('posts.id');
-      table.uuid('liked_by').notNullable().references('profiles.id');
-      table.primary(['post_id', 'liked_by']);
-    })
     .createTable('post_comments', table => {
       table.text('id').primary();
       table.text('post_id').notNullable().references('posts.id');
       table.text('parent_comment_id').references('post_comments.id');
       table.text('text').notNullable();
       table.uuid('written_by').notNullable().references('profiles.id');
-      table
-        .timestamp('create_time')
-        .notNullable()
-        .defaultTo(knex.fn.now());
       table.timestamp('update_time');
     })
     .raw(
       `CREATE TRIGGER trigger_post_comments_genid BEFORE INSERT ON post_comments
       FOR EACH ROW EXECUTE PROCEDURE unique_short_id()`
     )
-    .createTable('post_comment_likes', table => {
-      table.text('comment_id').notNullable().references('post_comments.id');
-      table.uuid('liked_by').notNullable().references('profiles.id');
-      table.primary(['comment_id', 'liked_by']);
+    .raw(
+      `CREATE TYPE event AS ENUM(
+        'following_started',
+        'challenge_created',
+        'challenge_commented',
+        'challenge_proposed',
+        'challenge_proposal_commented',
+        'post_created',
+        'post_liked',
+        'post_commented',
+        'post_comment_liked'
+      )`
+    )
+    .createTable('events', table => {
+      table.uuid('id').notNullable().primary().defaultTo(db.raw('uuid_generate_v4()'));
+      table.uuid('emitter').notNullable().references('profiles.id');
+      table.specificType('type', 'event').notNullable();
+      table.text('object').notNullable();
+      table.timestamp('when').notNullable().defaultTo(db.fn.now())
+      table.unique(['emitter', 'type', 'object']);
     });
 };
 
-exports.down = function (knex) {
-  return knex.schema
+exports.down = function (db) {
+  return db.schema
     .raw(`
       DROP TRIGGER IF EXISTS trigger_post_comments_genid ON post_comments;
       DROP TRIGGER IF EXISTS trigger_posts_genid ON posts;
@@ -124,15 +122,16 @@ exports.down = function (knex) {
       DROP TRIGGER IF EXISTS trigger_challenge_proposals_genid ON challenge_proposals;
       DROP TRIGGER IF EXISTS trigger_challenges_genid ON challenges;
     `)
-    .dropTableIfExists('post_comment_likes')
+    .dropTableIfExists('events')
+    .raw(`DROP TYPE IF EXISTS event`)
     .dropTableIfExists('post_comments')
-    .dropTableIfExists('post_likes')
     .dropTableIfExists('posts')
     .dropTableIfExists('challenge_proposal_comments')
     .dropTableIfExists('challenge_proposals')
     .dropTableIfExists('challenge_comments')
     .dropTableIfExists('profile_favorite_challenges')
     .dropTableIfExists('challenges')
+    .dropTableIfExists('followers')
     .dropTableIfExists('profiles');
 };
 

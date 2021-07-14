@@ -1,4 +1,5 @@
 import { Dataservice } from '../dataservice.js';
+import { NotAuthorizedError } from '../errors.js';
 import { ID_STATUS_AUTHORIZED } from '../state.js';
 
 export default class ChallengesDataservice extends Dataservice {
@@ -8,11 +9,11 @@ export default class ChallengesDataservice extends Dataservice {
 
   checkBeforeCreate(state) {
     if (state.uinfo.status !== ID_STATUS_AUTHORIZED) {
-      throw new Error('user is not authorized');
+      throw new NotAuthorizedError();
     }
   }
 
-  _preCreateModify(state, challenges) {
+  _preCreate(state, challenges) {
     for (const challenge of challenges) {
       challenge.proposed_by = state.uinfo.account.id;
     }

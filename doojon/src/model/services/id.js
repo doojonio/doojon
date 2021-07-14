@@ -1,5 +1,10 @@
 import { Service } from '../service.js';
-import { ID_STATUS_NOPROFILE, ID_STATUS_UNAUTHORIZED, ID_STATUS_AUTHORIZED } from '../state.js';
+import {
+  ID_STATUS_NOPROFILE,
+  ID_STATUS_UNAUTHORIZED,
+  ID_STATUS_AUTHORIZED,
+  ID_STATUS_SYSTEM,
+} from '../state.js';
 
 export default class IdService extends Service {
   static get deps() {
@@ -16,7 +21,10 @@ export default class IdService extends Service {
 
     if (!account) return { status: ID_STATUS_UNAUTHORIZED };
 
-    const profiles = await this._profiles.read({}, { id: account.id });
+    const profiles = await this._profiles.read(
+      { uinfo: { status: ID_STATUS_SYSTEM } },
+      { id: account.id }
+    );
     if (profiles.length === 0) return { account, status: ID_STATUS_NOPROFILE };
 
     return { account, profile: profiles[0], status: ID_STATUS_AUTHORIZED };

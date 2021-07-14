@@ -1,4 +1,5 @@
 import { Dataservice } from '../dataservice.js';
+import { NotAuthorizedError } from '../errors.js';
 import { ID_STATUS_AUTHORIZED } from '../state.js';
 
 export default class ProfileFavoriteChallengesDataservice extends Dataservice {
@@ -8,10 +9,10 @@ export default class ProfileFavoriteChallengesDataservice extends Dataservice {
 
   async checkBeforeCreate(state) {
     if (state.uinfo.status !== ID_STATUS_AUTHORIZED)
-      throw new Error('User is not authorized');
+      throw new NotAuthorizedError();
   }
 
-  async _preCreateModify(state, pairs) {
+  async _preCreate(state, pairs) {
     for (const pair of pairs) {
       pair.profile_id = state.uinfo.account.id;
     }

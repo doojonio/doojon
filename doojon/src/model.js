@@ -66,6 +66,7 @@ export class Model {
         client: 'pg',
         connection: conf.database,
         migrations: conf.migrations,
+        debug: this._log.level === 'trace',
       });
     h.addService('db', { block: dbBlock, isSingletone: true });
 
