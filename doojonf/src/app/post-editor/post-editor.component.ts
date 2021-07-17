@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CreatablePost, PostsService } from '../post-services/posts.service';
@@ -14,6 +14,8 @@ export class PostEditorComponent implements OnInit {
     is_hidden: [false, Validators.required],
   });
   postInProgress = false;
+  @Output()
+  postCreated = new EventEmitter();
 
   constructor(
     private _fb: FormBuilder,
@@ -42,6 +44,7 @@ export class PostEditorComponent implements OnInit {
       id => {
         this.postInProgress = false;
         this.resetForm();
+        this.postCreated.emit(id)
       },
       err => {
         this.postInProgress = false;

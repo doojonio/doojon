@@ -1,0 +1,17 @@
+:host {
+  display: block;
+  padding: 10px;
+}
+
+.post-container {
+  display: flex;
+  flex-flow: column nowrap;
+
+  .post-username {
+    font-weight: 50;
+  }
+
+  .post-body {
+    padding-left: 25px;
+  }
+}

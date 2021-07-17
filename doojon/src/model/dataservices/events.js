@@ -40,9 +40,10 @@ export default class EventsDataservice extends Dataservice {
 
     const events = this._db('followers')
       .rightJoin('events', 'followers.profile', '=', 'events.emitter')
+      .leftJoin('profiles', 'events.emitter', '=', 'profiles.id')
       .select({
         'id': 'events.id',
-        'user': 'events.emitter',
+        'user': 'profiles.username',
         'type': 'events.type',
         'object': 'events.object',
         'when': 'events.when',
@@ -56,7 +57,7 @@ export default class EventsDataservice extends Dataservice {
     if (beforeEvent !== undefined) {
       events.andWhere(
         'when',
-        '>',
+        '<',
         this._db('events').select('when').where('id', beforeEvent)
       );
     }
@@ -65,7 +66,7 @@ export default class EventsDataservice extends Dataservice {
     if (sinceEvent !== undefined) {
       events.andWhere(
         'when',
-        '<',
+        '>',
         this._db('events').select('when').where('id', sinceEvent)
       );
     }

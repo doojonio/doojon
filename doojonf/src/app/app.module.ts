@@ -31,6 +31,8 @@ import { MovingSidebarComponent } from './layouts/moving-sidebar/moving-sidebar.
 import { ShowComponent } from './show/show.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { PostEditorComponent } from './post-editor/post-editor.component';
+import { EventDirective } from './event-components/event.directive';
+import { PostCreatedComponent } from './event-components/post-created/post-created.component';
 
 
 @NgModule({
@@ -47,6 +49,8 @@ import { PostEditorComponent } from './post-editor/post-editor.component';
     MovingSidebarComponent,
     ShowComponent,
     PostEditorComponent,
+    EventDirective,
+    PostCreatedComponent,
   ],
   imports: [
     BrowserModule,

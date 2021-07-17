@@ -1,5 +1,9 @@
 <div class="feed-container">
   <div *ngIf="(uinfo$ | async)?.status === 'AUTHORIZED'" class="feed-post-creator">
-    <app-post-editor></app-post-editor>
+    <app-post-editor (postCreated)="updateEvents()"></app-post-editor>
+  </div>
+  <div>
+    <ng-template appEvent [event]="event" *ngFor="let event of events">
+    </ng-template>
   </div>
 </div>
