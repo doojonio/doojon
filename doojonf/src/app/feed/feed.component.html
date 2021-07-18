@@ -3,7 +3,10 @@
     <app-post-editor (postCreated)="updateEvents()"></app-post-editor>
   </div>
   <div>
-    <ng-template appEvent [event]="event" *ngFor="let event of events">
-    </ng-template>
+    <div *ngFor="let event of events">
+      <ng-template appEvent [event]="event">
+      </ng-template>
+      <mat-divider></mat-divider>
+    </div>
   </div>
 </div>

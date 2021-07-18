@@ -11,7 +11,7 @@ export default class ProfilesDataservice extends Dataservice {
     return {
       _conf: '/conf',
       _events: '/ds/events',
-    }
+    };
   }
 
   async checkBeforeCreate(state, profiles) {
@@ -33,15 +33,15 @@ export default class ProfilesDataservice extends Dataservice {
     profiles[0].id = account.id;
   }
 
-  async checkBeforeRead(state, where) {
-  }
+  async checkBeforeRead(state, where) {}
 
   async isUsernameAvailable(username) {
-    if (this._conf.profiles.forbiddenUsernames.includes(username))
-      return false;
+    if (this._conf.profiles.forbiddenUsernames.includes(username)) return false;
 
-    const result = await this._db('profiles').select(1).where({ username });
+    const {exists} = await this._db.first(
+      this._db.raw('exists ? as exists', this._db('profiles').where({ username }))
+    );
 
-    return result.length === 0;
+    return !exists;
   }
 }

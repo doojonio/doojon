@@ -33,6 +33,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { PostEditorComponent } from './post-editor/post-editor.component';
 import { EventDirective } from './event-components/event.directive';
 import { PostCreatedComponent } from './event-components/post-created/post-created.component';
+import { TimeAgoPipe } from './pipes/time-ago.pipe';
 
 
 @NgModule({
@@ -51,6 +52,7 @@ import { PostCreatedComponent } from './event-components/post-created/post-creat
     PostEditorComponent,
     EventDirective,
     PostCreatedComponent,
+    TimeAgoPipe,
   ],
   imports: [
     BrowserModule,

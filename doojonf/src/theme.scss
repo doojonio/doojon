@@ -1,7 +1,9 @@
 @use '~@angular/material' as mat;
 @use './app/feed/feed-theme' as feed;
 @use './app/navbar/navbar-theme' as navbar;
-@use './app/post-editor//post-editor-theme' as post-editor;
+@use './app/post-editor/post-editor-theme' as post-editor;
+@use './app/event-components/post-created/post-created-theme' as event-post-created;
+@use './app/event-components/events-theme' as events;
 
 @include mat.core();
 
@@ -22,3 +24,5 @@ $dark-theme: mat.define-dark-theme((
 @include feed.theme($dark-theme);
 @include navbar.theme($dark-theme);
 @include post-editor.theme($dark-theme);
+@include event-post-created.theme($dark-theme);
+@include events.theme($dark-theme);

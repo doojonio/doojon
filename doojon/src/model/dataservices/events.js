@@ -1,6 +1,7 @@
 import { Dataservice } from '../dataservice.js';
 import { NotAuthorizedError } from '../errors.js';
 import { ID_STATUS_AUTHORIZED } from '../state.js';
+import { ForbiddenError } from '../errors.js';
 
 export const EVENT_FOLLOWING_STARTED = 'following_started';
 export const EVENT_CHALLENGE_CREATED = 'challenge_created';
@@ -16,17 +17,6 @@ export const EVENT_POST_COMMENT_LIKED = 'post_comment_liked';
 export default class EventsDataservice extends Dataservice {
   static get _tablename() {
     return 'events';
-  }
-
-  checkBeforeCreate(state) {
-    if (state.uinfo.status !== ID_STATUS_AUTHORIZED)
-      throw new NotAuthorizedError();
-  }
-
-  _preCreate(state, events) {
-    for (const event of events) {
-      event.emitter = state.uinfo.account.id;
-    }
   }
 
   async getEventsFromFollowing(state, options) {
@@ -53,6 +43,14 @@ export default class EventsDataservice extends Dataservice {
       .where('followers.follower', userId)
       .orWhere('events.emitter', userId);
 
+    const types = options?.types;
+    if (types !== undefined) {
+      events.whereIn(
+        'type',
+        types,
+      )
+    }
+
     const beforeEvent = options?.beforeEvent;
     if (beforeEvent !== undefined) {
       events.andWhere(
@@ -73,4 +71,38 @@ export default class EventsDataservice extends Dataservice {
 
     return await events;
   }
+
+  checkBeforeCreate(state) {
+    if (state.uinfo.status !== ID_STATUS_AUTHORIZED)
+      throw new NotAuthorizedError();
+  }
+
+  checkBeforeDelete(state, where) {
+    if (state.uinfo.status !== ID_STATUS_AUTHORIZED)
+      throw new NotAuthorizedError();
+
+    const type = where.type;
+    if (!type) throw new ForbiddenError();
+
+    const handler = this[`_handleDeleteCheck_${type}`];
+
+    if (!(handler instanceof Function)) throw new ForbiddenError();
+
+    handler.call(this, state, where);
+  }
+
+  _handleDeleteCheck_post_liked(state, where) {
+    this.validateFields(where, ['object', 'type'], {strict: true})
+  }
+
+  _preCreate(state, events) {
+    for (const event of events) {
+      event.emitter = state.uinfo.account.id;
+    }
+  }
+
+  _preDelete(state, where) {
+    where.emitter = state.uinfo.account.id;
+  }
+
 }

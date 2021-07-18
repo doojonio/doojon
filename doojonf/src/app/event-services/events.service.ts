@@ -19,20 +19,20 @@ export class EventsService {
     let params = new HttpParams();
 
     if (options?.sinceEvent !== undefined)
-      params = params.set('sinceEvent', options.sinceEvent)
+      params = params.set('sinceEvent', options.sinceEvent);
     if (options?.beforeEvent !== undefined)
-      params = params.set('beforeEvent', options.beforeEvent)
+      params = params.set('beforeEvent', options.beforeEvent);
     if (options?.limit !== undefined)
-      params = params.set('limit', options.limit)
+      params = params.set('limit', options.limit);
 
-    return this._http.get<Array<Event>>(url, {params});
+    return this._http.get<Array<Event>>(url, { params });
   }
 }
 
 export interface GetEventsOptions {
-  limit?: number,
-  sinceEvent?: string,
-  beforeEvent?: string,
+  limit?: number;
+  sinceEvent?: string;
+  beforeEvent?: string;
 }
 
 export enum EventType {
@@ -52,6 +52,11 @@ export interface Event {
   user: string;
   type: EventType;
   object: string;
+  when: string;
+}
+
+export interface EventId {
+  id: string;
 }
 
 export interface PostCreatedEvent extends Event {
@@ -63,6 +68,9 @@ export interface LinkedPost {
   is_hidden: boolean;
   tags: Array<string>;
   text: string;
+  likes: number;
+  comments: number;
   title?: string;
   update_time?: string;
+  liked?: boolean;
 }

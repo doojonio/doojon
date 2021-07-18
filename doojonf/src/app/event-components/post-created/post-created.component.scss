@@ -7,11 +7,22 @@
   display: flex;
   flex-flow: column nowrap;
 
-  .post-username {
-    font-weight: 50;
+  .post-meta {
+    font-weight: 300;
+  }
+
+  .post-meta-username {
+    font-weight: 600;
   }
 
   .post-body {
-    padding-left: 25px;
+    padding: 15px 25px;
+  }
+
+  .post-actions{
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: flex-start;
   }
 }

@@ -1,6 +1,10 @@
 import { EVENT_POST_CREATED } from '../model/dataservices/events.js';
 import { ID_STATUS_AUTHORIZED } from '../model/state.js';
 
+const SHOWABLE_EVENTS = [
+  EVENT_POST_CREATED,
+];
+
 export default class EventsController {
   async getEventsFromFollowing(ctx) {
     const state = await ctx.getState(ctx);
@@ -20,6 +24,7 @@ export default class EventsController {
     const events = await ctx.app.model
       .getDataservice('events')
       .getEventsFromFollowing(state, {
+        types: SHOWABLE_EVENTS,
         limit,
         sinceEvent,
         beforeEvent,
@@ -32,7 +37,6 @@ export default class EventsController {
     if (post_events.length !== 0) {
       dataserviceQueries.push(posts.linkPostsToPostCreatedEvents(state, post_events));
     }
-
 
     await Promise.all(dataserviceQueries);
 

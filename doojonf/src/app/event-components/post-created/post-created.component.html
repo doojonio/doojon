@@ -1,7 +1,23 @@
-
 <div class="post-container">
-  <div class="post-username"><a routerLink="/{{ event.user }}">{{ event.user }}</a></div>
+  <div class="post-meta">
+    <span class="post-meta-username"
+      ><a routerLink="/{{ event.user }}">@{{ event.user }}</a></span
+    >
+    <span> posted</span>
+    <span> {{ event.when | timeAgo }}</span>
+  </div>
   <div class="post-body">
     <span>{{ event.post.text }}</span>
+  </div>
+  <div class="post-actions">
+    <div class="post-action">
+      <button mat-icon-button (click)="toggleLike()"
+        [ngClass]="{'event-liked': event.post.liked }"
+      >
+        <mat-icon>thumb_up</mat-icon>
+      </button>
+      <span *ngIf="event.post.likes > 0" >{{ event.post.likes }}</span>
+    </div>
+    <button mat-icon-button><mat-icon>comment</mat-icon></button>
   </div>
 </div>

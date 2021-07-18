@@ -1,4 +1,4 @@
-import { NotAuthorizedError } from '../model/errors.js';
+import { ForbiddenError, NotAuthorizedError } from '../model/errors.js';
 
 export default class ResourceController {
   async create(ctx) {
@@ -13,6 +13,8 @@ export default class ResourceController {
     catch (e) {
       if (e instanceof NotAuthorizedError)
         return ctx.res.status(401).send(`User is not authorized`);
+      if (e instanceof ForbiddenError)
+        return ctx.res.status(403).send(`Foribdden`);
 
       ctx.app.log.debug(`Error during check for creating: ${e}`)
       return ctx.res.status(400).send(`check before creating has not passed: ${e}`);
@@ -35,6 +37,8 @@ export default class ResourceController {
     catch (e) {
       if (e instanceof NotAuthorizedError)
         return ctx.res.status(401).send(`User is not authorized`);
+      if (e instanceof ForbiddenError)
+        return ctx.res.status(403).send(`Foribdden`);
 
       ctx.app.log.debug(`Error during check for reading: ${e}`)
       return ctx.res.status(400).send(`check before read has not passed ${e}`);
@@ -59,6 +63,8 @@ export default class ResourceController {
     catch (e) {
       if (e instanceof NotAuthorizedError)
         return ctx.res.status(401).send(`User is not authorized`);
+      if (e instanceof ForbiddenError)
+        return ctx.res.status(403).send(`Foribdden`);
 
       ctx.app.log.debug(`Error during check for updating: ${e}`)
       return ctx.res.status(400).send(`check before update has not passed ${e}`);
@@ -83,6 +89,8 @@ export default class ResourceController {
     catch (e) {
       if (e instanceof NotAuthorizedError)
         return ctx.res.status(401).send(`User is not authorized`);
+      if (e instanceof ForbiddenError)
+        return ctx.res.status(403).send(`Foribdden`);
 
       ctx.app.log.debug(`Error during check for deleting: ${e}`)
       return ctx.res.status(400).send(`check before delete has not passed: ${e}`);

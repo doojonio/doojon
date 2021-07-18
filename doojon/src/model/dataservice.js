@@ -1,5 +1,6 @@
 import { Service } from './service.js';
 import { ID_STATUS_SYSTEM } from './state.js';
+import { ForbiddenError } from './errors.js';
 
 export class Dataservice extends Service {
   static get deps() {
@@ -61,7 +62,7 @@ export class Dataservice extends Service {
   async _postCreate(state, ids) {}
 
   async checkBeforeRead(state, where) {
-    throw new Error('read on dataservice is forbidden')
+    throw new ForbiddenError('read on dataservice is forbidden')
   }
 
   async read(state, where) {
@@ -74,7 +75,7 @@ export class Dataservice extends Service {
   }
 
   async checkBeforeUpdate(state, where, newFields) {
-    throw new Error('update on dataservice is forbidden')
+    throw new ForbiddenError('update on dataservice is forbidden')
   }
 
   async update(state, where, newFields) {
@@ -88,16 +89,41 @@ export class Dataservice extends Service {
   }
 
   async checkBeforeDelete(state, where) {
-    throw new Error('delete on dataservice is forbidden')
+    throw new ForbiddenError('delete on dataservice is forbidden')
   }
 
+  _preDelete(state, where) {}
   async delete(state, where) {
     await this.checkBeforeDelete(state, where);
+    await this._preDelete(state, where);
 
     this._log.trace(`Deleting objects from ${this.constructor._tablename}`);
     return await this._db(this.constructor._tablename)
       .delete()
       .where(where)
       .returning(this._primarykeys);
+  }
+
+  validateFields(fields, againstFields = undefined, options = { strict: false }) {
+    const allowedFields = againstFields ?? Object.keys(this._fields);
+
+    if (Object.keys(fields).length > Object.keys(allowedFields).length )
+      throw new Error('extra fields found');
+
+    const foundFields = [];
+    for (const key in fields) {
+      if (!allowedFields.includes(key))
+        throw new Error(`${key} is not allowed`)
+      foundFields.push(key)
+    }
+
+    if (options.strict) {
+      for (const needed of allowedFields) {
+        if (!foundFields.includes(needed))
+          throw new Error(`${needed} field not found`);
+      }
+    }
+
+    return;
   }
 }
