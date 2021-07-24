@@ -34,6 +34,8 @@ import { PostEditorComponent } from './post-editor/post-editor.component';
 import { EventDirective } from './event-components/event.directive';
 import { PostCreatedComponent } from './event-components/post-created/post-created.component';
 import { TimeAgoPipe } from './pipes/time-ago.pipe';
+import { ProfileComponent } from './profile-components/profile/profile.component';
+import { NotFoundComponent } from './not-found/not-found.component';
 
 
 @NgModule({
@@ -53,6 +55,8 @@ import { TimeAgoPipe } from './pipes/time-ago.pipe';
     EventDirective,
     PostCreatedComponent,
     TimeAgoPipe,
+    ProfileComponent,
+    NotFoundComponent,
   ],
   imports: [
     BrowserModule,

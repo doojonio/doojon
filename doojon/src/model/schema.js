@@ -1,14 +1,14 @@
 export const schema = {
   'tables': {
     'challenge_comments': {
-      'challenge_id': {
+      'challenge': {
         'type': 'string',
       },
       'id': {
         'type': 'string',
         'is_primary_key': true,
       },
-      'parent_id': {
+      'parent': {
         'type': 'string',
       },
       'text': {
@@ -23,7 +23,7 @@ export const schema = {
         'type': 'string',
         'is_primary_key': true,
       },
-      'proposal_id': {
+      'proposal': {
         'type': 'string',
       },
       'text': {
@@ -32,12 +32,9 @@ export const schema = {
       'update_time': {
         'type': 'timestamp',
       },
-      'written_by': {
-        'type': 'string',
-      },
     },
     'challenge_proposals': {
-      'challenge_id': {
+      'challenge': {
         'type': 'string',
       },
       'id': {
@@ -60,9 +57,6 @@ export const schema = {
         'type': 'boolean',
       },
       'personal_tag': {
-        'type': 'string',
-      },
-      'proposed_by': {
         'type': 'string',
       },
       'public_tag': {
@@ -93,25 +87,15 @@ export const schema = {
         'type': 'timestamp',
       },
     },
-    'followers': {
-      'follower': {
-        'type': 'string',
-        'is_primary_key': true,
-      },
-      'profile': {
-        'type': 'string',
-        'is_primary_key': true,
-      },
-    },
     'post_comments': {
       'id': {
         'type': 'string',
         'is_primary_key': true,
       },
-      'parent_comment_id': {
+      'parent_comment': {
         'type': 'string',
       },
-      'post_id': {
+      'post': {
         'type': 'string',
       },
       'text': {
@@ -119,9 +103,6 @@ export const schema = {
       },
       'update_time': {
         'type': 'timestamp',
-      },
-      'written_by': {
-        'type': 'string',
       },
     },
     'posts': {
@@ -144,16 +125,13 @@ export const schema = {
       'update_time': {
         'type': 'timestamp',
       },
-      'written_by': {
-        'type': 'string',
-      },
     },
     'profile_favorite_challenges': {
-      'challenge_id': {
+      'challenge': {
         'type': 'string',
         'is_primary_key': true,
       },
-      'profile_id': {
+      'profile': {
         'type': 'string',
         'is_primary_key': true,
       },

@@ -28,27 +28,33 @@ export default class EventsDataservice extends Dataservice {
 
     const userId = state.uinfo.account.id;
 
-    const events = this._db('followers')
-      .rightJoin('events', 'followers.profile', '=', 'events.emitter')
-      .leftJoin('profiles', 'events.emitter', '=', 'profiles.id')
+    const db = this._db;
+
+    const events = db
+      .with(
+        'following',
+        db('events').select(db.raw('object::uuid')).where({
+          type: EVENT_FOLLOWING_STARTED,
+          emitter: userId,
+        })
+      )
       .select({
-        'id': 'events.id',
-        'user': 'profiles.username',
-        'type': 'events.type',
-        'object': 'events.object',
-        'when': 'events.when',
+        'id': 'e.id',
+        'user': 'p.username',
+        'type': 'e.type',
+        'object': 'e.object',
+        'when': 'e.when',
       })
-      .orderBy('events.when', 'desc')
-      .limit(limit)
-      .where('followers.follower', userId)
-      .orWhere('events.emitter', userId);
+      .from({ 'e': 'events' })
+      .leftJoin({ 'p': 'profiles' }, { 'e.emitter': 'p.id' })
+      .whereIn('e.emitter', db.select('object').from('following'))
+      .orWhere('e.emitter', userId)
+      .orderBy('e.when', 'desc')
+      .limit(limit);
 
     const types = options?.types;
     if (types !== undefined) {
-      events.whereIn(
-        'type',
-        types,
-      )
+      events.whereIn('e.type', types);
     }
 
     const beforeEvent = options?.beforeEvent;
@@ -92,7 +98,7 @@ export default class EventsDataservice extends Dataservice {
   }
 
   _handleDeleteCheck_post_liked(state, where) {
-    this.validateFields(where, ['object', 'type'], {strict: true})
+    this.validateFields(where, ['object', 'type'], { strict: true });
   }
 
   _preCreate(state, events) {
@@ -104,5 +110,4 @@ export default class EventsDataservice extends Dataservice {
   _preDelete(state, where) {
     where.emitter = state.uinfo.account.id;
   }
-
 }

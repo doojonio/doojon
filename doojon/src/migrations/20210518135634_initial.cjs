@@ -2,16 +2,12 @@ exports.up = function (db) {
   return db.schema
     .raw('create extension if not exists "uuid-ossp";')
     .raw('create extension if not exists "pgcrypto";')
-    .raw(shortIdTrigger)
+    .raw('create extension if not exists "hstore";')
+    .raw(shortIdTriggerFunction)
     .createTable('profiles', table => {
       table.uuid('id').primary();
       table.text('username').unique().notNullable();
       table.timestamp('create_time').notNullable().defaultTo(db.fn.now());
-    })
-    .createTable('followers', table => {
-      table.uuid('follower').notNullable().references('profiles.id');
-      table.uuid('profile').notNullable().references('profiles.id');
-      table.primary(['follower', 'profile']);
     })
     .createTable('challenges', table => {
       table.text('id').primary();
@@ -19,7 +15,6 @@ exports.up = function (db) {
       table.text('description');
       table.text('personal_tag');
       table.text('public_tag').unique();
-      table.uuid('proposed_by').notNullable().references('profiles.id');
       table.bool('is_public').notNullable().defaultTo('false');
       table.bool('is_hidden').notNullable().defaultTo('false');
       table.timestamp('update_time');
@@ -28,14 +23,14 @@ exports.up = function (db) {
       `CREATE TRIGGER trigger_challenges_genid BEFORE INSERT ON challenges FOR EACH ROW EXECUTE PROCEDURE unique_short_id();`
     )
     .createTable('profile_favorite_challenges', table => {
-      table.uuid('profile_id').notNullable().references('profiles.id');
-      table.text('challenge_id').notNullable().references('challenges.id');
-      table.primary(['profile_id', 'challenge_id']);
+      table.uuid('profile').notNullable().references('profiles.id');
+      table.text('challenge').notNullable().references('challenges.id');
+      table.primary(['profile', 'challenge']);
     })
     .createTable('challenge_comments', table => {
       table.text('id').primary();
-      table.text('challenge_id').notNullable().references('challenges.id');
-      table.text('parent_id').references('challenge_comments.id');
+      table.text('challenge').notNullable().references('challenges.id');
+      table.text('parent').references('challenge_comments.id');
       table.text('text').notNullable();
       table.timestamp('update_time');
     })
@@ -45,7 +40,7 @@ exports.up = function (db) {
     )
     .createTable('challenge_proposals', table => {
       table.text('id').primary();
-      table.text('challenge_id').references('challenges.id');
+      table.text('challenge').references('challenges.id');
     })
     .raw(
       `CREATE TRIGGER trigger_challenge_proposals_genid BEFORE INSERT ON challenge_proposals
@@ -53,12 +48,8 @@ exports.up = function (db) {
     )
     .createTable('challenge_proposal_comments', table => {
       table.text('id').primary();
-      table
-        .text('proposal_id')
-        .references('challenge_proposals.id')
-        .notNullable();
+      table.text('proposal').references('challenge_proposals.id').notNullable();
       table.text('text').notNullable();
-      table.uuid('written_by').references('profiles.id').notNullable();
       table.timestamp('update_time');
     })
     .raw(
@@ -71,7 +62,6 @@ exports.up = function (db) {
       table.specificType('tags', 'text[]');
       table.text('text').notNullable();
       table.bool('is_hidden').notNullable().defaultTo('false');
-      table.uuid('written_by').notNullable().references('profiles.id');
       table.timestamp('update_time');
     })
     .raw(
@@ -80,10 +70,9 @@ exports.up = function (db) {
     )
     .createTable('post_comments', table => {
       table.text('id').primary();
-      table.text('post_id').notNullable().references('posts.id');
-      table.text('parent_comment_id').references('post_comments.id');
+      table.text('post').notNullable().references('posts.id');
+      table.text('parent_comment').references('post_comments.id');
       table.text('text').notNullable();
-      table.uuid('written_by').notNullable().references('profiles.id');
       table.timestamp('update_time');
     })
     .raw(
@@ -104,24 +93,35 @@ exports.up = function (db) {
       )`
     )
     .createTable('events', table => {
-      table.uuid('id').notNullable().primary().defaultTo(db.raw('uuid_generate_v4()'));
+      table
+        .uuid('id')
+        .notNullable()
+        .primary()
+        .defaultTo(db.raw('uuid_generate_v4()'));
       table.uuid('emitter').notNullable().references('profiles.id');
       table.specificType('type', 'event').notNullable();
       table.text('object').notNullable();
-      table.timestamp('when').notNullable().defaultTo(db.fn.now())
+      table.timestamp('when').notNullable().defaultTo(db.fn.now());
       table.unique(['emitter', 'type', 'object']);
-    });
+    })
+    .raw(eventObjectCheckerFunction).raw(`
+      CREATE TRIGGER trigger_events_object_checker BEFORE INSERT OR UPDATE ON events
+      FOR EACH ROW EXECUTE PROCEDURE check_event_object()
+    `);
 };
 
 exports.down = function (db) {
   return db.schema
-    .raw(`
+    .raw(
+      `
+      DROP TRIGGER IF EXISTS trigger_events_object_checker ON events;
       DROP TRIGGER IF EXISTS trigger_post_comments_genid ON post_comments;
       DROP TRIGGER IF EXISTS trigger_posts_genid ON posts;
       DROP TRIGGER IF EXISTS trigger_challenge_proposal_comments_genid ON challenge_proposal_comments;
       DROP TRIGGER IF EXISTS trigger_challenge_proposals_genid ON challenge_proposals;
       DROP TRIGGER IF EXISTS trigger_challenges_genid ON challenges;
-    `)
+    `
+    )
     .dropTableIfExists('events')
     .raw(`DROP TYPE IF EXISTS event`)
     .dropTableIfExists('post_comments')
@@ -131,68 +131,62 @@ exports.down = function (db) {
     .dropTableIfExists('challenge_comments')
     .dropTableIfExists('profile_favorite_challenges')
     .dropTableIfExists('challenges')
-    .dropTableIfExists('followers')
     .dropTableIfExists('profiles');
 };
 
-const shortIdTrigger = `
--- Create a trigger function that takes no arguments.
--- Trigger functions automatically have OLD, NEW records
--- and TG_TABLE_NAME as well as others.
+const eventObjectCheckerFunction = `
+CREATE OR REPLACE FUNCTION check_event_object() RETURNS trigger as $EOF$
+  DECLARE
+    types2table hstore := hstore(ARRAY[
+      'following_started', 'profiles',
+      'challenge_created', 'challenges',
+      'challenge_commented', 'challenge_comments',
+      'challenge_proposed', 'challenge_proposals',
+      'challenge_proposal_commented', 'challenge_proposal_comments',
+      'post_created', 'posts',
+      'post_liked', 'posts',
+      'post_commented', 'post_comments',
+      'post_comment_liked', 'post_comments'
+    ]);
+    objtable text := types2table -> NEW.type::text;
+    objexists boolean;
+  BEGIN
+      EXECUTE format('SELECT EXISTS(SELECT FROM %I WHERE id::text = %L)', objtable, NEW.object)
+      INTO objexists;
+      IF objexists != true THEN
+        RAISE EXCEPTION 'invalid % event: object % does not exists', NEW.type, NEW.object;
+      END IF;
+      RETURN NEW;
+  END;
+$EOF$ LANGUAGE plpgsql;
+`;
+
+const shortIdTriggerFunction = `
 CREATE OR REPLACE FUNCTION unique_short_id()
 RETURNS TRIGGER AS $$
 
- -- Declare the variables we'll be using.
 DECLARE
   key TEXT;
   qry TEXT;
   found TEXT;
 BEGIN
-
-  -- generate the first part of a query as a string with safely
-  -- escaped table name, using || to concat the parts
   qry := 'SELECT id FROM ' || quote_ident(TG_TABLE_NAME) || ' WHERE id=';
 
-  -- This loop will probably only run once per call until we've generated
-  -- millions of ids.
   LOOP
-
-    -- Generate our string bytes and re-encode as a base64 string.
-    key := encode(gen_random_bytes(6), 'base64');
-
-    -- Base64 encoding contains 2 URL unsafe characters by default.
-    -- The URL-safe version has these replacements.
+    key := substring(encode(gen_random_bytes(8), 'base64') for 11);
     key := replace(key, '/', 's'); -- url safe replacement
     key := replace(key, '+', 'p'); -- url safe replacement
     key := replace(key, '=', 'e'); -- url safe replacement
 
-    -- Concat the generated key (safely quoted) with the generated query
-    -- and run it.
-    -- SELECT id FROM "test" WHERE id='blahblah' INTO found
-    -- Now "found" will be the duplicated id or NULL.
     EXECUTE qry || quote_literal(key) INTO found;
 
-    -- Check to see if found is NULL.
-    -- If we checked to see if found = NULL it would always be FALSE
-    -- because (NULL = NULL) is always FALSE.
     IF found IS NULL THEN
-
-      -- If we didn't find a collision then leave the LOOP.
       EXIT;
     END IF;
 
-    -- We haven't EXITed yet, so return to the top of the LOOP
-    -- and try again.
   END LOOP;
 
-  -- NEW and OLD are available in TRIGGER PROCEDURES.
-  -- NEW is the mutated row that will actually be INSERTed.
-  -- We're replacing id, regardless of what it was before
-  -- with our key variable.
   NEW.id = key;
-
-  -- The RECORD returned here is what will actually be INSERTed,
-  -- or what the next trigger will get if there is one.
   RETURN NEW;
 END;
 $$ language 'plpgsql';

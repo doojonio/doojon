@@ -2,9 +2,9 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { FeedComponent } from './feed/feed.component';
 import { MovingSidebarComponent } from './layouts/moving-sidebar/moving-sidebar.component';
-import { StaticSidebarComponent } from './layouts/static-sidebar/static-sidebar.component';
 import { LoginComponent } from './login/login.component';
-import { NewPersonalChallengeComponent } from './new-personal-challenge/new-personal-challenge.component';
+import { NotFoundComponent } from './not-found/not-found.component';
+import { ProfileComponent } from './profile-components/profile/profile.component';
 import { ShowComponent } from './show/show.component';
 import { SignupComponent } from './signup/signup.component';
 
@@ -28,12 +28,20 @@ const routes: Routes = [
       {
         path: 'show',
         component: ShowComponent,
-      }
+      },
+      {
+        path: '404',
+        component: NotFoundComponent,
+      },
+      {
+        path: ':username',
+        component: ProfileComponent,
+      },
     ],
   },
   {
     path: '**',
-    redirectTo: '',
+    redirectTo: '/404',
   },
 ];
 

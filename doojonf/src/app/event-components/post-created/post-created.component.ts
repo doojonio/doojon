@@ -13,9 +13,7 @@ export class PostCreatedComponent implements OnInit {
 
   constructor(private _posts: PostsService) {}
 
-  ngOnInit(): void {
-    console.log(this.event.post);
-  }
+  ngOnInit(): void {}
 
   toggleLike() {
     const post = this.event.post;

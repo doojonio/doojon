@@ -14,7 +14,7 @@ export default class ProfileFavoriteChallengesDataservice extends Dataservice {
 
   async _preCreate(state, pairs) {
     for (const pair of pairs) {
-      pair.profile_id = state.uinfo.account.id;
+      pair.profile = state.uinfo.account.id;
     }
   }
 }

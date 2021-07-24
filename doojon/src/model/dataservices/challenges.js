@@ -40,7 +40,7 @@ export default class ChallengesDataservice extends Dataservice {
     if (state.uinfo?.status === ID_STATUS_AUTHORIZED) {
       const inFavorite = await this._db('profile_favorite_challenges')
         .select(1)
-        .where({ profile_id: state.uinfo.account.id });
+        .where({ profile: state.uinfo.account.id });
 
       info.in_favorite = inFavorite.length !== 0 ? true : false;
     }

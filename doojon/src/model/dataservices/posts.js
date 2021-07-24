@@ -19,17 +19,7 @@ export default class PostsDataservice extends Dataservice {
   async linkPostsToPostCreatedEvents(state, events) {
     const db = this._db;
     const ids = events.map(e => e.object);
-    const q = db({ 'p': 'posts' })
-      .leftJoin(
-        { 'e': 'events' },
-        {
-          'e.type': db.raw('?', EVENT_POST_LIKED),
-          'e.object': 'p.id',
-        }
-      )
-      .leftJoin({ 'pc': 'post_comments' }, { 'pc.post_id': 'p.id' })
-      .whereIn('p.id', ids)
-      .groupBy('p.id');
+    const q = db({ 'p': 'posts' }).whereIn('p.id', ids);
 
     const select = {
       'id': 'p.id',
@@ -38,8 +28,8 @@ export default class PostsDataservice extends Dataservice {
       'tags': 'p.tags',
       'title': 'p.title',
       'update_time': 'p.update_time',
-      'likes': db.raw('count(e.id)'),
-      'comments': db.raw('count(pc.id)'),
+      'likes': db('events').count('id').where({object: db.raw('p.id'), type: EVENT_POST_LIKED}),
+      'comments': db('post_comments').count('*').where({post: db.raw('p.id')}),
     };
 
     // Is post liked info
@@ -69,8 +59,6 @@ export default class PostsDataservice extends Dataservice {
 
   _preCreate(state, posts) {
     for (const post of posts) {
-      post.written_by = state.uinfo.account.id;
-
       const matches = post.text.matchAll(HASHTAG_REGEX);
 
       if (!(post.tags instanceof Array)) {
