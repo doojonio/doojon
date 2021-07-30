@@ -1,7 +1,0 @@
-- hosts: k8s-api
-  become: true
-  roles:
-    - gantsign.minikube
-    - githubixx.kubectl
-    - minikube_addons
-

@@ -1,5 +1,0 @@
-- name: ensure addons enabled
-  become: false
-  command: minikube addons enable {{ item }}
-  with_items:
-    - ingress

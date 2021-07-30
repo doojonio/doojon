@@ -1,3 +1,0 @@
-- hosts: k8s-api
-  roles:
-    - k8s
