@@ -1,21 +1,26 @@
-name: accounts ci
+name: doojonf ci
 
 on:
   push:
     branches: [ master ]
     paths:
-      - accounts/**
-  pull_request:
-    branches: [ master ]
-    paths:
-      - accounts/**
-
+      - doojonf/**
+      - dockerfiles/doojonf.Dockerfile
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: checkout the repository
         uses: actions/checkout@v2
+      - name: install node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+      - name: build dist
+        working-directory: './doojonf'
+        run: |
+          npm ci
+          ng build --prod
       - name: set up docker buildx
         uses: docker/setup-buildx-action@v1
       - name: login to dockerhub
@@ -23,12 +28,11 @@ jobs:
         with:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.DOCKERHUB_KEY }}
-      - name: build and push accounts image
+      - name: build and push doojonf image
         uses: docker/build-push-action@v2
         with:
-          context: ./accounts
-          file: ./accounts/Dockerfile
+          context: ./doojonf
+          file: ./dockerfiles/doojonf.Dockerfile
           push: true
           tags: |
-            ${{ github.repository_owner }}/accounts:latest
-            ${{ github.repository_owner }}/accounts:latest-dev
+            ${{ github.repository_owner }}/doojonf:latest

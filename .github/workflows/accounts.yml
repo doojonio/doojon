@@ -1,12 +1,11 @@
-name: doojon ci
+name: accounts ci
 
 on:
   push:
     branches: [ master ]
     paths:
-      - doojon/**
-      - dockerfiles/doojon.Dockerfile
-
+      - accounts/**
+      - dockerfiles/accounts.Dockerfile
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,11 +19,11 @@ jobs:
         with:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.DOCKERHUB_KEY }}
-      - name: build and push doojon image
+      - name: build and push accounts image
         uses: docker/build-push-action@v2
         with:
-          context: ./doojon
-          file: ./dockerfiles/doojon.Dockerfile
+          context: ./accounts
+          file: ./dockerfiles/accounts.Dockerfile
           push: true
           tags: |
-            ${{ github.repository_owner }}/doojon:latest
+            ${{ github.repository_owner }}/accounts:latest

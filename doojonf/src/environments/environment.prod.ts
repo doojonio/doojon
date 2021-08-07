@@ -1,3 +1,11 @@
 export const environment = {
-  production: true
+  production: true,
+  apis: {
+    doojon: {
+      endpoint: '/api/'
+    },
+    accounts: {
+      endpoint: '/api/service/accounts/'
+    }
+  }
 };

@@ -19,6 +19,10 @@ export class Model {
     for (const step of steps) {
       await this[`_init${step}`]();
     }
+
+    if (process.env['DOOJON_RUN_DB_MIGRATIONS'] === '1') {
+      await this._container.resolve('/h/db').migrate.latest();
+    }
   }
 
   getDataservice(name) {
