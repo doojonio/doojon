@@ -20,7 +20,7 @@ jobs:
         working-directory: './doojonf'
         run: |
           npm ci
-          ng build --prod
+          npx ng build --prod
       - name: set up docker buildx
         uses: docker/setup-buildx-action@v1
       - name: login to dockerhub
