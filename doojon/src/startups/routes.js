@@ -6,6 +6,7 @@ export default async function routesStartup(app) {
   api.get('/resource/profiles/common').to('profiles#getProfileCommonInfo');
   api.get('/resource/profiles/is_username_available').to('profiles#isUsernameAvailable');
   api.get('/resource/events/following').to('events#getEventsFromFollowing');
+  api.get('/health', ctx => ctx.render({text: 'OK'}));
 
   _resourceRoutes(app, api);
 }
