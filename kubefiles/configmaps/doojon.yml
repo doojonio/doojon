@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: doojon-config
+data:
+  doojon.json: |
+    {
+      "web": {
+        "authCookie": {
+          "name": "SID"
+        }
+      },
+      "database": {
+        "user": "doojon",
+        "host": "127.0.0.1",
+        "database": "doojon",
+        "password": "password",
+        "port": 5432
+      },
+      "couriers": {
+        "accounts": {
+          "protocol": "http",
+          "host": "accounts-deployment-service",
+          "port": 80
+        }
+      },
+      "testtools": {
+        "authorizedClient": {
+          "testUserEmail": "doojontestuser@doojon.com",
+          "testUserPassword": "worldofwarcraft"
+        }
+      },
+      "profiles": {
+        "forbiddenUsernames": [
+          "api",
+          "show",
+          "login",
+          "signup",
+          "signin",
+          "settings",
+          "explore"
+        ]
+      }
+    }
+

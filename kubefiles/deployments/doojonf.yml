@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: doojonf-deployment
+  labels:
+    app: doojonf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: doojonf
+  template:
+    metadata:
+      labels:
+        app: doojonf
+    spec:
+      containers:
+        - name: doojonf
+          image: doojonio/doojonf
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 3
+          #resources:
+          #  limits:
+          #    memory: "100Mi"
+          #    cpu: "60m"
+          ports:
+            - containerPort: 8080
+              name: http
+          volumeMounts:
+            - mountPath: "/etc/nginx/nginx.conf"
+              subPath: "nginx.conf"
+              name: nginx-config
+              readOnly: true
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: doojonf-config

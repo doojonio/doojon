@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: doojon-ingress
+spec:
+  defaultBackend:
+    service:
+      name: doojonf-deployment-service
+      port:
+        name: http
+  rules:
+    - http:
+        paths:
+          - path: /api/svc/accounts/*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: accounts-deployment-service
+                port:
+                  name: http
+          - path: /api/svc/doojon/*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: doojon-deployment-service
+                port:
+                  name: http

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: doojon-deployment-service
+spec:
+  selector:
+    app: doojon
+  ports:
+    - protocol: TCP
+      port: 80
+      name: http
+      targetPort: http

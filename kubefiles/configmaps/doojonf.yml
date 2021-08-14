@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: doojonf-config
+data:
+  nginx.conf: |
+    events {}
+    http {
+      include mime.types;
+      server {
+        listen 8080;
+        server_name doojon.dev;
+        root /var/public/doojonf/;
+        index index.html;
+        location / {
+            try_files $uri$args $uri$args/ /index.html;
+        }
+      }
+    }
