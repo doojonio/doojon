@@ -6,7 +6,7 @@ export const environment = {
   production: false,
   apis: {
     doojon: {
-      v1endpoint: '/api/1'
+      v1endpoint: '/api/svc/doojon/1'
     },
     accounts: {
       v1endpoint: '/api/svc/accounts/1'

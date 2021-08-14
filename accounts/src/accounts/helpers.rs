@@ -13,11 +13,15 @@ pub fn build_auth_cookie<'a>(
 
   let sid = session.id.to_simple().to_string().to_uppercase();
 
-  Cookie::build(&cfg.name, sid)
-    .domain(&cfg.domain)
+  let mut builder = Cookie::build(&cfg.name, sid)
     .secure(cfg.secure)
     .path("/")
     .http_only(cfg.http_only)
-    .expires(expires)
-    .finish()
+    .expires(expires);
+
+  if cfg.domain.is_some() {
+    builder = builder.domain(cfg.domain.as_ref().unwrap());
+  }
+
+  builder.finish()
 }

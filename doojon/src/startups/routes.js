@@ -1,5 +1,5 @@
 export default async function routesStartup(app) {
-  const api = app.any('/api/1/');
+  const api = app.any('/api/svc/doojon/1');
 
   api.get('uinfo').to('id#getUserInfo');
   api.get('/resource/challenges/common').to('challenges#getChallengeCommonInfo');

@@ -56,7 +56,7 @@ pub struct ServerConfig {
 #[derive(Deserialize, Debug, Clone)]
 pub struct AuthCookieConfig {
   pub name: String,
-  pub domain: String,
+  pub domain: Option<String>,
   pub secure: bool,
   pub http_only: bool,
   pub expires_after_days: i64,

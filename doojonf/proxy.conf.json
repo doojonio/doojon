@@ -1,5 +1,5 @@
 {
-    "/api": {
+    "/api/svc/doojon": {
         "target": "http://doojon:8080",
         "secure": false
     },
