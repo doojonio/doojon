@@ -18,19 +18,19 @@ export class ProfilesService {
   createProfile(
     profile: CreatableProfile
   ): Observable<ProfileId[]> {
-    const url = this._apiCfg.endpoint + '/resource/profiles';
+    const url = this._apiCfg.v1endpoint + '/resource/profiles';
     return this._http.post<ProfileId[]>(url, profile);
   }
 
   getProfileCommonInfo(username: string): Observable<ProfileCommonInfo> {
-    const url = this._apiCfg.endpoint + '/resource/profiles/common';
+    const url = this._apiCfg.v1endpoint + '/resource/profiles/common';
     let params = new HttpParams().set('username', username);
 
     return this._http.get<ProfileCommonInfo>(url, {params})
   }
 
   followProfile(id: string): Observable<EventId> {
-    const url = this._apiCfg.endpoint + '/resource/events';
+    const url = this._apiCfg.v1endpoint + '/resource/events';
     const event = {
       type: EventType.FOLLOWING_STARTED,
       object: id
@@ -41,7 +41,7 @@ export class ProfilesService {
 
   isUsernameAvailable(username: string): Observable<boolean> {
     const url =
-      this._apiCfg.endpoint + '/resource/profiles/is_username_available';
+      this._apiCfg.v1endpoint + '/resource/profiles/is_username_available';
     return this._http.get<boolean>(url, { params: { username } });
   }
 }

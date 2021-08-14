@@ -18,13 +18,13 @@ export class AccountsService {
     acc: CreatableAccount,
     options?: { authorize?: boolean }
   ): Observable<ReadableAccount> {
-    const url = this._apiConfig.endpoint + '/accounts';
+    const url = this._apiConfig.v1endpoint + '/accounts';
 
     return this._http.post<ReadableAccount>(url, acc, {params: options});
   }
 
   isEmailAvailable(email: string): Observable<boolean> {
-    const url = this._apiConfig.endpoint + '/accounts/is_email_available';
+    const url = this._apiConfig.v1endpoint + '/accounts/is_email_available';
     return this._http.get<boolean>(url, {params: {email}});
   }
 }

@@ -20,7 +20,7 @@ export default class AccountsCourier {
 
   async auth(creds) {
 
-    const res = await this.ua.post('/api/1/auth', {
+    const res = await this.ua.post('/api/svc/accounts/1/auth', {
       json: creds,
     });
 
@@ -33,7 +33,7 @@ export default class AccountsCourier {
   async logout() {
     if ((await this.ua.cookieJar.serialize()).cookies.length === 0) return;
 
-    const res = await this.ua.delete('/api/1/logout');
+    const res = await this.ua.delete('/api/svc/accounts/1/logout');
 
     if (res.isError)
       throw new Error(`error during logout in accounts: ${res.statusMessage}`);
@@ -44,7 +44,7 @@ export default class AccountsCourier {
   }
 
   async createAccount(account) {
-    const res = await this.ua.post('/api/1/accounts', { json: account });
+    const res = await this.ua.post('/api/svc/accounts/1/accounts', { json: account });
 
     if (res.isError)
       throw new Error(
@@ -56,7 +56,7 @@ export default class AccountsCourier {
 
   async createTestAccount() {
 
-    const res = await this.ua.post('/api/1/test_account');
+    const res = await this.ua.post('/api/svc/accounts/1/test_account');
 
     if (res.isError)
       throw new Error(`error during creating test account: ${res.statusMessage}`);
@@ -65,7 +65,7 @@ export default class AccountsCourier {
   }
 
   async getAccount(by) {
-    const url = new URL('/api/1/accounts', this.ua.baseURL);
+    const url = new URL('/api/svc/accounts/1/accounts', this.ua.baseURL);
 
     if (by.id) {
       url.searchParams.append('id', by.id);
@@ -91,7 +91,7 @@ export default class AccountsCourier {
     let authCookie = new Cookie({key: 'SID', value: sessionId, domain: this._host});
     this.ua.cookieJar.setCookie(authCookie, this.ua.baseURL);
 
-    const res = await this.ua.get('/api/1/current_user_account');
+    const res = await this.ua.get('/api/svc/accounts/1/current_user_account');
 
     if (res.status === 401) return null
 

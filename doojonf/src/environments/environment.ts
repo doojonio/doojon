@@ -6,10 +6,10 @@ export const environment = {
   production: false,
   apis: {
     doojon: {
-      endpoint: '/api/doojon/'
+      v1endpoint: '/api/1'
     },
     accounts: {
-      endpoint: '/api/accounts/'
+      v1endpoint: '/api/svc/accounts/1'
     }
   }
 };

@@ -2,10 +2,10 @@ export const environment = {
   production: true,
   apis: {
     doojon: {
-      endpoint: '/api/'
+      v1endpoint: '/api/1'
     },
     accounts: {
-      endpoint: '/api/service/accounts/'
+      v1endpoint: '/api/svc/accounts/1'
     }
   }
 };

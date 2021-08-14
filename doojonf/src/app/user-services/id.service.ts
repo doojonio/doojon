@@ -24,7 +24,7 @@ export class IdService {
 
     if (needRequest) {
       this._getUserInfoRequestInProgress = true;
-      const url = this._api.endpoint + '/uinfo';
+      const url = this._api.v1endpoint + '/uinfo';
       this._http.get<UserInfo>(url).subscribe(uinfo => {
         this._getUserInfoRequestInProgress = false;
         this._uinfoSubject.next(uinfo);

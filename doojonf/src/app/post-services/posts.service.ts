@@ -17,7 +17,7 @@ export class PostsService {
   }
 
   createPost(post: CreatablePost): Observable<string> {
-    const url = this._api.endpoint + '/resource/posts';
+    const url = this._api.v1endpoint + '/resource/posts';
     return this._http.post<CreatedPostId[]>(url, post).pipe(
       map(ids => {
         return ids[0].id;
@@ -26,7 +26,7 @@ export class PostsService {
   }
 
   likePost(id: string): Observable<string> {
-    const url = this._api.endpoint + '/resource/events';
+    const url = this._api.v1endpoint + '/resource/events';
     const event = { type: EventType.POST_LIKED, object: id };
     return this._http.post<EventId[]>(url, event).pipe(
       map(ids => ids[0].id)
@@ -34,7 +34,7 @@ export class PostsService {
   }
 
   unlikePost(id: string): Observable<string> {
-    const url = this._api.endpoint + '/resource/events';
+    const url = this._api.v1endpoint + '/resource/events';
     const params = { type: EventType.POST_LIKED, object: id };
     return this._http.delete<EventId[]>(url, {params}).pipe(
       map(ids => ids[0].id)

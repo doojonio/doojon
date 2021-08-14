@@ -16,7 +16,7 @@ export class FavoriteChallengesService {
   }
 
   setFavoriteFlagOnChallenge(flag: boolean, challengeId: string) {
-    const url = this._api.endpoint + '/resource/profile_favorite_challenges';
+    const url = this._api.v1endpoint + '/resource/profile_favorite_challenges';
 
     if (flag === false) {
       return this._http.delete(url, {params: {challenge_id: challengeId}})

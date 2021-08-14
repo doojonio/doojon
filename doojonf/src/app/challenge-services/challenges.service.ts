@@ -18,19 +18,19 @@ export class ChallengesService {
   }
 
   createChallenge(challenge: CreatableChallenge) : Observable<ChallengeCreateReturning[]> {
-    const url = this._api.endpoint + '/resource/challenges';
+    const url = this._api.v1endpoint + '/resource/challenges';
     return this._http.post<ChallengeCreateReturning[]>(url, challenge)
   }
 
   readChallenge(id: string): Observable<ReadableChallenge> {
-    const url = this._api.endpoint + '/resource/challenges';
+    const url = this._api.v1endpoint + '/resource/challenges';
     return this._http.get<ReadableChallenge[]>(url, {params: {id: id}}).pipe(
       map(challenges => challenges[0])
     );
   }
 
   getChallengeCommonInfo(id: string): Observable<ChallengeCommonInformation> {
-    const url = this._api.endpoint + '/resource/challenges/common';
+    const url = this._api.v1endpoint + '/resource/challenges/common';
     return this._http.get<ChallengeCommonInformation>(url, {params: {id: id}});
   }
 }

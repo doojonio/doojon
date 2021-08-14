@@ -19,14 +19,14 @@ export class AuthService {
   }
 
   authWithPassword(email: string, password: string): Observable<string> {
-    const url = this._apiConfig.endpoint + '/auth';
+    const url = this._apiConfig.v1endpoint + '/auth';
     const creds: PasswordAuthCreds = { email, password };
 
     return this._http.post(url, creds, { responseType: 'text' });
   }
 
   logout(): Observable<string> {
-    const url = this._apiConfig.endpoint + '/logout';
+    const url = this._apiConfig.v1endpoint + '/logout';
     return this._http.delete(url, { responseType: 'text' }).pipe(tap(_ => {
       this._id.onLogout()
     }));

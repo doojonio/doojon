@@ -31,9 +31,9 @@ export interface ApisConfig {
 }
 
 export interface DoojonApiConfig {
-  endpoint: string;
+  v1endpoint: string;
 }
 
 export interface AccountsApiConfig {
-  endpoint: string;
+  v1endpoint: string;
 }

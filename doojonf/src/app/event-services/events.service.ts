@@ -14,7 +14,7 @@ export class EventsService {
   }
 
   getEventsFromFollowing(options?: GetEventsOptions): Observable<Array<Event>> {
-    const url = this._api.endpoint + '/resource/events/following';
+    const url = this._api.v1endpoint + '/resource/events/following';
 
     let params = new HttpParams();
 
