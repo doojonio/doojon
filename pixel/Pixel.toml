@@ -1,0 +1,4 @@
+[web.server]
+listen = "0.0.0.0:8080"
+workers = 6
+max_connections = 25_000

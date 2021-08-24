@@ -1,0 +1,13 @@
+[package]
+name = "pixel"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+actix-multipart = "0.3.0"
+actix-web = "3.3.2"
+futures = "0.3.16"
+image = "0.23.14"
+mime = "0.3.16"
+serde = "1.0.126"
+toml = "0.5.8"
