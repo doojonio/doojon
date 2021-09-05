@@ -1,104 +1,127 @@
 use actix_multipart::Multipart;
-use actix_web::{web, Error, HttpResponse};
+use actix_web::{self as aweb, web, HttpResponse};
+
+use crate::{
+    config::Config,
+    services::storage::{self, Storage},
+};
 
 use futures::{StreamExt, TryStreamExt};
 
 #[derive(serde::Deserialize)]
 pub struct QueryCropValues {
-  x: u32,
-  y: u32,
-  width: u32,
-  height: u32,
+    x: u32,
+    y: u32,
+    length: u32,
+}
+
+#[derive(serde::Serialize)]
+pub struct ResponseAvatarUrls {
+    full: storage::ObjectPresentation,
+    mini: storage::ObjectPresentation,
 }
 
 pub async fn avatarize(
-  payload: Multipart,
-  crop: web::Query<QueryCropValues>,
-) -> Result<HttpResponse, Error> {
-  _check_crop_vals(&crop).or_else(|err| Err(HttpResponse::BadRequest().body(err)))?;
+    payload: Multipart,
+    crop: web::Query<QueryCropValues>,
+    storage: web::Data<Storage>,
+    config: web::Data<Config>,
+) -> Result<HttpResponse, aweb::Error> {
+    if crop.length < config.avatars.avatar_min_length {
+        Err(aweb::error::ErrorBadRequest(format!(
+            "length of the crop square should not be lesser then {}",
+            config.avatars.avatar_min_length
+        )))?;
+    }
 
-  let bytes = _get_image_bytes(payload)
-    .await
-    .or_else(|err| Err(HttpResponse::BadRequest().body(err)))?;
+    let bytes = _get_image_bytes(payload)
+        .await
+        .map_err(aweb::error::ErrorBadRequest)?;
 
-  let mut im = image::load_from_memory(&bytes)
-    .or_else(|err| {
-      Err(HttpResponse::BadRequest().body(format!("error during parsing image: {}", err)))
-    })?
-    .into_rgb8();
+    let mut im = image::load_from_memory(&bytes)
+        .map_err(aweb::error::ErrorInternalServerError)?
+        .into_rgb8();
 
-  _check_crop_compared_to_image_vals(im.dimensions(), &crop)
-    .or_else(|msg| Err(HttpResponse::BadRequest().body(msg)))?;
+    _check_crop_compared_to_image_vals(im.dimensions(), &crop)
+        .map_err(aweb::error::ErrorBadRequest)?;
 
-  im = image::imageops::crop(&mut im, crop.x, crop.y, crop.width, crop.height).to_image();
+    im = image::imageops::crop(&mut im, crop.x, crop.y, crop.length, crop.length).to_image();
+    im = image::imageops::resize(&mut im, 300, 300, image::imageops::FilterType::Gaussian);
 
-  im = image::imageops::resize(&mut im, 300, 300, image::imageops::FilterType::Gaussian);
-  im.save("/tmp/test.jpg")
-    .or_else(|err| Err(HttpResponse::BadRequest().body(format!("{}", err))))?;
+    let mut buf = Vec::<u8>::new();
+    let mut encoder = image::jpeg::JpegEncoder::new(&mut buf);
+    encoder
+        .encode_image(&im)
+        .map_err(aweb::error::ErrorInternalServerError)?;
 
-  // Minificated
-  im = image::imageops::resize(&mut im, 64, 64, image::imageops::FilterType::Gaussian);
-  im.save("/tmp/test.mini.jpg")
-    .or_else(|err| Err(HttpResponse::BadRequest().body(format!("{}", err))))?;
+    let full_obj = storage
+        .upload_avatar_jpeg(buf)
+        .await
+        .map_err(aweb::error::ErrorInternalServerError)?;
 
-  Ok(HttpResponse::from("OK"))
-}
+    // Minificated
+    im = image::imageops::resize(&mut im, 64, 64, image::imageops::FilterType::Gaussian);
+    let mut buf = Vec::<u8>::new();
+    let mut encoder = image::jpeg::JpegEncoder::new(&mut buf);
+    encoder
+        .encode_image(&im)
+        .map_err(aweb::error::ErrorInternalServerError)?;
 
-fn _check_crop_vals(crop: &QueryCropValues) -> Result<(), &'static str> {
-  if crop.width < 300 || crop.height < 300 {
-    return Err("width and height should not be lesser then 300");
-  }
+    let mini_obj = storage
+        .upload_avatar_jpeg(buf)
+        .await
+        .map_err(aweb::error::ErrorInternalServerError)?;
 
-  if crop.width != crop.height {
-    return Err("cropped image shoud be square (height should be equal width)");
-  }
-
-  Ok(())
+    Ok(HttpResponse::Ok().json(ResponseAvatarUrls {
+        mini: mini_obj,
+        full: full_obj,
+    }))
 }
 
 fn _check_crop_compared_to_image_vals(
-  dimensions: (u32, u32),
-  crop: &QueryCropValues,
+    dimensions: (u32, u32),
+    crop: &QueryCropValues,
 ) -> Result<(), &'static str> {
-  if crop.x + crop.width > dimensions.0 {
-    return Err("(x + width) is bigger than image width");
-  }
+    if crop.x + crop.length > dimensions.0 {
+        Err("(x + width) is bigger than image width")?;
+    }
 
-  if crop.y + crop.height > dimensions.1 {
-    return Err("(y + height) is bigger than image height");
-  }
+    if crop.y + crop.length > dimensions.1 {
+        Err("(y + height) is bigger than image height")?;
+    }
 
-  Ok(())
+    Ok(())
 }
 
-async fn _get_image_bytes(mut payload: Multipart) -> Result<web::BytesMut, &'static str> {
-  while let Ok(Some(mut field)) = payload.try_next().await {
-    let content_disposition = match field.content_disposition() {
-      Some(d) => d,
-      None => continue,
-    };
-    let partname = match content_disposition.get_name() {
-      Some(p) => p,
-      None => continue,
-    };
+async fn _get_image_bytes(mut payload: Multipart) -> Result<web::BytesMut, String> {
+    while let Ok(Some(mut field)) = payload.try_next().await {
+        let content_disposition = match field.content_disposition() {
+            Some(d) => d,
+            None => continue,
+        };
+        let partname = match content_disposition.get_name() {
+            Some(p) => p,
+            None => continue,
+        };
 
-    if partname != "image" {
-      continue;
+        if partname != "image" {
+            continue;
+        }
+
+        match field.content_type().type_() {
+            mime::IMAGE => 1,
+            _other => Err("content-type is not image")?,
+        };
+
+        let mut bytes = web::BytesMut::new();
+        while let Some(chunk) = field.next().await {
+            let chunk =
+                chunk.map_err(|e| format!("unable to get one of the image chunks: {}", e))?;
+            bytes.extend_from_slice(&chunk);
+        }
+
+        return Ok(bytes);
     }
 
-    match field.content_type().type_() {
-      mime::IMAGE => 1,
-      _ => return Err("content-type is not image"),
-    };
-
-    let mut bytes = web::BytesMut::new();
-    while let Some(chunk) = field.next().await {
-      let chunk = chunk.or_else(|_| Err("unable to get one of the image chunks"))?;
-      bytes.extend_from_slice(&chunk);
-    }
-
-    return Ok(bytes);
-  }
-
-  Err("image part of body is missing")
+    Err("image part of body is missing")?
 }

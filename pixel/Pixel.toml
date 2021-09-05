@@ -2,3 +2,10 @@
 listen = "0.0.0.0:8080"
 workers = 6
 max_connections = 25_000
+
+[avatars]
+avatar_min_length = 325
+
+[cloud_storage]
+avatars_bucket = "doojon-test-avatars"
+avatars_filename_length = 64

@@ -1,0 +1,15 @@
+---
+services:
+  pixel:
+    build: "."
+    command: sleep infinity
+    volumes:
+      - "../../:/workspace"
+  cloudstorage:
+    image: fsouza/fake-gcs-server
+    volumes:
+      - ./cloudstorage:/data
+networks:
+  default:
+    external: true
+    name: doojondev
