@@ -1,0 +1,4 @@
+target/
+.devcontainer/cloudstorage/
+secrets/*
+!secrets/*.example

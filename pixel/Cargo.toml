@@ -1,0 +1,15 @@
+[package]
+name = "pixel"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+actix-multipart = "0.4.0-beta.5"
+actix-web = "4.0.0-beta.8"
+cloud-storage = "0.10.2"
+futures = "0.3.17"
+image = "0.23.14"
+mime = "0.3.16"
+rand = "0.8.4"
+serde = "1.0.130"
+toml = "0.5.8"
