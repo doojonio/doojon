@@ -1,7 +1,17 @@
 import { ForbiddenError, NotAuthorizedError } from '../model/errors.js';
 
+import Context from '@mojojs/core/lib/context';
+import { Dataservice } from '../model/dataservice.js';
+
 export default class ResourceController {
+  /**
+   *
+   * @param {Context} ctx
+   */
   async create(ctx) {
+    /**
+     * @type Dataservice
+     */
     const ds = ctx.app.model.getDataservice(ctx.stash.dsname);
     const objects = await ctx.req.json();
 
@@ -24,7 +34,14 @@ export default class ResourceController {
     return ctx.render({ json: ids });
   }
 
+  /**
+   *
+   * @param {Context} ctx
+   */
   async read(ctx) {
+    /**
+     * @type Dataservice
+     */
     const ds = ctx.app.model.getDataservice(ctx.stash.dsname);
     const fields = ds.fields;
 
@@ -48,7 +65,14 @@ export default class ResourceController {
     return ctx.render({ json: objects });
   }
 
+  /**
+   *
+   * @param {Context} ctx
+   */
   async update(ctx) {
+    /**
+     * @type Dataservice
+     */
     const ds = ctx.app.model.getDataservice(ctx.stash.dsname);
     const fields = ds.fields;
 
@@ -75,7 +99,14 @@ export default class ResourceController {
     return ctx.render({ json: ids });
   }
 
+  /**
+   *
+   * @param {Context} ctx
+   */
   async delete(ctx) {
+    /**
+     * @type Dataservice
+     */
     const ds = ctx.app.model.getDataservice(ctx.stash.dsname);
     const fields = ds.fields;
 
@@ -105,6 +136,12 @@ export default class ResourceController {
     return ctx.render({ json: ids });
   }
 
+  /**
+   *
+   * @param {Context} ctx
+   * @param {Object} fields
+   * @returns {Object} fieldsFromQuery
+   */
   _getFieldsFromQuery(ctx, fields) {
     const fieldsFromQuery = {};
 

@@ -1,12 +1,23 @@
+import AccountsCourier from '../couriers/accounts.js';
+import ProfilesDataservice from '../dataservices/profiles.js';
 import { Service } from '../service.js';
 import {
   ID_STATUS_NOPROFILE,
   ID_STATUS_UNAUTHORIZED,
   ID_STATUS_AUTHORIZED,
   ID_STATUS_SYSTEM,
+  UserInfo,
 } from '../state.js';
 
 export default class IdService extends Service {
+  /**
+   * @type {ProfilesDataservice}
+   */
+  _profiles;
+  /**
+   * @type {AccountsCourier}
+   */
+  _accountsCourier;
   static get deps() {
     return {
       _profiles: '/ds/profiles',
@@ -14,6 +25,11 @@ export default class IdService extends Service {
     };
   }
 
+  /**
+   *
+   * @param {string} sessionId
+   * @returns {Promise<UserInfo>}
+   */
   async collectUserInformationBySession(sessionId) {
     if (!sessionId) return { status: ID_STATUS_UNAUTHORIZED };
 

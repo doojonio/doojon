@@ -22,12 +22,12 @@
   },
   "homepage": "https://github.com/doojonio/doojon#readme",
   "dependencies": {
+    "@google-cloud/spanner": "^5.15.0",
     "@mojojs/core": "^0.0.8",
     "ejs": "^3.1.6",
-    "knex": "^0.95.5",
-    "pg": "^8.6.0",
     "prettier": "^2.3.0",
-    "tough-cookie": "^4.0.0"
+    "tough-cookie": "^4.0.0",
+    "typescript": "^4.4.2"
   },
   "devDependencies": {
     "supervisor": "^0.12.0"

@@ -1,8 +1,32 @@
 import { Service } from './service.js';
-import { ID_STATUS_SYSTEM } from './state.js';
+import { State, ID_STATUS_SYSTEM } from './state.js';
 import { ForbiddenError } from './errors.js';
+import { DataserviceGuard } from './ds_guard.js';
+import { Spanner } from '@google-cloud/spanner';
+import { Logger } from '@mojojs/core';
 
 export class Dataservice extends Service {
+  /**
+   * @type {Spanner}
+   */
+  _db;
+  /**
+   * @type {Logger}
+   */
+  _log;
+  /**
+   * @type {Object}
+   */
+  _dbschema;
+  /**
+   * Guard should be redefined in child dataservices using _customdeps.
+   * Otherwise there will be alway forbidden errors unless user status is not `SYSTEM`
+   *
+   * @type {DataserviceGuard}
+   *
+   */
+  _guard = undefined;
+
   static get deps() {
     return Object.assign(
       {
@@ -13,18 +37,37 @@ export class Dataservice extends Service {
       this._customdeps
     );
   }
+  /**
+   * Custom dependencies are specified in subclasses
+   *
+   * @private
+   */
   static get _customdeps() {
     return {};
   }
 
+  /**
+   * @private
+   */
   static get _tablename() {
     throw new Error('_tablename is undefined');
   }
 
+  /**
+   * Object with column names (as keys) and their's defenitions (as values)
+   *
+   * @private
+   * @type {Object}
+   */
   get fields() {
     return this._dbschema.tables[this.constructor._tablename];
   }
 
+  /**
+   * Array of primary keys for dataservice's primary table
+   * @private
+   * @type {Array<string>}
+   */
   get _primarykeys() {
     const fields = this.fields;
     const pkeys = [];
@@ -36,19 +79,28 @@ export class Dataservice extends Service {
     return pkeys;
   }
 
-  async checkBeforeCreate(state, objects) {
-    throw new Error('create on this dataservice is fordbidden')
-  }
-
-  async _preCreate(state, objects) {}
-
+  /**
+   * Insert objects on dataservice's primary table
+   *
+   * @param {State} state
+   * @param {Array<Object>} objects
+   * @returns {Array<Object>} array of {id: string}
+   */
   async create(state, objects) {
-    objects = Array.isArray(objects) ? objects : [objects];
+    if (!Array.isArray(objects)) {
+      throw Error('objects (second argument) is not array of objects');
+    }
 
-    await this.checkBeforeCreate(state, objects);
+    if (state.uinfo.status !== ID_STATUS_SYSTEM) {
+      const guard = this._guard;
+      if (!guard) {
+        throw new ForbiddenError('create action has been forbidden')
+      }
+      await guard.precreateCheck(state, objects);
+      await guard.precreateAction(state, objects);
+    }
 
     this._log.trace(`Inserting objects in ${this.constructor._tablename}`);
-    await this._preCreate(state, objects);
 
     const ids = await this._db(this.constructor._tablename)
       .insert(objects)
@@ -59,51 +111,83 @@ export class Dataservice extends Service {
     return ids;
   }
 
-  async _postCreate(state, ids) {}
-
-  async checkBeforeRead(state, where) {
-    throw new ForbiddenError('read on dataservice is forbidden')
-  }
-
+  /**
+   * Read objects from dataservice's primary table
+   *
+   * @param {Stae} state
+   * @param {Object} where
+   * @returns TODO
+   */
   async read(state, where) {
-
-    if (state.uinfo.status !== ID_STATUS_SYSTEM)
-      await this.checkBeforeRead(state, where);
+    if (state.uinfo.status !== ID_STATUS_SYSTEM) {
+      if (!this._guard) {
+        throw new ForbiddenError('read action has been forbidden')
+      }
+      await this._guard.prereadCheck(state, where);
+    }
 
     this._log.trace(`Reading objects from ${this.constructor._tablename}`);
     return await this._db.select().from(this.constructor._tablename).where(where);
   }
 
-  async checkBeforeUpdate(state, where, newFields) {
-    throw new ForbiddenError('update on dataservice is forbidden')
-  }
-
+  /**
+   * Update objects in dataservice's primary table
+   *
+   * @param {State} state
+   * @param {Object} where
+   * @param {Object} newFields
+   * @returns TODO
+   */
   async update(state, where, newFields) {
-    await this.checkBeforeUpdate(state, where, newFields);
+    if (state.uinfo.status !== ID_STATUS_SYSTEM) {
+      if (!this._guard) {
+        throw new ForbiddenError('update action has been forbidden');
+      }
+      await this._guard.preupdateCheck(state, where, newFields);
+    }
 
-    this._log.trace(`Updating objects in ${this.constructor._tablename}`);
+    this._log.trace(`updating objects in ${this.constructor._tablename}`);
     return await this._db(this.constructor._tablename)
       .where(where)
       .update(newFields)
       .returning(this._primarykeys);
   }
 
-  async checkBeforeDelete(state, where) {
-    throw new ForbiddenError('delete on dataservice is forbidden')
-  }
-
-  _preDelete(state, where) {}
+  /**
+   * Delete objects from dataservice's primary table
+   *
+   * @param {State} state
+   * @param {Object} where
+   * @returns TODO
+   */
   async delete(state, where) {
-    await this.checkBeforeDelete(state, where);
-    await this._preDelete(state, where);
 
-    this._log.trace(`Deleting objects from ${this.constructor._tablename}`);
+    if (state.uinfo.status !== ID_STATUS_SYSTEM) {
+      if (!this._guard) {
+        throw new ForbiddenError('delete action has been forbidden');
+      }
+      await this._guard.predeleteCheck(state, where);
+    }
+
+    this._log.trace(`deleting objects from ${this.constructor._tablename}`);
+
     return await this._db(this.constructor._tablename)
       .delete()
       .where(where)
       .returning(this._primarykeys);
   }
 
+  /**
+   * Validate fields against array of fields to ensure
+   * that extra fields aren't present in object.
+   *
+   * If options.strict == true then
+   *
+   * @param {Object} fields
+   * @param {Array} againstFields
+   * @param {Object} options
+   * @returns {undefined}
+   */
   validateFields(fields, againstFields = undefined, options = { strict: false }) {
     const allowedFields = againstFields ?? Object.keys(this._fields);
 

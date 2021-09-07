@@ -1,4 +1,4 @@
-export const schema = {
+export const Schema = {
   'tables': {
     'challenge_comments': {
       'challenge': {

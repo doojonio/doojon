@@ -1,3 +1,4 @@
+import IdService from '../model/services/id.js';
 import { State } from '../model/state.js';
 
 export default async function addHelpers(app) {
@@ -6,6 +7,9 @@ export default async function addHelpers(app) {
 
 async function _stateFromCtxHelper(ctx) {
   const state = new State(ctx.app.log);
+  /**
+   * @type {IdService}
+   */
   const idService = ctx.app.model.getService('id');
 
   let authCookieName = ctx.app.config.web.authCookie.name;

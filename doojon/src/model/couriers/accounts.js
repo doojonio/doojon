@@ -3,14 +3,14 @@ import { Cookie } from 'tough-cookie';
 
 export default class AccountsCourier {
   constructor(conf) {
-    for (const required of ['protocol', 'host', 'port']) {
+    for (const required of ['schema', 'host', 'port']) {
       if (!conf[required]) throw new Error(`${required} is required`);
     }
 
-    const proto = conf.protocol;
+    const schema = conf.schema;
     const host = conf.host;
     const port = conf.port;
-    const baseURL = new URL(`${proto}://${host}:${port}`);
+    const baseURL = new URL(`${schema}://${host}:${port}`);
 
     this._host = conf.host;
     this.ua = new Client({ name: 'Accounts Courier', baseURL });
@@ -18,6 +18,11 @@ export default class AccountsCourier {
     this.ua.cookieJar.rejectPublicSuffixes = false;
   }
 
+  /**
+   *
+   * @param {AccountCredentials} creds
+   * @returns undefined
+   */
   async auth(creds) {
 
     const res = await this.ua.post('/api/svc/accounts/1/auth', {
@@ -30,6 +35,10 @@ export default class AccountsCourier {
     return;
   }
 
+  /**
+   *
+   * @returns undefined
+   */
   async logout() {
     if ((await this.ua.cookieJar.serialize()).cookies.length === 0) return;
 
@@ -43,6 +52,12 @@ export default class AccountsCourier {
     return;
   }
 
+  /**
+   * Throws error on fail
+   *
+   * @param {Object} account
+   * @returns {Object} object with id
+   */
   async createAccount(account) {
     const res = await this.ua.post('/api/svc/accounts/1/accounts', { json: account });
 
@@ -54,6 +69,10 @@ export default class AccountsCourier {
     return res.json();
   }
 
+  /**
+   *
+   * @returns {Object} object with id
+   */
   async createTestAccount() {
 
     const res = await this.ua.post('/api/svc/accounts/1/test_account');
@@ -64,6 +83,11 @@ export default class AccountsCourier {
     return res.json();
   }
 
+  /**
+   *
+   * @param {Object} by keys: email or id
+   * @returns
+   */
   async getAccount(by) {
     const url = new URL('/api/svc/accounts/1/accounts', this.ua.baseURL);
 
@@ -87,6 +111,11 @@ export default class AccountsCourier {
     return res.json();
   }
 
+  /**
+   *
+   * @param {string} sessionId
+   * @returns Accounts information
+   */
   async getAccountBySession(sessionId) {
     let authCookie = new Cookie({key: 'SID', value: sessionId, domain: this._host});
     this.ua.cookieJar.setCookie(authCookie, this.ua.baseURL);
@@ -102,4 +131,15 @@ export default class AccountsCourier {
 
     return res.json();
   }
+}
+
+export class AccountCredentials {
+  /**
+   * @type {string}
+   */
+  email;
+  /**
+   * @type {string}
+   */
+  password;
 }

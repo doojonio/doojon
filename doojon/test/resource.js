@@ -35,6 +35,5 @@ tap.test('Resource', async t => {
     };
   });
 
-  app.model.closeHandlers();
   client.stop();
 });
