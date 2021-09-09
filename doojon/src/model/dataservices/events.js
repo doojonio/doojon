@@ -1,6 +1,6 @@
 import { Dataservice } from '../dataservice.js';
 import { NotAuthorizedError } from '../errors.js';
-import { ID_STATUS_AUTHORIZED } from '../state.js';
+import { IdStatus } from '../state.js';
 
 export const EVENT_FOLLOWING_STARTED = 'following_started';
 export const EVENT_CHALLENGE_CREATED = 'challenge_created';
@@ -19,7 +19,7 @@ export default class EventsDataservice extends Dataservice {
   }
 
   async getEventsFromFollowing(state, options) {
-    if (state.uinfo.status !== ID_STATUS_AUTHORIZED)
+    if (state.uinfo.status !== IdStatus.AUTHORIZED)
       throw new NotAuthorizedError();
 
     const limit = options?.limit ?? 25;

@@ -1,6 +1,6 @@
 import { Dataservice } from '../dataservice.js';
 import { NotAuthorizedError } from '../errors.js';
-import { ID_STATUS_AUTHORIZED } from '../state.js';
+import { IdStatus } from '../state.js';
 
 export default class ProfileFavoriteChallengesDataservice extends Dataservice {
   static get _tablename() {
@@ -8,7 +8,7 @@ export default class ProfileFavoriteChallengesDataservice extends Dataservice {
   }
 
   async checkBeforeCreate(state) {
-    if (state.uinfo.status !== ID_STATUS_AUTHORIZED)
+    if (state.uinfo.status !== IdStatus.AUTHORIZED)
       throw new NotAuthorizedError();
   }
 

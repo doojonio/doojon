@@ -1,6 +1,6 @@
 import { Dataservice } from '../dataservice.js';
 import { NotAuthorizedError } from '../errors.js';
-import { ID_STATUS_AUTHORIZED } from '../state.js';
+import { IdStatus } from '../state.js';
 
 export default class ChallengesDataservice extends Dataservice {
   static get _tablename() {
@@ -25,7 +25,7 @@ export default class ChallengesDataservice extends Dataservice {
 
     info = info[0];
 
-    if (state.uinfo?.status === ID_STATUS_AUTHORIZED) {
+    if (state.uinfo?.status === IdStatus.AUTHORIZED) {
       const inFavorite = await this._db('profile_favorite_challenges')
         .select(1)
         .where({ profile: state.uinfo.account.id });

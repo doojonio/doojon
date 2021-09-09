@@ -2,10 +2,7 @@ import AccountsCourier from '../couriers/accounts.js';
 import ProfilesDataservice from '../dataservices/profiles.js';
 import { Service } from '../service.js';
 import {
-  ID_STATUS_NOPROFILE,
-  ID_STATUS_UNAUTHORIZED,
-  ID_STATUS_AUTHORIZED,
-  ID_STATUS_SYSTEM,
+  IdStatus,
   UserInfo,
 } from '../state.js';
 
@@ -31,18 +28,18 @@ export default class IdService extends Service {
    * @returns {Promise<UserInfo>}
    */
   async collectUserInformationBySession(sessionId) {
-    if (!sessionId) return { status: ID_STATUS_UNAUTHORIZED };
+    if (!sessionId) return { status: IdStatus.UNAUTHORIZED };
 
     const account = await this._accountsCourier.getAccountBySession(sessionId);
 
-    if (!account) return { status: ID_STATUS_UNAUTHORIZED };
+    if (!account) return { status: IdStatus.UNAUTHORIZED };
 
     const profiles = await this._profiles.read(
-      { uinfo: { status: ID_STATUS_SYSTEM } },
+      { uinfo: { status: IdStatus.SYSTEM } },
       { id: account.id }
     );
-    if (profiles.length === 0) return { account, status: ID_STATUS_NOPROFILE };
+    if (profiles.length === 0) return { account, status: IdStatus.NOPROFILE };
 
-    return { account, profile: profiles[0], status: ID_STATUS_AUTHORIZED };
+    return { account, profile: profiles[0], status: IdStatus.AUTHORIZED };
   }
 }

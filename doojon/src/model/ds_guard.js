@@ -1,7 +1,7 @@
 import { Database } from '@google-cloud/spanner';
 import { ForbiddenError } from './errors';
 import { Service } from './service';
-import { ID_STATUS_AUTHORIZED, State } from './state';
+import { IdStatus, State } from './state';
 
 export class DataserviceGuard extends Service {
   /**
@@ -133,7 +133,7 @@ export class DataserviceGuard extends Service {
    * @param {State} state
    */
   isAuthorized(state) {
-    if (state.uinfo.status !== ID_STATUS_AUTHORIZED) {
+    if (state.uinfo.status !== IdStatus.AUTHORIZED) {
       throw new NotAuthorizedError();
     }
   }

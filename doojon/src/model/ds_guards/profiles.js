@@ -1,6 +1,6 @@
 import { DataserviceGuard } from '../ds_guard';
 import { NotAuthorizedError } from '../errors';
-import { State } from '../state';
+import { State, IdStatus } from '../state';
 
 const USERNAME_CHECK = /^[a-zA-Z]{1,}[a-zA-Z\d_]{2,17}$/;
 
@@ -13,7 +13,7 @@ export default class ChallengesGuard extends DataserviceGuard {
   precreateCheck(state, profiles) {
     if (!Array.isArray(profiles)) profiles = [profiles];
 
-    if (state.uinfo.status != ID_STATUS_NOPROFILE)
+    if (state.uinfo.status != IdStatus.NOPROFILE)
       throw new NotAuthorizedError();
 
     if (profiles.length !== 1)

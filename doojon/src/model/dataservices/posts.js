@@ -1,6 +1,6 @@
 import { Dataservice } from '../dataservice.js';
 import { NotAuthorizedError } from '../errors.js';
-import { ID_STATUS_AUTHORIZED } from '../state.js';
+import { IdStatus } from '../state.js';
 import { EVENT_POST_CREATED, EVENT_POST_LIKED } from './events.js';
 
 const HASHTAG_REGEX = /\B((?<!#)\#{1,2}\w+\b)(?!;)/g;
@@ -33,7 +33,7 @@ export default class PostsDataservice extends Dataservice {
     };
 
     // Is post liked info
-    if (state.uinfo.status === ID_STATUS_AUTHORIZED) {
+    if (state.uinfo.status === IdStatus.AUTHORIZED) {
       select['liked'] = db.raw(
         'exists ?',
         db('events').where({
@@ -53,7 +53,7 @@ export default class PostsDataservice extends Dataservice {
   }
 
   checkBeforeCreate(state) {
-    if (state.uinfo.status != ID_STATUS_AUTHORIZED)
+    if (state.uinfo.status != IdStatus.AUTHORIZED)
       throw new NotAuthorizedError();
   }
 

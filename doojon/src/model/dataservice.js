@@ -1,5 +1,5 @@
 import { Service } from './service.js';
-import { State, ID_STATUS_SYSTEM } from './state.js';
+import { State, IdStatus } from './state.js';
 import { ForbiddenError } from './errors.js';
 import { DataserviceGuard } from './ds_guard.js';
 import { Database } from '@google-cloud/spanner';
@@ -91,7 +91,7 @@ export class Dataservice extends Service {
       throw Error('objects (second argument) is not array of objects');
     }
 
-    if (state.uinfo.status !== ID_STATUS_SYSTEM) {
+    if (state.uinfo.status !== IdStatus.SYSTEM) {
       const guard = this._guard;
       if (!guard) {
         throw new ForbiddenError('create action has been forbidden');
@@ -119,7 +119,7 @@ export class Dataservice extends Service {
    * @returns TODO
    */
   async read(state, where) {
-    if (state.uinfo.status !== ID_STATUS_SYSTEM) {
+    if (state.uinfo.status !== IdStatus.SYSTEM) {
       if (!this._guard) {
         throw new ForbiddenError('read action has been forbidden');
       }
@@ -142,7 +142,7 @@ export class Dataservice extends Service {
    * @returns TODO
    */
   async update(state, where, newFields) {
-    if (state.uinfo.status !== ID_STATUS_SYSTEM) {
+    if (state.uinfo.status !== IdStatus.SYSTEM) {
       if (!this._guard) {
         throw new ForbiddenError('update action has been forbidden');
       }
@@ -164,7 +164,7 @@ export class Dataservice extends Service {
    * @returns TODO
    */
   async delete(state, where) {
-    if (state.uinfo.status !== ID_STATUS_SYSTEM) {
+    if (state.uinfo.status !== IdStatus.SYSTEM) {
       if (!this._guard) {
         throw new ForbiddenError('delete action has been forbidden');
       }
