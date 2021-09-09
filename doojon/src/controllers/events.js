@@ -1,8 +1,8 @@
-import { EVENT_POST_CREATED } from '../model/dataservices/events.js';
+import { Events } from '../model/dataservices/events.js';
 import { IdStatus } from '../model/state.js';
 
 const SHOWABLE_EVENTS = [
-  EVENT_POST_CREATED,
+  Events.POST_CREATED,
 ];
 
 export default class EventsController {
@@ -33,7 +33,7 @@ export default class EventsController {
     const dataserviceQueries = [];
     const posts = ctx.app.model.getDataservice('posts');
 
-    const post_events = events.filter(e => e.type === EVENT_POST_CREATED);
+    const post_events = events.filter(e => e.type === Events.POST_CREATED);
     if (post_events.length !== 0) {
       dataserviceQueries.push(posts.linkPostsToPostCreatedEvents(state, post_events));
     }

@@ -1,7 +1,6 @@
 import { Dataservice } from '../dataservice.js';
 import {
-  EVENT_FOLLOWING_STARTED,
-  EVENT_POST_CREATED,
+  Events,
 } from './events.js';
 
 export default class ProfilesDataservice extends Dataservice {
@@ -35,16 +34,16 @@ export default class ProfilesDataservice extends Dataservice {
         'followers': db('events')
           .count()
           .where({
-            type: EVENT_FOLLOWING_STARTED,
+            type: Events.FOLLOWING_STARTED,
             object: db.raw('p.id::text'),
           }),
         'following': db('events')
           .count('*')
-          .where({ type: EVENT_FOLLOWING_STARTED, emitter: db.raw('p.id') }),
+          .where({ type: Events.FOLLOWING_STARTED, emitter: db.raw('p.id') }),
         'posts': db({ po: 'posts' })
           .join(
             { e: 'events' },
-            { 'e.object': 'po.id', 'e.type': db.raw(`'${EVENT_POST_CREATED}'`) }
+            { 'e.object': 'po.id', 'e.type': db.raw(`'${Events.POST_CREATED}'`) }
           )
           .count()
           .where({ 'e.emitter': db.raw('p.id') }),

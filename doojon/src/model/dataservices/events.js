@@ -2,16 +2,17 @@ import { Dataservice } from '../dataservice.js';
 import { NotAuthorizedError } from '../errors.js';
 import { IdStatus } from '../state.js';
 
-export const EVENT_FOLLOWING_STARTED = 'following_started';
-export const EVENT_CHALLENGE_CREATED = 'challenge_created';
-export const EVENT_CHALLENGE_COMMENTED = 'challenge_commented';
-export const EVENT_CHALLENGE_PROPOSED = 'challenge_proposed';
-export const EVENT_CHALLENGE_PROPOSAL_COMMENTED =
-  'challenge_proposal_commented';
-export const EVENT_POST_CREATED = 'post_created';
-export const EVENT_POST_LIKED = 'post_liked';
-export const EVENT_POST_COMMENTED = 'post_commented';
-export const EVENT_POST_COMMENT_LIKED = 'post_comment_liked';
+export const Events = {
+  FOLLOWING_STARTED: 'following_started',
+  CHALLENGE_CREATED: 'challenge_created',
+  CHALLENGE_COMMENTED: 'challenge_commented',
+  CHALLENGE_PROPOSED: 'challenge_proposed',
+  CHALLENGE_PROPOSAL_COMMENTED: 'challenge_proposal_commented',
+  POST_CREATED: 'post_created',
+  POST_LIKED: 'post_liked',
+  POST_COMMENTED: 'post_commented',
+  POST_COMMENT_LIKED: 'post_comment_liked',
+};
 
 export default class EventsDataservice extends Dataservice {
   static get _tablename() {
@@ -33,7 +34,7 @@ export default class EventsDataservice extends Dataservice {
       .with(
         'following',
         db('events').select(db.raw('object::uuid')).where({
-          type: EVENT_FOLLOWING_STARTED,
+          type: Events.FOLLOWING_STARTED,
           emitter: userId,
         })
       )

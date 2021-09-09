@@ -1,7 +1,7 @@
 import { Dataservice } from '../dataservice.js';
 import { NotAuthorizedError } from '../errors.js';
 import { IdStatus } from '../state.js';
-import { EVENT_POST_CREATED, EVENT_POST_LIKED } from './events.js';
+import { Events } from './events.js';
 
 const HASHTAG_REGEX = /\B((?<!#)\#{1,2}\w+\b)(?!;)/g;
 
@@ -28,7 +28,7 @@ export default class PostsDataservice extends Dataservice {
       'tags': 'p.tags',
       'title': 'p.title',
       'update_time': 'p.update_time',
-      'likes': db('events').count('id').where({object: db.raw('p.id'), type: EVENT_POST_LIKED}),
+      'likes': db('events').count('id').where({object: db.raw('p.id'), type: Events.POST_LIKED}),
       'comments': db('post_comments').count('*').where({post: db.raw('p.id')}),
     };
 
@@ -37,7 +37,7 @@ export default class PostsDataservice extends Dataservice {
       select['liked'] = db.raw(
         'exists ?',
         db('events').where({
-          type: EVENT_POST_LIKED,
+          type: Events.POST_LIKED,
           emitter: state.uinfo.account.id,
           object: db.raw('p.id'),
         })
@@ -77,7 +77,7 @@ export default class PostsDataservice extends Dataservice {
       const postId = pkey.id;
       events.push({
         object: postId,
-        type: EVENT_POST_CREATED,
+        type: Events.POST_CREATED,
       });
     }
 
