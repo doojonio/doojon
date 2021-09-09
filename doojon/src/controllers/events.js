@@ -1,5 +1,5 @@
 import { EVENT_POST_CREATED } from '../model/dataservices/events.js';
-import { ID_STATUS_AUTHORIZED } from '../model/state.js';
+import { IdStatus } from '../model/state.js';
 
 const SHOWABLE_EVENTS = [
   EVENT_POST_CREATED,
@@ -9,7 +9,7 @@ export default class EventsController {
   async getEventsFromFollowing(ctx) {
     const state = await ctx.getState(ctx);
 
-    if (state.uinfo.status !== ID_STATUS_AUTHORIZED)
+    if (state.uinfo.status !== IdStatus.AUTHORIZED)
       return ctx.res.status(401).send('user is not authorized');
 
     const limit = ctx.req.query.get('limit');

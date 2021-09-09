@@ -4,6 +4,9 @@
       "name": "SID"
     }
   },
+  "spanner": {
+    "poolOptions": {}
+  },
   "couriers": {
     "accounts": {
       "schema": "http",

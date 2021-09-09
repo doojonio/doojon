@@ -7,7 +7,7 @@ const SUBCOMMANDS = {
 };
 
 const SCHEMA_TEMPLATE = `
-  export const schema = {
+  export const Schema = {
     'tables': {
     <% for (const table of schema.tables) { -%>
       '<%= table['table_name'] %>': {

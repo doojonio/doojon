@@ -2,12 +2,12 @@ import { Service } from './service.js';
 import { State, ID_STATUS_SYSTEM } from './state.js';
 import { ForbiddenError } from './errors.js';
 import { DataserviceGuard } from './ds_guard.js';
-import { Spanner } from '@google-cloud/spanner';
+import { Database } from '@google-cloud/spanner';
 import { Logger } from '@mojojs/core';
 
 export class Dataservice extends Service {
   /**
-   * @type {Spanner}
+   * @type {Database}
    */
   _db;
   /**
@@ -94,7 +94,7 @@ export class Dataservice extends Service {
     if (state.uinfo.status !== ID_STATUS_SYSTEM) {
       const guard = this._guard;
       if (!guard) {
-        throw new ForbiddenError('create action has been forbidden')
+        throw new ForbiddenError('create action has been forbidden');
       }
       await guard.precreateCheck(state, objects);
       await guard.precreateAction(state, objects);
@@ -121,13 +121,16 @@ export class Dataservice extends Service {
   async read(state, where) {
     if (state.uinfo.status !== ID_STATUS_SYSTEM) {
       if (!this._guard) {
-        throw new ForbiddenError('read action has been forbidden')
+        throw new ForbiddenError('read action has been forbidden');
       }
       await this._guard.prereadCheck(state, where);
     }
 
     this._log.trace(`Reading objects from ${this.constructor._tablename}`);
-    return await this._db.select().from(this.constructor._tablename).where(where);
+    return await this._db
+      .select()
+      .from(this.constructor._tablename)
+      .where(where);
   }
 
   /**
@@ -161,7 +164,6 @@ export class Dataservice extends Service {
    * @returns TODO
    */
   async delete(state, where) {
-
     if (state.uinfo.status !== ID_STATUS_SYSTEM) {
       if (!this._guard) {
         throw new ForbiddenError('delete action has been forbidden');
@@ -175,39 +177,5 @@ export class Dataservice extends Service {
       .delete()
       .where(where)
       .returning(this._primarykeys);
-  }
-
-  /**
-   * Validate fields against array of fields to ensure
-   * that extra fields aren't present in object.
-   *
-   * If options.strict == true then
-   *
-   * @param {Object} fields
-   * @param {Array} againstFields
-   * @param {Object} options
-   * @returns {undefined}
-   */
-  validateFields(fields, againstFields = undefined, options = { strict: false }) {
-    const allowedFields = againstFields ?? Object.keys(this._fields);
-
-    if (Object.keys(fields).length > Object.keys(allowedFields).length )
-      throw new Error('extra fields found');
-
-    const foundFields = [];
-    for (const key in fields) {
-      if (!allowedFields.includes(key))
-        throw new Error(`${key} is not allowed`)
-      foundFields.push(key)
-    }
-
-    if (options.strict) {
-      for (const needed of allowedFields) {
-        if (!foundFields.includes(needed))
-          throw new Error(`${needed} field not found`);
-      }
-    }
-
-    return;
   }
 }

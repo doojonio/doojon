@@ -8,6 +8,12 @@ export class Container {
     }
   }
 
+  /**
+   *
+   * @param {string} serviceName
+   * @param {Object} conf
+   * @returns {Service}
+   */
   addService(serviceName, conf) {
     if (this._services[serviceName]) {
       throw new Error(`service ${serviceName} already exists`);
@@ -23,6 +29,11 @@ export class Container {
     return Object.keys(this._services);
   }
 
+  /**
+   *
+   * @param {string} containerName
+   * @returns {Container} container
+   */
   addContainer(containerName) {
     if (this._containers[containerName]) {
       throw new Error(`container ${containerName} already exists`);
@@ -34,6 +45,11 @@ export class Container {
     return container;
   }
 
+  /**
+   *
+   * @param {string} containerName
+   * @returns {Container}
+   */
   getContainer(containerName) {
     const container = this._containers[containerName];
 
@@ -42,6 +58,11 @@ export class Container {
     return container;
   }
 
+  /**
+   *
+   * @param {string} serviceName
+   * @returns {Service}
+   */
   getService(serviceName) {
     const service = this._services[serviceName];
 
@@ -50,6 +71,12 @@ export class Container {
     return service;
   }
 
+  /**
+   *
+   * @param {string} path
+   * @param {boolean} isContainer
+   * @returns {Service | Container}
+   */
   fetch(path, isContainer = false) {
     path = path.split('/').filter(el => el);
 
@@ -69,6 +96,11 @@ export class Container {
     return currentContainer.getService(lastEl);
   }
 
+  /**
+   *
+   * @param {string} path
+   * @returns Dereferenced service (result of `block` or `class` constructor)
+   */
   resolve(path) {
     return this.fetch(path).get();
   }
@@ -106,6 +138,10 @@ class Service {
     return this._serviceClass.deps;
   }
 
+  /**
+   *
+   * @returns Dereferenced service (result of `block` or `class` constructor)
+   */
   get() {
     if (this._isSingletone && this._instance) {
       return this._instance;

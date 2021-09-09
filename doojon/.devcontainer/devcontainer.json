@@ -4,20 +4,32 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "doojon",
   "workspaceFolder": "/workspace/doojon",
-
-
   // Add the IDs of extensions you want installed when the container is created.
   "extensions": [
     "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode"
+    "esbenp.prettier-vscode",
+    "google-cloud-spanner-ecosystem.google-cloud-spanner-driver",
+    "mtxr.sqltools"
   ],
-
+  "settings": {
+    "sqltools.connections": [
+      {
+        "previewLimit": 50,
+        "driver": "Google Cloud Spanner Driver",
+        "name": "Emulator connection",
+        "project": "doojon-test",
+        "instance": "doojon-test",
+        "database": "doojon",
+        "connectToEmulator": true,
+        "emulatorHost": "doojon_db",
+        "emulatorPort": 9010
+      }
+    ]
+  },
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // "forwardPorts": [3000, 5432],
-
   // Use 'postCreateCommand' to run commands after the container is created.
   // "postCreateCommand": "yarn install",
-
   // Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
   "remoteUser": "node"
 }

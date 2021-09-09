@@ -7,18 +7,6 @@ export default class ChallengesDataservice extends Dataservice {
     return 'challenges';
   }
 
-  checkBeforeCreate(state) {
-    if (state.uinfo.status !== ID_STATUS_AUTHORIZED) {
-      throw new NotAuthorizedError();
-    }
-  }
-
-  _preCreate(state, challenges) {
-    for (const challenge of challenges) {
-      challenge.proposed_by = state.uinfo.account.id;
-    }
-  }
-
   async collectChallengeInfo(state, id) {
     if (!id) {
       throw new Error('missing id');

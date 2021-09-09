@@ -3,6 +3,13 @@ export const ID_STATUS_NOPROFILE = 'NOPROFILE';
 export const ID_STATUS_AUTHORIZED = 'AUTHORIZED';
 export const ID_STATUS_SYSTEM = 'SYSTEM';
 
+export const IdStatus = {
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  NOPROFILE: 'NOPROFILE',
+  AUTHORIZED: 'AUTHORIZED',
+  SYSTEM: 'SYSTEM',
+};
+
 export class State {
   /**
    * @type {UserInfo}
@@ -10,20 +17,13 @@ export class State {
   uinfo;
 }
 
-export class UserInfo {
-  /**
-   * @type {string}
-   */
-  status;
-  /**
-   * @type {AccountInfo}
-   */
-  account;
-}
+/**
+ * @typedef {object} UserInfo
+ * @property {string} status
+ * @property {AccountInfo} account
+ */
 
-export class AccountInfo {
-  /**
-   * @type {string}
-   */
-  id;
-}
+/**
+ * @typedef {object} AccountInfo
+ * @property {string} id
+ */
