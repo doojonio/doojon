@@ -1,10 +1,11 @@
-import AccountsCourier from '../couriers/accounts.js';
-import ProfilesDataservice from '../dataservices/profiles.js';
 import { Service } from '../service.js';
-import {
-  IdStatus,
-  UserInfo,
-} from '../state.js';
+import { IdStatus } from '../state.js';
+
+/**
+ * @typedef {import('../couriers/accounts.js').default} AccountsCourier
+ * @typedef {import('../dataservices/profiles.js').default} ProfilesDataservice
+ * @typedef {import('../state.js').UserInfo} UserInfo
+ */
 
 export default class IdService extends Service {
   /**

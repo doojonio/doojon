@@ -5,6 +5,10 @@ export class Model {
     this._container = new Container();
 
     this._conf = deps.conf;
+
+    /**
+     * @type {import('@mojojs/core').File}
+     */
     this._appHome = deps.home;
     this._container.addService('conf', { block: () => deps.conf });
 
@@ -12,13 +16,24 @@ export class Model {
   }
 
   async init() {
-    const steps = ['couriers', 'handlers', 'dataservices', 'services'];
+    const steps = [
+      'couriers',
+      'handlers',
+      'ds_stewards',
+      'ds_guards',
+      'dataservices',
+      'services',
+    ];
 
     for (const step of steps) {
-      const modulePath = this._appHome.child(`src/model_startups/${step}.js`).toString();
+      const modulePath = this._appHome
+        .child(`src/model_startups/${step}.js`)
+        .toString();
       const fn = (await import(modulePath.toString())).default;
-      fn.apply(this);
+      await fn.apply(this);
     }
+
+    this._container.initAll();
 
     if (process.env['DOOJON_RUN_DB_MIGRATIONS'] === '1') {
       await this._container.resolve('/h/db').migrate.latest();
@@ -26,6 +41,10 @@ export class Model {
   }
 
   getDataservice(name) {
+    return this._container.resolve(`/ds/${name}`);
+  }
+
+  getDsGuard(name) {
     return this._container.resolve(`/ds/${name}`);
   }
 

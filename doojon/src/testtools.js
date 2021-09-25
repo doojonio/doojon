@@ -22,7 +22,9 @@ export async function newAuthorizedClient(app) {
   let authCookieName = app.config.web.authCookie.name;
   const authCookie = (
     await accountsCourier.ua.cookieJar.getCookies(accountsCourier.ua.baseURL)
-  ).filter(c => c.key === authCookieName)[0].clone();
+  )
+    .filter(c => c.key === authCookieName)[0]
+    .clone();
 
   client.accountsSession = authCookie.value;
   client.accountsAccount = account;

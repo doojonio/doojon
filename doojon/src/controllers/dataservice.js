@@ -1,37 +1,68 @@
-import { ForbiddenError, NotAuthorizedError } from '../model/errors.js';
+import {
+  ForbiddenError,
+  NotAuthorizedError,
+  ValidationError,
+} from '../model/errors.js';
 
-import Context from '@mojojs/core/lib/context';
 import { Dataservice } from '../model/dataservice.js';
 
-export default class ResourceController {
+/**
+ * @typedef {import('@mojojs/core').MojoContext} Context
+ */
+
+export default class DataserviceController {
   /**
    *
    * @param {Context} ctx
    */
   async create(ctx) {
-    /**
-     * @type Dataservice
-     */
-    const ds = ctx.app.model.getDataservice(ctx.stash.dsname);
-    const objects = await ctx.req.json();
-
-    const state = await ctx.getState(ctx);
-
+    let objects;
     try {
-      await ds.checkBeforeCreate(state, objects)
-    }
-    catch (e) {
-      if (e instanceof NotAuthorizedError)
-        return ctx.res.status(401).send(`User is not authorized`);
-      if (e instanceof ForbiddenError)
-        return ctx.res.status(403).send(`Foribdden`);
-
-      ctx.app.log.debug(`Error during check for creating: ${e}`)
-      return ctx.res.status(400).send(`check before creating has not passed: ${e}`);
+      objects = await ctx.req.json();
+    } catch (error) {
+      return ctx.render({
+        status: 400,
+        json: new ValidationError(`${error}`),
+      });
     }
 
-    const ids = await ds.create(state, objects);
-    return ctx.render({ json: ids });
+    if (!Array.isArray(objects)) {
+      return ctx.render({
+        status: 400,
+        json: new ValidationError('JSON body is not an array'),
+      });
+    }
+
+    const state = await ctx.getState();
+    const dataserviceName = ctx.stash.dataserviceName;
+    const dataservice = ctx.app.model.getDataservice(dataserviceName);
+
+    let keys;
+    try {
+      keys = await dataservice.create(state, objects);
+    } catch (error) {
+      if (error instanceof ValidationError) {
+        return ctx.render({status: 400, json: error});
+      }
+
+      if (error instanceof NotAuthorizedError) {
+        return ctx.render({status: 401, json: error})
+      }
+
+      if (error instanceof ForbiddenError) {
+        return ctx.render({status: 403, json: error});
+      }
+
+      // Unrecognized exception
+      throw error;
+    }
+
+    const response = {
+      kind: 'ObjectKeys',
+      items: keys,
+    };
+
+    return ctx.render({ json: response });
   }
 
   /**
@@ -49,15 +80,14 @@ export default class ResourceController {
     const state = await ctx.getState(ctx);
 
     try {
-      await ds.checkBeforeRead(state, searchquery)
-    }
-    catch (e) {
+      await ds.checkBeforeRead(state, searchquery);
+    } catch (e) {
       if (e instanceof NotAuthorizedError)
         return ctx.res.status(401).send(`User is not authorized`);
       if (e instanceof ForbiddenError)
         return ctx.res.status(403).send(`Foribdden`);
 
-      ctx.app.log.debug(`Error during check for reading: ${e}`)
+      ctx.app.log.debug(`Error during check for reading: ${e}`);
       return ctx.res.status(400).send(`check before read has not passed ${e}`);
     }
 
@@ -82,16 +112,17 @@ export default class ResourceController {
     const state = await ctx.getState(ctx);
 
     try {
-      await ds.checkBeforeUpdate(state, filter, newFields)
-    }
-    catch (e) {
+      await ds.checkBeforeUpdate(state, filter, newFields);
+    } catch (e) {
       if (e instanceof NotAuthorizedError)
         return ctx.res.status(401).send(`User is not authorized`);
       if (e instanceof ForbiddenError)
         return ctx.res.status(403).send(`Foribdden`);
 
-      ctx.app.log.debug(`Error during check for updating: ${e}`)
-      return ctx.res.status(400).send(`check before update has not passed ${e}`);
+      ctx.app.log.debug(`Error during check for updating: ${e}`);
+      return ctx.res
+        .status(400)
+        .send(`check before update has not passed ${e}`);
     }
 
     const ids = await ds.update(state, filter, newFields);
@@ -115,16 +146,17 @@ export default class ResourceController {
     const state = await ctx.getState(ctx);
 
     try {
-      await ds.checkBeforeDelete(state, filter)
-    }
-    catch (e) {
+      await ds.checkBeforeDelete(state, filter);
+    } catch (e) {
       if (e instanceof NotAuthorizedError)
         return ctx.res.status(401).send(`User is not authorized`);
       if (e instanceof ForbiddenError)
         return ctx.res.status(403).send(`Foribdden`);
 
-      ctx.app.log.debug(`Error during check for deleting: ${e}`)
-      return ctx.res.status(400).send(`check before delete has not passed: ${e}`);
+      ctx.app.log.debug(`Error during check for deleting: ${e}`);
+      return ctx.res
+        .status(400)
+        .send(`check before delete has not passed: ${e}`);
     }
 
     const ids = await ds.delete(state, filter);

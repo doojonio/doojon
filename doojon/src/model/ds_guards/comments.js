@@ -4,7 +4,7 @@ import { DataserviceGuard } from '../ds_guard.js';
  * @typedef {import('../state.js').State} State
  */
 
-export default class ProfilesGuard extends DataserviceGuard {
+export default class CommentsGuard extends DataserviceGuard {
   static get _createSchema() {
     return {
       type: 'array',
@@ -14,10 +14,11 @@ export default class ProfilesGuard extends DataserviceGuard {
         type: 'object',
         additionalProperties: false,
         properties: {
-          bio: { type: 'string', maxLength: 256 },
-          username: { type: 'string', maxLength: 16 },
+          text: { type: 'string', maxLength: 10000 },
+          postId: { type: 'string', maxLength: 11 },
+          authorId: { type: 'string', maxLength: 36 },
         },
-        required: ['bio', 'username'],
+        required: ['text', 'postId', 'authorId'],
       },
     };
   }

@@ -1,11 +1,11 @@
 import { Dataservice } from '../dataservice.js';
 
-export default class PostsDataservice extends Dataservice {
+export default class CommentsDataservice extends Dataservice {
   static get _tablename() {
-    return 'Posts';
+    return 'Comments';
   }
 
   static get _moniker() {
-    return 'posts';
+    return 'comments';
   }
 }

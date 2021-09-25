@@ -5,7 +5,7 @@
   "type": "module",
   "main": "script/doojon.js",
   "scripts": {
-    "morbo": "npx supervisor -w src/ -- ./script/doojon.js server -l http://*:8080",
+    "morbo": "npx supervisor -w src/ -- ./script/doojon.js server",
     "test": "npx tap"
   },
   "repository": {
@@ -24,7 +24,10 @@
   "dependencies": {
     "@google-cloud/spanner": "^5.15.0",
     "@mojojs/core": "^0.0.8",
+    "ajv": "^8.6.3",
+    "doctrine": "^3.0.0",
     "ejs": "^3.1.6",
+    "nopt": "^5.0.0",
     "prettier": "^2.3.0",
     "tough-cookie": "^4.0.0",
     "typescript": "^4.4.2"

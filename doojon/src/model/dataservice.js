@@ -1,9 +1,10 @@
 import { Service } from './service.js';
 import { State, IdStatus } from './state.js';
-import { ForbiddenError } from './errors.js';
+import { ForbiddenError, ValidationError } from './errors.js';
 import { DataserviceGuard } from './ds_guard.js';
 import { Database } from '@google-cloud/spanner';
 import { Logger } from '@mojojs/core';
+import { DataserviceSteward } from './ds_steward.js';
 
 export class Dataservice extends Service {
   /**
@@ -19,20 +20,24 @@ export class Dataservice extends Service {
    */
   _dbschema;
   /**
-   * Guard should be redefined in child dataservices using _customdeps.
-   * Otherwise there will be alway forbidden errors unless user status is not `SYSTEM`
-   *
    * @type {DataserviceGuard}
    *
    */
-  _guard = undefined;
+  _guard;
+
+  /**
+   * @type {DataserviceSteward}
+   */
+  _steward;
 
   static get deps() {
+    const moniker = this._moniker;
     return Object.assign(
       {
         _log: '/h/log',
         _db: '/h/db',
         _dbschema: '/h/db/schema',
+        _guard: `/ds_guards/${moniker}`,
       },
       this._customdeps
     );
@@ -51,6 +56,10 @@ export class Dataservice extends Service {
    */
   static get _tablename() {
     throw new Error('_tablename is undefined');
+  }
+
+  static get _moniker() {
+    throw new Error('_moniker is undefined');
   }
 
   /**
@@ -88,14 +97,12 @@ export class Dataservice extends Service {
    */
   async create(state, objects) {
     if (!Array.isArray(objects)) {
-      throw Error('objects (second argument) is not array of objects');
+      throw ValidationError('objects (second argument) is not array of objects');
     }
 
     if (state.uinfo.status !== IdStatus.SYSTEM) {
       const guard = this._guard;
-      if (!guard) {
-        throw new ForbiddenError('create action has been forbidden');
-      }
+
       await guard.precreateCheck(state, objects);
       await guard.precreateAction(state, objects);
     }

@@ -1,18 +1,50 @@
 import { Database } from '@google-cloud/spanner';
-import { ForbiddenError } from './errors';
-import { Service } from './service';
-import { IdStatus, State } from './state';
+import { ForbiddenError } from './errors.js';
+import { Service } from './service.js';
+import { IdStatus, State } from './state.js';
 
 export class DataserviceGuard extends Service {
   /**
    * @type {Database}
    */
   _db;
+  /**
+   * @type {import('ajv').default}
+   */
+  _validator;
+
+  static get _objectsCreateSchema() {};
+  static get _whereReadSchema() {};
+  static get _whatReadSchema() {};
+  static get _whereUpdateSchema() {};
+  static get _whatUpdateSchema() {};
+  static get _whereDeleteSchema() {};
+
+  _validateCreate;
+  _validateRead;
+  _validateUpdate;
+  _validateDelete;
+
+  _postInit() {
+    if (this.constructor._createSchema) {
+      this._validateCreate = this._validator.compile(this.constructor._createSchema);
+    }
+    if (this.constructor._readSchema) {
+      this._validateRead = this._validator.compile(this.constructor._readSchema);
+    }
+    if (this.constructor._updateSchema) {
+      this._validateUpdate = this._validator.compile(this.constructor._updateSchema);
+    }
+    if (this.constructor._deleteSchema) {
+      this._validateDelete = this._validator.compile(this.constructor._deleteSchema);
+    }
+  }
 
   static get deps() {
     return Object.assign(
       {
         _db: '/h/db',
+        _validator: '/s/validator',
       },
       this._customdeps
     );
@@ -32,27 +64,6 @@ export class DataserviceGuard extends Service {
   async precreateCheck(state, objects) {
     throw new ForbiddenError('create action has been foribdden');
   }
-
-  /**
-   * Dataservices call this method of their guard to
-   * modify inserting data according to domain logic.
-   *
-   * For example, every inserted challenge has to be
-   * proposed by someone, so code in `precreateAction` method
-   * has to set someone on this position.
-   *
-   * @param {State} state
-   * @param {Array<Object>} objects
-   */
-  async precreateAction(state, objects) {}
-
-  /**
-   * Dataservices call this method of their guard to
-   *
-   * @param {State} state
-   * @param {Array<string>} pkeys - primary keys
-   */
-  async postcreateAction(state, pkeys) {}
 
   /**
    * Dataservices call this method of their guard to
@@ -104,17 +115,21 @@ export class DataserviceGuard extends Service {
    * @param {Object} options
    * @returns {undefined}
    */
-  validateFields(fields, againstFields = undefined, options = { strict: false }) {
+  validateFields(
+    fields,
+    againstFields = undefined,
+    options = { strict: false }
+  ) {
     const allowedFields = againstFields ?? Object.keys(this._fields);
 
-    if (Object.keys(fields).length > Object.keys(allowedFields).length )
+    if (Object.keys(fields).length > Object.keys(allowedFields).length)
       throw new Error('extra fields found');
 
     const foundFields = [];
     for (const key in fields) {
       if (!allowedFields.includes(key))
-        throw new Error(`${key} is not allowed`)
-      foundFields.push(key)
+        throw new Error(`${key} is not allowed`);
+      foundFields.push(key);
     }
 
     if (options.strict) {
@@ -128,7 +143,7 @@ export class DataserviceGuard extends Service {
   }
 
   /**
-   * Throws `NotAuthorizedError` unless user is authorized
+   * @throws NotAuthorizedError unless user in state is authorized
    *
    * @param {State} state
    */

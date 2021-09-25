@@ -5,6 +5,6 @@ export default async function startup() {
   for await (const file of dsGuardsDir.list()) {
     const name = file.basename('.js');
     const serviceClass = (await import(file.toString())).default;
-    dsGuards.addService(name, { isSingletone: true, class: serviceClass });
+    dsGuards.addService(name, { class: serviceClass });
   }
 }

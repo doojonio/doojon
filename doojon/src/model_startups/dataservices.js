@@ -5,6 +5,6 @@ export default async function startup() {
   for await (const dsfile of dsdir.list()) {
     const dsname = dsfile.basename('.js');
     const dsclass = (await import(dsfile.toString())).default;
-    ds.addService(dsname, { isSingletone: true, class: dsclass });
+    ds.addService(dsname, { class: dsclass });
   }
 }

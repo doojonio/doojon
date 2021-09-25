@@ -21,5 +21,9 @@ export class Service {
     for (const depName in this.constructor.deps) {
       this[depName] = deps[depName];
     }
+
+    if (this._postInit) {
+      this._postInit();
+    }
   }
 }

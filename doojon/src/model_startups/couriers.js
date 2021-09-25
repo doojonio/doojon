@@ -1,4 +1,3 @@
-
 export default async function startup() {
   const c = this._container.addContainer('c');
   const couriersdir = this._appHome.child('src/model/couriers');
@@ -11,6 +10,8 @@ export default async function startup() {
     if (!courierconf)
       throw new Error(`missing conf for courier ${couriername}`);
 
-    c.addService(couriername, { block: () => new courierclass(courierconf) });
+    c.addService(couriername, {
+      block: () => new courierclass(courierconf),
+    });
   }
 }

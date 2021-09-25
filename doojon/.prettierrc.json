@@ -1,6 +1,6 @@
 {
   "tabWidth": 2,
-  "quoteProps": "preserve",
+  "quoteProps": "consistent",
   "singleQuote": true,
   "arrowParens": "avoid"
 }

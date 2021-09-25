@@ -24,7 +24,6 @@ export default class AccountsCourier {
    * @returns undefined
    */
   async auth(creds) {
-
     const res = await this.ua.post('/api/svc/accounts/1/auth', {
       json: creds,
     });
@@ -59,7 +58,9 @@ export default class AccountsCourier {
    * @returns {Object} object with id
    */
   async createAccount(account) {
-    const res = await this.ua.post('/api/svc/accounts/1/accounts', { json: account });
+    const res = await this.ua.post('/api/svc/accounts/1/accounts', {
+      json: account,
+    });
 
     if (res.isError)
       throw new Error(
@@ -74,11 +75,12 @@ export default class AccountsCourier {
    * @returns {Object} object with id
    */
   async createTestAccount() {
-
     const res = await this.ua.post('/api/svc/accounts/1/test_account');
 
     if (res.isError)
-      throw new Error(`error during creating test account: ${res.statusMessage}`);
+      throw new Error(
+        `error during creating test account: ${res.statusMessage}`
+      );
 
     return res.json();
   }
@@ -117,12 +119,16 @@ export default class AccountsCourier {
    * @returns Accounts information
    */
   async getAccountBySession(sessionId) {
-    let authCookie = new Cookie({key: 'SID', value: sessionId, domain: this._host});
+    let authCookie = new Cookie({
+      key: 'SID',
+      value: sessionId,
+      domain: this._host,
+    });
     this.ua.cookieJar.setCookie(authCookie, this.ua.baseURL);
 
     const res = await this.ua.get('/api/svc/accounts/1/current_user_account');
 
-    if (res.status === 401) return null
+    if (res.status === 401) return null;
 
     if (res.isError)
       throw new Error(

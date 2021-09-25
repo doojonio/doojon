@@ -1,38 +1,47 @@
-import { Schema } from '../model/schema.js';
 import { Spanner } from '@google-cloud/spanner';
 import { Container } from '../breadboard.js';
 
+/**
+ * @this {import('../model.js').Model}
+ */
 export default async function startup() {
   /**
    * @type {Container}
    */
   const h = this._container.addContainer('h');
 
-  const isEmulator = !!process.env.SPANNER_EMULATOR_HOST;
-
-  const projectId = process.env.DOOJON_PROJECT_ID;
-  if (!isEmulator && !projectId) {
-    throw new Error('env DOOJON_PROJECT_ID is not specified');
+  const projectId = process.env.GCP_PROJECT;
+  if (!projectId) {
+    throw new Error('env GCP_PROJECT is not specified');
+  }
+  const spannerInstance = process.env.SPANNER_INSTANCE;
+  if (!spannerInstance) {
+    throw new Error('env SPANNER_INSTANCE is not specified');
   }
 
-  const spannerInstanceName = process.env.SPANNER_INSTANCE;
-  const spannerDatabaseName = process.env.SPANNER_DATABASE;
+  const spannerDatabase = process.env.SPANNER_DATABASE;
+  if (!spannerInstance) {
+    throw new Error('env SPANNER_DATABASE is not specified');
+  }
 
   const dbContainer = h.addContainer('db');
+  const dbSchema = JSON.parse(
+    await this._appHome.child('src', 'model', 'schema.json').readFile()
+  );
+  dbContainer.addService('schema', {
+    block: () => dbSchema,
+  });
 
-  const spanner = new Spanner(isEmulator ? undefined : {projectId});
-  dbContainer.addService('spanner', {block: () => spanner});
+  const spanner = new Spanner({ projectId });
+  dbContainer.addService('spanner', { block: () => spanner });
 
-  const instance = spanner.instance(spannerInstanceName);
-  dbContainer.addService('instance', {block: () => instance});
+  const instance = spanner.instance(spannerInstance);
+  dbContainer.addService('instance', { block: () => instance });
 
   const poolOptions = this._conf.spanner?.poolOptions;
-  const database = instance.database(spannerDatabaseName, poolOptions);
-  h.addService('db', { block: () => database, isSingletone: true });
+  const database = instance.database(spannerDatabase, poolOptions);
+  h.addService('db', { block: () => database });
 
   const log = this._log;
-  h.addService('log', { block: () => log, isSingletone: true });
-
-  const dbcont = h.addContainer('db');
-  dbcont.addService('schema', { block: () => Schema, isSingletone: true });
+  h.addService('log', { block: () => log });
 }

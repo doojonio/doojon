@@ -1,0 +1,161 @@
+{
+  "Replies": {
+    "columns": {
+      "commentId": {
+        "spannerType": "STRING(26)",
+        "type": "string",
+        "maxLength": 26
+      },
+      "authorId": {
+        "spannerType": "STRING(36)",
+        "type": "string",
+        "maxLength": 36
+      },
+      "id": { "spannerType": "STRING(26)", "type": "string", "maxLength": 26 },
+      "created": { "spannerType": "TIMESTAMP", "type": "string" },
+      "text": {
+        "spannerType": "STRING(10000)",
+        "type": "string",
+        "maxLength": 10000
+      }
+    },
+    "keys": ["id"]
+  },
+  "ProgressesByThingsDonePerPeriod": {
+    "columns": {
+      "period": { "spannerType": "INT64", "type": "integer" },
+      "times": { "spannerType": "INT64", "type": "integer" },
+      "thing": {
+        "spannerType": "STRING(150)",
+        "type": "string",
+        "maxLength": 150
+      },
+      "acceptanceId": {
+        "spannerType": "STRING(26)",
+        "type": "string",
+        "maxLength": 26
+      },
+      "periodsNum": { "spannerType": "INT64", "type": ["integer", "null"] }
+    },
+    "keys": ["acceptanceId"]
+  },
+  "Comments": {
+    "columns": {
+      "text": {
+        "spannerType": "STRING(10000)",
+        "type": "string",
+        "maxLength": 10000
+      },
+      "postId": {
+        "spannerType": "STRING(11)",
+        "type": "string",
+        "maxLength": 11
+      },
+      "authorId": {
+        "spannerType": "STRING(36)",
+        "type": "string",
+        "maxLength": 36
+      },
+      "id": { "spannerType": "STRING(26)", "type": "string", "maxLength": 26 },
+      "created": { "spannerType": "TIMESTAMP", "type": "string" }
+    },
+    "keys": ["id"]
+  },
+  "ProgressesBySpendedDays": {
+    "columns": {
+      "untillDate": { "spannerType": "DATE", "type": ["string", "null"] },
+      "acceptanceId": {
+        "spannerType": "STRING(26)",
+        "type": "string",
+        "maxLength": 26
+      },
+      "spendedDays": { "spannerType": "INT64", "type": "integer" }
+    },
+    "keys": ["acceptanceId"]
+  },
+  "Posts": {
+    "columns": {
+      "created": { "spannerType": "TIMESTAMP", "type": "string" },
+      "text": {
+        "spannerType": "STRING(10000)",
+        "type": "string",
+        "maxLength": 10000
+      },
+      "authorId": {
+        "spannerType": "STRING(36)",
+        "type": "string",
+        "maxLength": 36
+      },
+      "id": { "spannerType": "STRING(11)", "type": "string", "maxLength": 11 }
+    },
+    "keys": ["id"]
+  },
+  "Acceptances": {
+    "columns": {
+      "challengeId": {
+        "spannerType": "STRING(11)",
+        "type": "string",
+        "maxLength": 11
+      },
+      "profileId": {
+        "spannerType": "STRING(36)",
+        "type": "string",
+        "maxLength": 36
+      },
+      "updated": { "spannerType": "TIMESTAMP", "type": ["string", "null"] },
+      "id": { "spannerType": "STRING(26)", "type": "string", "maxLength": 26 },
+      "created": { "spannerType": "TIMESTAMP", "type": "string" },
+      "status": {
+        "spannerType": "STRING(16)",
+        "type": "string",
+        "maxLength": 16
+      }
+    },
+    "keys": ["id"]
+  },
+  "Profiles": {
+    "columns": {
+      "created": { "spannerType": "TIMESTAMP", "type": "string" },
+      "bio": {
+        "spannerType": "STRING(256)",
+        "type": "string",
+        "maxLength": 256
+      },
+      "username": {
+        "spannerType": "STRING(16)",
+        "type": "string",
+        "maxLength": 16
+      },
+      "id": { "spannerType": "STRING(36)", "type": "string", "maxLength": 36 }
+    },
+    "keys": ["id"]
+  },
+  "Challenges": {
+    "columns": {
+      "criterionType": {
+        "spannerType": "STRING(16)",
+        "type": "string",
+        "maxLength": 16
+      },
+      "id": { "spannerType": "STRING(11)", "type": "string", "maxLength": 11 },
+      "title": {
+        "spannerType": "STRING(100)",
+        "type": "string",
+        "maxLength": 100
+      },
+      "authorId": {
+        "spannerType": "STRING(36)",
+        "type": ["string", "null"],
+        "maxLength": 36
+      },
+      "description": {
+        "spannerType": "STRING(10000)",
+        "type": "string",
+        "maxLength": 10000
+      },
+      "isPublic": { "spannerType": "BOOL", "type": "boolean" },
+      "created": { "spannerType": "TIMESTAMP", "type": "string" }
+    },
+    "keys": ["id"]
+  }
+}

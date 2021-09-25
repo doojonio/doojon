@@ -8,6 +8,16 @@ export class Container {
     }
   }
 
+  initAll() {
+    for (const service of Object.values(this._services)) {
+      service.get();
+    }
+
+    for (const container of Object.values(this._containers)) {
+      container.initAll();
+    }
+  }
+
   /**
    *
    * @param {string} serviceName
@@ -120,7 +130,6 @@ class Service {
     }
 
     this.isLocked = false;
-    this._isSingletone = conf.isSingletone || false;
     this._parentRef = new WeakRef(parentContainer);
   }
 
@@ -143,7 +152,7 @@ class Service {
    * @returns Dereferenced service (result of `block` or `class` constructor)
    */
   get() {
-    if (this._isSingletone && this._instance) {
+    if (this._instance) {
       return this._instance;
     }
 
@@ -155,7 +164,7 @@ class Service {
       object = new this._serviceClass(deps);
     }
 
-    if (this._isSingletone) this._instance = object;
+    this._instance = object;
 
     return object;
   }

@@ -13,10 +13,17 @@ services:
       - ../..:/workspace:cached
     command: sleep infinity
     environment:
-      CLOUD_SPANNER_EMULATOR: doojon_db:9010
+      GCP_PROJECT: doojon-dev
+      SPANNER_EMULATOR_HOST: doojon_db:9010
+      SPANNER_INSTANCE: doojon-dev
+      SPANNER_DATABASE: doojon
   doojon_db:
     image: gcr.io/cloud-spanner-emulator/emulator
+    ports:
+      - 9010:9010
+      - 9020:9020
     restart: unless-stopped
+
 volumes:
   doojon-data:
   accounts-data:
