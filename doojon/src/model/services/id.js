@@ -23,9 +23,11 @@ export default class IdService extends Service {
    * @param {string} sessionId
    * @returns {Promise<UserInfo>}
    */
-  async getProfileBySessionId(sessionId) {
+  async getIdentityBySessionId(sessionId) {
     if (!sessionId) {
       return { status: IdStatus.UNAUTHORIZED };
     }
+
+    return { status: IdStatus.AUTHORIZED }
   }
 }

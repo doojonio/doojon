@@ -1,4 +1,3 @@
-import IdService from '../model/services/id.js';
 import { State } from '../model/state.js';
 
 /**
@@ -10,14 +9,11 @@ export default async function addHelpers(app) {
 }
 
 async function _stateFromCtxHelper(ctx) {
-  const state = new State();
-
-  const idService = ctx.app.model.getService('id');
-
-  let authCookieName = ctx.app.config.web.authCookie.name;
+  const authCookieName = ctx.app.config.web.authCookie.name;
   const session = ctx.req.getCookie(authCookieName);
 
-  state.uinfo = await idService.collectUserInformationBySession(session);
+  const idService = ctx.app.model.getService('id');
+  const identity = await idService.getIdentityBySessionId(session);
 
-  return state;
+  return new State(identity);
 }
