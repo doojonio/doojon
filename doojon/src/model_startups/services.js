@@ -14,7 +14,6 @@ export default async function startup() {
     const serviceName = serviceFile.basename('.js');
     const serviceClass = (await import(serviceFile.toString())).default;
     s.addService(serviceName, { class: serviceClass });
-
   }
 }
 

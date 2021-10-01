@@ -19,18 +19,20 @@ async function apiV1(app) {
   const v1 = app.any('/api/doojon/v1');
 
   const dataservicesApi = {
-    profiles: {create: true},
-    posts: {create: true},
-    comments: {create: true},
-    replies: {create: true},
-    challenges: {create: true},
-    acceptances: {create: true},
+    profiles: { create: true },
+    posts: { create: true },
+    comments: { create: true },
+    replies: { create: true },
+    challenges: { create: true },
+    acceptances: { create: true },
   };
 
   const dataservicesEndpoint = v1.any('ds');
   for (const [dataserviceName, methods] of Object.entries(dataservicesApi)) {
     if (methods.create) {
-      dataservicesEndpoint.post(dataserviceName).to('dataservice#create', {dataserviceName});
+      dataservicesEndpoint
+        .post(dataserviceName)
+        .to('dataservice#create', { dataserviceName });
     }
   }
 

@@ -27,8 +27,11 @@ t.test('Dataservices', async t => {
     const jsClass = (await import(jsFile.toString())).default;
 
     const dataservice = model.getDataservice(name);
-    t.ok(dataservice instanceof Dataservice, 'Is instance of Dataservice class');
-    t.ok(dataservice instanceof jsClass, 'Is instance of it\'s own class');
+    t.ok(
+      dataservice instanceof Dataservice,
+      'Is instance of Dataservice class'
+    );
+    t.ok(dataservice instanceof jsClass, "Is instance of it's own class");
 
     const shouldCan = ['create', 'read', 'update', 'delete'];
 
@@ -82,7 +85,10 @@ t.test('DataserviceStewards', async t => {
 
     const steward = model._container.resolve(`/ds_stewards/${name}`);
 
-    t.ok(steward instanceof DataserviceSteward, 'Is instance of DataserviceSteward');
+    t.ok(
+      steward instanceof DataserviceSteward,
+      'Is instance of DataserviceSteward'
+    );
     t.ok(steward instanceof jsClass, 'Is instance of it class');
 
     const shouldCan = [

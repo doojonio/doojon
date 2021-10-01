@@ -9,7 +9,7 @@ export default async function modelStartup(app) {
     conf: app.config,
     home: app.home,
     log: app.log,
-    validator: app.validator
+    validator: app.validator,
   });
   await app.model.init();
 }

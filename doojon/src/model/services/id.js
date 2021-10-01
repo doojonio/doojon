@@ -28,6 +28,6 @@ export default class IdService extends Service {
       return { status: IdStatus.UNAUTHORIZED };
     }
 
-    return { status: IdStatus.AUTHORIZED }
+    return { status: IdStatus.AUTHORIZED };
   }
 }

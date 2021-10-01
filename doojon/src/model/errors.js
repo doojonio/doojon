@@ -3,7 +3,7 @@ export class NotAuthorizedError extends Error {
     return {
       kind: 'NotAuthorizedError',
       message: this.message,
-    }
+    };
   }
 }
 export class ForbiddenError extends Error {
@@ -11,7 +11,7 @@ export class ForbiddenError extends Error {
     return {
       kind: 'ForbiddenError',
       message: this.message,
-    }
+    };
   }
 }
 export class ValidationError extends Error {
@@ -19,6 +19,6 @@ export class ValidationError extends Error {
     return {
       kind: 'ValidationError',
       message: this.message,
-    }
+    };
   }
 }

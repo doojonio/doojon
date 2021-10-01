@@ -42,15 +42,15 @@ export default class DataserviceController {
       keys = await dataservice.create(state, objects);
     } catch (error) {
       if (error instanceof ValidationError) {
-        return ctx.render({status: 400, json: error});
+        return ctx.render({ status: 400, json: error });
       }
 
       if (error instanceof NotAuthorizedError) {
-        return ctx.render({status: 401, json: error})
+        return ctx.render({ status: 401, json: error });
       }
 
       if (error instanceof ForbiddenError) {
-        return ctx.render({status: 403, json: error});
+        return ctx.render({ status: 403, json: error });
       }
 
       // Unrecognized exception

@@ -34,7 +34,7 @@ function _getWhatUpdateSchemaCode(schema) {
       continue;
     }
 
-    properties[columnName] = {type: columnSchema.type}
+    properties[columnName] = { type: columnSchema.type };
   }
 
   return JSON.stringify({
@@ -42,7 +42,7 @@ function _getWhatUpdateSchemaCode(schema) {
     minProperties: 1,
     additionalProperties: false,
     properties,
-  })
+  });
 }
 
 function _getWhatReadSchemaCode(schema) {
@@ -51,14 +51,13 @@ function _getWhatReadSchemaCode(schema) {
     minItems: 1,
     items: {
       type: 'string',
-      enum: Object.keys(schema.columns)
-    }
-  })
+      enum: Object.keys(schema.columns),
+    },
+  });
 }
 
 function _getWhereSchemaCode(schema) {
   const properties = {};
-
 
   for (const key of schema.keys) {
     properties[key] = { type: schema.columns[key].type };
@@ -69,7 +68,7 @@ function _getWhereSchemaCode(schema) {
     additionalProperties: false,
     required: schema.keys,
     properties,
-  })
+  });
 }
 
 function _getObjectsCreateSchemaCode(schema) {
@@ -208,7 +207,7 @@ async function _generateDsEntities(app, schema) {
       fileName,
       tableName,
       className: stewardClassName,
-    })
+    });
   }
 
   let schemaString = JSON.stringify(schema);
@@ -221,7 +220,7 @@ async function _prettifyCode(app, code, isJSON) {
   await prettier
     .resolveConfig(app.home.child('.prettierrc.json').toString())
     .then(options => {
-      options.parser = isJSON ? 'json': 'babel';
+      options.parser = isJSON ? 'json' : 'babel';
       code = prettier.format(code, options);
     });
 

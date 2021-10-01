@@ -3,7 +3,6 @@
  */
 
 export default class ProfilesController {
-
   /**
    * Returns true if username in request is available. False otherwise
    *

@@ -53,6 +53,6 @@ async function setupSchema(dbContainer) {
   const schemaContainer = dbContainer.addContainer('schema');
 
   for (const [tableName, tableSchema] of Object.entries(dbSchema)) {
-    schemaContainer.addService(tableName, {block: () => tableSchema});
+    schemaContainer.addService(tableName, { block: () => tableSchema });
   }
 }

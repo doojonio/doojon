@@ -82,6 +82,6 @@ export class DataserviceSteward extends Service {
      * To generate a UUID without using the cache, set disableEntropyCache
      * to true. Default: false.
      */
-    return randomUUID({disableEntropyCache: true});
+    return randomUUID({ disableEntropyCache: true });
   }
 }

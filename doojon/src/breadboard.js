@@ -117,7 +117,6 @@ export class Container {
 }
 
 class Service {
-
   constructor(conf, parentContainer) {
     if (!parentContainer) {
       throw new Error('Missing parent container for service');
