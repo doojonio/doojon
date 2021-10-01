@@ -8,6 +8,4 @@ export default class ChallengesSteward extends DataserviceSteward {
   static get _tableName() {
     return 'Challenges';
   }
-
-  preCreateAction(state, objects) {}
 }

@@ -8,6 +8,4 @@ export default class ProgressesBySpendedDaysSteward extends DataserviceSteward {
   static get _tableName() {
     return 'ProgressesBySpendedDays';
   }
-
-  preCreateAction(state, objects) {}
 }

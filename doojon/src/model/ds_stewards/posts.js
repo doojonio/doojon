@@ -8,6 +8,4 @@ export default class PostsSteward extends DataserviceSteward {
   static get _tableName() {
     return 'Posts';
   }
-
-  preCreateAction(state, objects) {}
 }

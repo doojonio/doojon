@@ -115,18 +115,28 @@
   },
   "Profiles": {
     "columns": {
-      "created": { "spannerType": "TIMESTAMP", "type": "string" },
-      "bio": {
-        "spannerType": "STRING(256)",
-        "type": "string",
-        "maxLength": 256
-      },
       "username": {
         "spannerType": "STRING(16)",
         "type": "string",
         "maxLength": 16
       },
-      "id": { "spannerType": "STRING(36)", "type": "string", "maxLength": 36 }
+      "id": { "spannerType": "STRING(36)", "type": "string", "maxLength": 36 },
+      "bio": {
+        "spannerType": "STRING(256)",
+        "type": "string",
+        "maxLength": 256
+      },
+      "email": {
+        "spannerType": "STRING(320)",
+        "type": "string",
+        "maxLength": 320
+      },
+      "created": { "spannerType": "TIMESTAMP", "type": "string" },
+      "password": {
+        "spannerType": "STRING(70)",
+        "type": "string",
+        "maxLength": 70
+      }
     },
     "keys": ["id"]
   },

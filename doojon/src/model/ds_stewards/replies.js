@@ -8,6 +8,4 @@ export default class RepliesSteward extends DataserviceSteward {
   static get _tableName() {
     return 'Replies';
   }
-
-  preCreateAction(state, objects) {}
 }

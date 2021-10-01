@@ -413,8 +413,5 @@ export default class <%=className%> extends DataserviceSteward {
   static get _tableName() {
     return '<%=tableName%>'
   }
-
-  preCreateAction(state, objects) {
-  }
 }
 `;

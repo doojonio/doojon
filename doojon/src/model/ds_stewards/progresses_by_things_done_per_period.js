@@ -8,6 +8,4 @@ export default class ProgressesByThingsDonePerPeriodSteward extends DataserviceS
   static get _tableName() {
     return 'ProgressesByThingsDonePerPeriod';
   }
-
-  preCreateAction(state, objects) {}
 }

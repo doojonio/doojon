@@ -8,6 +8,4 @@ export default class CommentsSteward extends DataserviceSteward {
   static get _tableName() {
     return 'Comments';
   }
-
-  preCreateAction(state, objects) {}
 }

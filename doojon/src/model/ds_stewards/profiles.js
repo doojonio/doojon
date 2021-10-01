@@ -8,6 +8,4 @@ export default class ProfilesSteward extends DataserviceSteward {
   static get _tableName() {
     return 'Profiles';
   }
-
-  preCreateAction(state, objects) {}
 }
