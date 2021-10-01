@@ -44,7 +44,7 @@ export class Model {
   }
 
   getDsGuard(name) {
-    return this._container.resolve(`/ds/${name}`);
+    return this._container.resolve(`/ds_guards/${name}`);
   }
 
   getService(name) {
