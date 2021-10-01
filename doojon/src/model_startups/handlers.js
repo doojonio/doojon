@@ -25,12 +25,8 @@ export default async function startup() {
   }
 
   const dbContainer = h.addContainer('db');
-  const dbSchema = JSON.parse(
-    await this._appHome.child('src', 'model', 'schema.json').readFile()
-  );
-  dbContainer.addService('schema', {
-    block: () => dbSchema,
-  });
+
+  await setupSchema.call(this, dbContainer);
 
   const spanner = new Spanner({ projectId });
   dbContainer.addService('spanner', { block: () => spanner });
@@ -44,4 +40,19 @@ export default async function startup() {
 
   const log = this._log;
   h.addService('log', { block: () => log });
+}
+
+async function setupSchema(dbContainer) {
+  const dbSchema = JSON.parse(
+    await this._appHome.child('src', 'model', 'schema.json').readFile()
+  );
+  dbContainer.addService('schema', {
+    block: () => dbSchema,
+  });
+
+  const schemaContainer = dbContainer.addContainer('schema');
+
+  for (const [tableName, tableSchema] of Object.entries(dbSchema)) {
+    schemaContainer.addService(tableName, {block: () => tableSchema});
+  }
 }

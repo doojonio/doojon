@@ -117,16 +117,18 @@ export class Container {
 }
 
 class Service {
+
   constructor(conf, parentContainer) {
-    if (!parentContainer)
-      throw new Error('missing parent container for service');
+    if (!parentContainer) {
+      throw new Error('Missing parent container for service');
+    }
 
     if (conf.block) {
       this._block = conf.block;
     } else if (conf.class) {
       this._serviceClass = conf.class;
     } else {
-      throw new Error('missing block or class');
+      throw new Error('Missing block or class');
     }
 
     this.isLocked = false;

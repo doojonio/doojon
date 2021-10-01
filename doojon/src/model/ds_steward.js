@@ -1,6 +1,6 @@
 import { Database } from '@google-cloud/spanner';
 import { Service } from './service.js';
-import { State } from './state.js';
+import { randomBytes, randomUUID } from 'crypto';
 
 /**
  * General class for dataservice stewards.
@@ -12,38 +12,76 @@ export class DataserviceSteward extends Service {
    */
   _db;
 
+  static get _tableName() {
+    throw new Error('Table name is undefined');
+  }
+
   static get deps() {
+    const tableName = this._tableName;
     return Object.assign(
       {
         _db: '/h/db',
+        _schema: `/h/db/schema/${tableName}`,
       },
       this._customdeps
     );
   }
+
   static get _customdeps() {
     return {};
   }
 
-  /**
-   * Dataservices call this method of their steward to
-   * modify inserting data according to domain logic.
-   *
-   * For example, every inserted challenge has to be
-   * proposed by someone, so code in `precreateAction` method
-   * has to set someone on this position.
-   *
-   * @param {State} state
-   * @param {Array<Object>} objects
-   */
-  async precreateAction(state, objects) {}
+  async manageKeysForNewObjects(state, objects) {
+    for (const object of objects) {
+      const keys = this._generateRandomKeys();
 
-  /**
-   * Dataservices call this method of their steward to
-   * perform any actions after creating new objects
-   * using their primary keys
-   *
-   * @param {State} state
-   * @param {Array<string>} pkeys - primary keys
-   */
-  async postcreateAction(state, pkeys) {}
+      for (const [key, value] of Object.entries(keys)) {
+        object[key] = value;
+      }
+    }
+  }
+
+  // TODO: retries
+  async handleInsertError(error, tryNum) {
+    let shouldRetry = false;
+    return shouldRetry;
+  }
+
+  _generateRandomKeys() {
+    const schema = this._schema;
+
+    const generatedValues = {};
+
+    for (const key of schema.keys) {
+      const columnSchema = schema.columns[key];
+
+      const randomBytesBuffer = randomBytes(
+        (columnSchema.maxLength * 3) / 4 + 1
+      );
+      const base64 = randomBytesBuffer.toString('base64');
+
+      let urlSafeId = base64
+        .replace(/\+/g, 'd')
+        .replace(/\//g, 'j')
+        .replace(/=/g, 'n');
+
+      if (urlSafeId.length > columnSchema.maxLength) {
+        urlSafeId = urlSafeId.substring(0, columnSchema.maxLength);
+      }
+
+      generatedValues[key] = urlSafeId;
+    }
+
+    return generatedValues;
+  }
+
+  _generateRandomUUID() {
+    /**
+     * By default, to improve performance, Node.js generates and
+     * caches enough random data to generate up to 128 random UUIDs.
+     * To generate a UUID without using the cache, set disableEntropyCache
+     * to true. Default: false.
+     */
+    return randomUUID({disableEntropyCache: true});
+  }
 }

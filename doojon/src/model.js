@@ -17,7 +17,6 @@ export class Model {
 
   async init() {
     const steps = [
-      'couriers',
       'handlers',
       'ds_stewards',
       'ds_guards',
@@ -50,10 +49,6 @@ export class Model {
 
   getService(name) {
     return this._container.resolve(`/s/${name}`);
-  }
-
-  getCourier(name) {
-    return this._container.resolve(`/c/${name}`);
   }
 
   listDataservices() {

@@ -1,5 +1,4 @@
 import ejs from 'ejs';
-import { File } from '@mojojs/core';
 import prettier from 'prettier';
 import { camelCaseToSnakeCase } from '../string_util.js';
 
@@ -19,6 +18,7 @@ export default async function run(app, args) {
   db.getSnapshot(async (err, transaction) => {
     if (err) {
       console.log('Unable to start read transaction: ' + err);
+      process.exit(1);
     }
 
     const schema = await _getSchema(transaction);
@@ -26,11 +26,50 @@ export default async function run(app, args) {
   });
 }
 
-function _getWhereReadSchemaCode(schema) {
+function _getWhatUpdateSchemaCode(schema) {
+  const properties = {};
 
-  return {
-    type: 'object',
+  for (const [columnName, columnSchema] of Object.entries(schema.columns)) {
+    if ([...schema.keys, 'updated', 'created'].includes(columnName)) {
+      continue;
+    }
+
+    properties[columnName] = {type: columnSchema.type}
   }
+
+  return JSON.stringify({
+    type: 'object',
+    minProperties: 1,
+    additionalProperties: false,
+    properties,
+  })
+}
+
+function _getWhatReadSchemaCode(schema) {
+  return JSON.stringify({
+    type: 'array',
+    minItems: 1,
+    items: {
+      type: 'string',
+      enum: Object.keys(schema.columns)
+    }
+  })
+}
+
+function _getWhereSchemaCode(schema) {
+  const properties = {};
+
+
+  for (const key of schema.keys) {
+    properties[key] = { type: schema.columns[key].type };
+  }
+
+  return JSON.stringify({
+    type: 'object',
+    additionalProperties: false,
+    required: schema.keys,
+    properties,
+  })
 }
 
 function _getObjectsCreateSchemaCode(schema) {
@@ -72,6 +111,28 @@ function _getObjectsCreateSchemaCode(schema) {
   });
 }
 
+async function _generateDsSteward(app, namesAndSchema) {
+  const file = app.home.child(
+    'src',
+    'model',
+    'ds_stewards',
+    namesAndSchema.fileName
+  );
+
+  if (await file.exists()) {
+    return;
+  }
+
+  let dsStewardCode = ejs.render(DSSTEWARD_TEMPLATE, {
+    className: namesAndSchema.className,
+    tableName: namesAndSchema.tableName,
+  });
+
+  dsStewardCode = await _prettifyCode(app, dsStewardCode);
+
+  await file.writeFile(dsStewardCode);
+}
+
 async function _generateDsGuard(app, namesAndSchema) {
   const file = app.home.child(
     'src',
@@ -84,10 +145,17 @@ async function _generateDsGuard(app, namesAndSchema) {
     return;
   }
 
-  const objectsCreateSchemaCode = _getObjectsCreateSchemaCode(namesAndSchema.schema);
+  const schema = namesAndSchema.schema;
+  const objectsCreateSchemaCode = _getObjectsCreateSchemaCode(schema);
+  const whatReadSchemaCode = _getWhatReadSchemaCode(schema);
+  const whatUpdateSchemaCode = _getWhatUpdateSchemaCode(schema);
+  const whereSchemaCode = _getWhereSchemaCode(schema);
 
   let dsGuardCode = ejs.render(DSGUARD_TEMPLATE, {
-    createSchemaCode: objectsCreateSchemaCode,
+    objectsCreateSchemaCode,
+    whatReadSchemaCode,
+    whatUpdateSchemaCode,
+    whereSchemaCode,
     className: namesAndSchema.className,
     tableName: namesAndSchema.tableName,
   });
@@ -128,6 +196,7 @@ async function _generateDsEntities(app, schema) {
 
     const dataserviceClassName = tableName + 'Dataservice';
     const guardClassName = tableName + 'Guard';
+    const stewardClassName = tableName + 'Steward';
     _generateDs(app, { fileName, tableName, className: dataserviceClassName });
     _generateDsGuard(app, {
       fileName,
@@ -135,6 +204,11 @@ async function _generateDsEntities(app, schema) {
       className: guardClassName,
       schema: schema[tableName],
     });
+    _generateDsSteward(app, {
+      fileName,
+      tableName,
+      className: stewardClassName,
+    })
   }
 
   let schemaString = JSON.stringify(schema);
@@ -270,7 +344,7 @@ const DATASERVICE_TEMPLATE = `
 import { Dataservice } from '../dataservice.js';
 
 export default class <%=className%> extends Dataservice {
-  static get _tablename() {
+  static get _tableName() {
     return '<%=tableName%>'
   }
 
@@ -289,8 +363,32 @@ import { DataserviceGuard } from '../ds_guard.js';
  */
 
 export default class <%=className%> extends DataserviceGuard {
-  static get _createSchema() {
-    return <%- createSchemaCode %>
+  static get _tableName() {
+    return '<%=tableName%>';
+  }
+
+  static get _objectsCreateSchema() {
+    return <%- objectsCreateSchemaCode %>
+  }
+
+  static get _whereReadSchema() {
+    return <%- whereSchemaCode %>
+  }
+
+  static get _whatReadSchema() {
+    return <%- whatReadSchemaCode %>
+  }
+
+  static get _whereUpdateSchema() {
+    return <%- whereSchemaCode %>
+  }
+
+  static get _whatUpdateSchema() {
+    return <%- whatUpdateSchemaCode %>
+  }
+
+  static get _whereDeleteSchema() {
+    return <%- whereSchemaCode %>
   }
 
   /**
@@ -299,8 +397,25 @@ export default class <%=className%> extends DataserviceGuard {
    * @param {State} state
    * @param {Array<Object>} objects
    */
-  precreateCheck(state, objects) {
+  _preCreateAdditionalChecks(state, objects) {
     this.isAuthorized(state);
+  }
+}
+`;
+
+const DSSTEWARD_TEMPLATE = `
+import { DataserviceSteward } from '../ds_steward.js';
+
+/**
+ * @typedef {import('../state.js').State} State
+ */
+
+export default class <%=className%> extends DataserviceSteward {
+  static get _tableName() {
+    return '<%=tableName%>'
+  }
+
+  preCreateAction(state, objects) {
   }
 }
 `;

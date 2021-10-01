@@ -4,7 +4,9 @@ export const DDL_STATEMENTS = [
    *
    * @name Profiles
    * @type {CreateTable}
-   * @column id - Profile's identifier in uuid format
+   * @column id - Profile's unique identifier
+   * @column email - Email for verification
+   * @column password - Hashed password to profile
    * @column username - Username, human readable memorable
    *   identifier. Used for mentions, links and so on
    * @column bio - User defined profile description
@@ -12,12 +14,15 @@ export const DDL_STATEMENTS = [
    */
   `CREATE TABLE Profiles (
   id       STRING(36)  NOT NULL,
+  email    STRING(320) NOT NULL,
+  password STRING(70) NOT NULL,
   username STRING(16)  NOT NULL,
   bio      STRING(256) NOT NULL,
   created  TIMESTAMP   NOT NULL
 ) PRIMARY KEY (id)`,
   /**
    * Creates table for user posts
+   * @name Posts
    * @type {CreateTable}
    * @column id - Post uniq identifier
    * @column authorId - Id of profile used to post it
@@ -34,6 +39,7 @@ export const DDL_STATEMENTS = [
 ) PRIMARY KEY (id)`,
   /**
    * Creates table for user post comments
+   * @name Comments
    * @type {CreateTable}
    * @column id - Comment uniq identifier
    * @column authorId - Id of the profile used to comment it
@@ -53,6 +59,7 @@ export const DDL_STATEMENTS = [
 ) PRIMARY KEY (id)`,
   /**
    * Creates table for user post replies
+   * @name Replies
    * @type {CreateTable}
    * @column id - Reply uniq identifier
    * @column authorId - Id of the profile used to leave a reply
@@ -73,6 +80,7 @@ export const DDL_STATEMENTS = [
   /**
    * Creates table for challenges.
    *
+   * @name Challenges
    * @type {CreateTable}
    * @column id - Unique identifier
    * @column authorId - TODO
@@ -97,6 +105,7 @@ export const DDL_STATEMENTS = [
   /**
    * Creates table for storing every challenge acceptance.
    *
+   * @name Acceptances
    * @type {CreateTable}
    * @column id - Unique identifier
    * @column profileId - Id of profile used to accept challenge
@@ -122,6 +131,8 @@ export const DDL_STATEMENTS = [
    * here user's spended days and date until user
    * fulfills the challenge
    *
+   * @name ProgressesBySpendedDays
+   * @type {CreateTable}
    * @column acceptanceId - Id of challenge acceptance
    * @column spendedDays  - Number of days spended during challenge
    * @column untillDate   - Date of the end of the challenge. If null
@@ -141,6 +152,8 @@ export const DDL_STATEMENTS = [
    * will do, how many times he will do this during
    * period, period in days and amount of periods.
    *
+   * @name ProgressesByThingsDonePerPeriod
+   * @type {CreateTable}
    * @column acceptanceId - Id of challenge acceptance
    * @column thing - description of the thing user will do
    * @column times - number of times to do thing during period

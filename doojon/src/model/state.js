@@ -2,23 +2,18 @@ export const IdStatus = {
   UNAUTHORIZED: 'UNAUTHORIZED',
   NOPROFILE: 'NOPROFILE',
   AUTHORIZED: 'AUTHORIZED',
-  SYSTEM: 'SYSTEM',
 };
 
 export class State {
   /**
-   * @type {UserInfo}
+   * @type {Profile}
    */
-  uinfo;
+  profile;
 }
 
 /**
- * @typedef {object} UserInfo
- * @property {string} status
- * @property {AccountInfo} account
- */
-
-/**
- * @typedef {object} AccountInfo
+ * @typedef {object} Profile
  * @property {string} id
+ * @property {username} string
+ * @property {string} status
  */

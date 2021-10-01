@@ -2,7 +2,7 @@ import { Service } from './service.js';
 import { State, IdStatus } from './state.js';
 import { ForbiddenError, ValidationError } from './errors.js';
 import { DataserviceGuard } from './ds_guard.js';
-import { Database } from '@google-cloud/spanner';
+import { Database, Snapshot, Transaction } from '@google-cloud/spanner';
 import { Logger } from '@mojojs/core';
 import { DataserviceSteward } from './ds_steward.js';
 
@@ -32,14 +32,16 @@ export class Dataservice extends Service {
 
   static get deps() {
     const moniker = this._moniker;
+    const tableName = this._tableName;
+
     return Object.assign(
       {
         _log: '/h/log',
         _db: '/h/db',
-        _dbschema: '/h/db/schema',
+        _schema: `/h/db/schema/${tableName}`,
         _guard: `/ds_guards/${moniker}`,
       },
-      this._customdeps
+      this._customDeps
     );
   }
   /**
@@ -47,14 +49,14 @@ export class Dataservice extends Service {
    *
    * @private
    */
-  static get _customdeps() {
+  static get _customDeps() {
     return {};
   }
 
   /**
    * @private
    */
-  static get _tablename() {
+  static get _tableName() {
     throw new Error('_tablename is undefined');
   }
 
@@ -97,23 +99,37 @@ export class Dataservice extends Service {
    */
   async create(state, objects) {
     if (!Array.isArray(objects)) {
-      throw ValidationError('objects (second argument) is not array of objects');
+      throw new ValidationError(
+        'objects (second argument) is not array of objects'
+      );
     }
 
-    if (state.uinfo.status !== IdStatus.SYSTEM) {
-      const guard = this._guard;
+    await this._guard.preCreateCheck(state, objects);
 
-      await guard.precreateCheck(state, objects);
-      await guard.precreateAction(state, objects);
+    this._log.trace(`Inserting objects in ${this.constructor._tableName}`);
+
+    let shouldRetry = true;
+    let tryNum = 0;
+
+    while (shouldRetry) {
+      shouldRetry = false;
+      tryNum += 1;
+
+      if (tryNum > 1) {
+        this._log.warn(
+          'Retrying to insert objects ' +
+            `on ${this.constructor._tableName}. ` +
+            `Try: ${tryNum}`
+        );
+      }
+
+      await this._steward.manageKeysForNewObjects(state, objects);
+      try {
+        await this._db.table(this.constructor._tableName).insert(objects);
+      } catch (error) {
+        shouldRetry = await this._steward.handleInsertError(error, tryNum);
+      }
     }
-
-    this._log.trace(`Inserting objects in ${this.constructor._tablename}`);
-
-    const ids = await this._db(this.constructor._tablename)
-      .insert(objects)
-      .returning(this._primarykeys);
-
-    await this._postCreate(state, ids);
 
     return ids;
   }
@@ -130,7 +146,7 @@ export class Dataservice extends Service {
       if (!this._guard) {
         throw new ForbiddenError('read action has been forbidden');
       }
-      await this._guard.prereadCheck(state, where);
+      await this._guard.preReadCheck(state, where);
     }
 
     this._log.trace(`Reading objects from ${this.constructor._tablename}`);
@@ -153,7 +169,7 @@ export class Dataservice extends Service {
       if (!this._guard) {
         throw new ForbiddenError('update action has been forbidden');
       }
-      await this._guard.preupdateCheck(state, where, newFields);
+      await this._guard.preUpdateCheck(state, where, newFields);
     }
 
     this._log.trace(`updating objects in ${this.constructor._tablename}`);
@@ -175,7 +191,7 @@ export class Dataservice extends Service {
       if (!this._guard) {
         throw new ForbiddenError('delete action has been forbidden');
       }
-      await this._guard.predeleteCheck(state, where);
+      await this._guard.preDeleteCheck(state, where);
     }
 
     this._log.trace(`deleting objects from ${this.constructor._tablename}`);

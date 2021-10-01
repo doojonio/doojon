@@ -10,10 +10,8 @@ export default async function addHelpers(app) {
 }
 
 async function _stateFromCtxHelper(ctx) {
-  const state = new State(ctx.app.log);
-  /**
-   * @type {IdService}
-   */
+  const state = new State();
+
   const idService = ctx.app.model.getService('id');
 
   let authCookieName = ctx.app.config.web.authCookie.name;

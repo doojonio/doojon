@@ -1,28 +1,28 @@
 {
+  "dataservices": {
+    "profiles": {
+      "forbiddenUsernames": [
+        "api",
+        "show",
+        "login",
+        "signup",
+        "signin",
+        "settings",
+        "explore"
+      ]
+    }
+  },
+  "handlers": {
+    "spanner": {
+      "poolOptions": {}
+    },
+    "redis": {}
+  },
   "web": {
     "authCookie": {
-      "name": "SID"
+      "name": "SID",
+      "expiresAfterDays": 365,
+      "secure": false
     }
-  },
-  "spanner": {
-    "poolOptions": {}
-  },
-  "couriers": {
-    "accounts": {
-      "schema": "http",
-      "host": "accounts",
-      "port": 8080
-    }
-  },
-  "profiles": {
-    "forbiddenUsernames": [
-      "api",
-      "show",
-      "login",
-      "signup",
-      "signin",
-      "settings",
-      "explore"
-    ]
   }
 }
