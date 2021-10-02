@@ -1,4 +1,5 @@
 import { Spanner } from '@google-cloud/spanner';
+import redis from 'redis';
 import { Container } from '../breadboard.js';
 
 /**
@@ -9,6 +10,12 @@ export default async function startup() {
    * @type {Container}
    */
   const h = this._container.addContainer('h');
+
+  const redisOptions = this._conf.handlers.redis;
+  const redisClient = redis.createClient(redisOptions);
+  h.addService('redis', {
+    block: () => redisClient
+  });
 
   const projectId = process.env.GCP_PROJECT;
   if (!projectId) {

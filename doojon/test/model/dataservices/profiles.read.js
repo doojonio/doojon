@@ -5,11 +5,12 @@ import { IdStatus, State } from '../../../src/model/state.js';
 
 t.beforeEach(async t => {
   const app = await startup();
+  t.context.app = app;
   t.context.profilesDs = await app.model.getDataservice('profiles');
 });
 
 t.afterEach(async t => {
-  await t.context.profilesDs._db.close();
+  t.context.app.model.closeAllConnections();
 });
 
 t.test('Everything is ok', async t => {
@@ -24,26 +25,24 @@ t.test('Everything is ok', async t => {
   const columns = ['username'];
 
   let isReadCalled = false;
-  profilesDataservice._db.table = (tableName) => new Object({
-    read: (req) => {
-      isReadCalled = true;
-      t.equal(tableName, 'Profiles');
-      t.match(req.keys, keys);
-      t.match(req.columns, columns);
+  profilesDataservice._db.table = tableName =>
+    new Object({
+      read: req => {
+        isReadCalled = true;
+        t.equal(tableName, 'Profiles');
+        t.match(req.keys, keys);
+        t.match(req.columns, columns);
 
-      return [[]];
-    }
-  });
+        return [[]];
+      },
+    });
 
-  await t.resolves(
-    profilesDataservice.read(state, keys, columns),
-  )
+  await t.resolves(profilesDataservice.read(state, keys, columns));
 
   t.ok(isReadCalled, 'Read was called');
 
   t.end();
 });
-
 
 t.test('When empty array of keys', async t => {
   const profilesDataservice = t.context.profilesDs;
@@ -96,7 +95,7 @@ t.test('Reading secret fields', async t => {
 
   await t.rejects(
     profilesDataservice.read(state, keys, columns),
-    new ValidationError('data/0 must be equal to one of the allowed values'),
+    new ValidationError('data/0 must be equal to one of the allowed values')
   );
 
   t.end();

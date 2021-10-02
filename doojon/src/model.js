@@ -39,6 +39,11 @@ export class Model {
     }
   }
 
+  closeAllConnections() {
+    this._container.resolve('/h/db').close();
+    this._container.resolve('/h/redis').end(true);
+  }
+
   getDataservice(name) {
     return this._container.resolve(`/ds/${name}`);
   }

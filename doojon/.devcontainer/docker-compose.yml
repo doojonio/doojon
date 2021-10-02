@@ -23,7 +23,9 @@ services:
       - 9010:9010
       - 9020:9020
     restart: unless-stopped
-
+  doojon_redis:
+    image: redis
+    restart: unless-stopped
 volumes:
   doojon-data:
   accounts-data:

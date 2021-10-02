@@ -16,7 +16,9 @@
     "spanner": {
       "poolOptions": {}
     },
-    "redis": {}
+    "redis": {
+      "url": "redis://doojon_redis:6379"
+    }
   },
   "web": {
     "authCookie": {

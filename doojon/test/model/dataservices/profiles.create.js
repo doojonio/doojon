@@ -6,11 +6,12 @@ import { compareSync } from 'bcrypt';
 
 t.beforeEach(async t => {
   const app = await startup();
-  t.context.profilesDs = await app.model.getDataservice('profiles');
+  t.context.app = app;
+  t.context.profilesDs = app.model.getDataservice('profiles');
 });
 
 t.afterEach(async t => {
-  await t.context.profilesDs._db.close();
+  t.context.app.model.closeAllConnections();
 });
 
 t.test('When everything is ok', async t => {

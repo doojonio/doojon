@@ -10,7 +10,7 @@ t.beforeEach(async t => {
   t.context.app = await startup();
 });
 t.afterEach(async t => {
-  t.context.app.model._container.resolve('/h/db/').close();
+  t.context.app.model.closeAllConnections();
 });
 
 t.test('Model', async t => {
