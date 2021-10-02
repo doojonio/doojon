@@ -1,18 +1,9 @@
 import { Database } from '@google-cloud/spanner';
-import { ForbiddenError, ValidationError } from './errors.js';
+import { NotAuthorizedError, ValidationError } from './errors.js';
 import { Service } from './service.js';
 import { IdStatus, State } from './state.js';
 
 export class DataserviceGuard extends Service {
-  /**
-   * @type {Database}
-   */
-  _db;
-  /**
-   * @type {import('ajv').default}
-   */
-  _validator;
-
   static get _objectsCreateSchema() {}
   static get _whereReadSchema() {}
   static get _whatReadSchema() {}
@@ -20,16 +11,20 @@ export class DataserviceGuard extends Service {
   static get _whatUpdateSchema() {}
   static get _whereDeleteSchema() {}
 
-  _validateCreateWhat;
-  _validateReadWhere;
-  _validateReadWhat;
-  _validateUpdateWhere;
-  _validateUpdateWhat;
-  _validateDeleteWhere;
-
   _guardReadNeededFields = [];
 
-  _postInit() {
+  constructor(...args) {
+    super(...args);
+
+    /**
+     * @type {Database}
+     */
+    this._db;
+    /**
+     * @type {import('ajv').default}
+     */
+    this._validator;
+
     this._validateCreateWhat = this._validator.compile(
       this.constructor._objectsCreateSchema
     );
@@ -73,7 +68,9 @@ export class DataserviceGuard extends Service {
    */
   async preCreateCheck(state, objects) {
     if (!this._validateCreateWhat(objects)) {
-      throw new ValidationError(this._validator.errorsText);
+      throw new ValidationError(
+        this._validator.errorsText(this._validateCreateWhat.errors)
+      );
     }
 
     return this._preCreateAdditionalChecks(state, objects);
@@ -136,7 +133,7 @@ export class DataserviceGuard extends Service {
    * @param {State} state
    */
   isAuthorized(state) {
-    if (state.uinfo.status !== IdStatus.AUTHORIZED) {
+    if (state.identity.status !== IdStatus.AUTHORIZED) {
       throw new NotAuthorizedError();
     }
   }

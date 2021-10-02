@@ -1,6 +1,7 @@
 import ejs from 'ejs';
 import prettier from 'prettier';
 import { camelCaseToSnakeCase } from '../string_util.js';
+import nopt from 'nopt';
 
 /**
  * @typedef {import('@mojojs/core').MojoApp} App
@@ -11,6 +12,7 @@ import { camelCaseToSnakeCase } from '../string_util.js';
  * @param {Array} args
  */
 export default async function run(app, args) {
+  const options = _getOptions(args);
   /**
    * @type {import('@google-cloud/spanner').Database}
    */
@@ -22,8 +24,58 @@ export default async function run(app, args) {
     }
 
     const schema = await _getSchema(transaction);
-    await _generateDsEntities(app, schema);
+    if (Object.keys(schema).length === 0) {
+      console.log('No tables found. Did your run ddl statements?');
+      process.exit(1);
+    }
+
+    await _generateDsEntities(app, schema, options);
   });
+}
+
+function _getOptions(args) {
+  const cliOptions = nopt(
+    {
+      'rw-ds': [String, Array],
+      'rw-dsg': [String, Array],
+      'rw-dss': [String, Array],
+      'rw-all': [String, Array],
+    },
+    {},
+    args,
+    0
+  );
+
+  const options = {};
+  if (cliOptions['rw-dsg']) {
+    options.rewriteGuards = cliOptions['rw-dsg'];
+  }
+  if (cliOptions['rw-ds']) {
+    options.rewriteDataservices = cliOptions['rw-ds'];
+  }
+  if (cliOptions['rw-dss']) {
+    options.rewriteStewards = cliOptions['rw-dss'];
+  }
+  if (cliOptions['rw-all']) {
+    for (const section of [
+      'rewriteDataservices',
+      'rewriteGuards',
+      'rewriteStewards',
+    ]) {
+      options[section] = options[section] ?? [];
+    }
+    for (const name of cliOptions['rw-all']) {
+      for (const section of [
+        'rewriteDataservices',
+        'rewriteGuards',
+        'rewriteStewards',
+      ]) {
+        options[section].push(name);
+      }
+    }
+  }
+
+  return options;
 }
 
 function _getWhatUpdateSchemaCode(schema) {
@@ -110,7 +162,7 @@ function _getObjectsCreateSchemaCode(schema) {
   });
 }
 
-async function _generateDsSteward(app, namesAndSchema) {
+async function _generateDsSteward(app, namesAndSchema, options) {
   const file = app.home.child(
     'src',
     'model',
@@ -118,7 +170,10 @@ async function _generateDsSteward(app, namesAndSchema) {
     namesAndSchema.fileName
   );
 
-  if (await file.exists()) {
+  if (
+    (await file.exists()) &&
+    options.rewriteStewards?.includes(file.basename('.js'))
+  ) {
     return;
   }
 
@@ -132,7 +187,7 @@ async function _generateDsSteward(app, namesAndSchema) {
   await file.writeFile(dsStewardCode);
 }
 
-async function _generateDsGuard(app, namesAndSchema) {
+async function _generateDsGuard(app, namesAndSchema, options) {
   const file = app.home.child(
     'src',
     'model',
@@ -140,7 +195,10 @@ async function _generateDsGuard(app, namesAndSchema) {
     namesAndSchema.fileName
   );
 
-  if (await file.exists()) {
+  if (
+    (await file.exists()) &&
+    !options.rewriteGuards?.includes(file.basename('.js'))
+  ) {
     return;
   }
 
@@ -170,14 +228,16 @@ async function _generateDsGuard(app, namesAndSchema) {
  * @param {Object} names
  * @returns
  */
-async function _generateDs(app, names) {
+async function _generateDs(app, names, options) {
   const file = app.home.child('src', 'model', 'dataservices', names.fileName);
+  const moniker = file.basename('.js');
 
-  if (await file.exists()) {
+  if (
+    (await file.exists()) &&
+    !options.rewriteDataservices?.includes(moniker)
+  ) {
     return;
   }
-
-  const moniker = file.basename('.js');
 
   let dataserviceCode = ejs.render(DATASERVICE_TEMPLATE, {
     className: names.className,
@@ -189,25 +249,37 @@ async function _generateDs(app, names) {
   await file.writeFile(dataserviceCode);
 }
 
-async function _generateDsEntities(app, schema) {
+async function _generateDsEntities(app, schema, options) {
   for (const tableName in schema) {
     let fileName = camelCaseToSnakeCase(tableName) + '.js';
 
     const dataserviceClassName = tableName + 'Dataservice';
     const guardClassName = tableName + 'Guard';
     const stewardClassName = tableName + 'Steward';
-    _generateDs(app, { fileName, tableName, className: dataserviceClassName });
-    _generateDsGuard(app, {
-      fileName,
-      tableName,
-      className: guardClassName,
-      schema: schema[tableName],
-    });
-    _generateDsSteward(app, {
-      fileName,
-      tableName,
-      className: stewardClassName,
-    });
+    _generateDs(
+      app,
+      { fileName, tableName, className: dataserviceClassName },
+      options
+    );
+    _generateDsGuard(
+      app,
+      {
+        fileName,
+        tableName,
+        className: guardClassName,
+        schema: schema[tableName],
+      },
+      options
+    );
+    _generateDsSteward(
+      app,
+      {
+        fileName,
+        tableName,
+        className: stewardClassName,
+      },
+      options
+    );
   }
 
   let schemaString = JSON.stringify(schema);

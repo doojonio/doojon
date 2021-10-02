@@ -1,4 +1,4 @@
-import { Database } from '@google-cloud/spanner';
+import { Database, Spanner } from '@google-cloud/spanner';
 import { Service } from './service.js';
 import { randomBytes, randomUUID } from 'crypto';
 
@@ -7,10 +7,18 @@ import { randomBytes, randomUUID } from 'crypto';
  * Stewards modify incoming data and run post-actions
  */
 export class DataserviceSteward extends Service {
-  /**
-   * @type {Database}
-   */
-  _db;
+  constructor(...args) {
+    super(...args);
+
+    /**
+     * @type {Database}
+     */
+    this._db;
+    /**
+     * @type {Object}
+     */
+    this._schema;
+  }
 
   static get _tableName() {
     throw new Error('Table name is undefined');
@@ -31,7 +39,9 @@ export class DataserviceSteward extends Service {
     return {};
   }
 
-  async manageKeysForNewObjects(state, objects) {
+  async manageMutationsForNewObjects(_state, _objects) {}
+
+  async manageKeysForNewObjects(_state, objects) {
     for (const object of objects) {
       const keys = this._generateRandomKeys();
 
@@ -41,10 +51,20 @@ export class DataserviceSteward extends Service {
     }
   }
 
+  async manageTimestampsForNewObjects(_state, objects) {
+    if (this._schema.columns.created === undefined) {
+      return;
+    }
+
+    const currentTimestamp = Spanner.timestamp();
+    for (const object of objects) {
+      object.created = currentTimestamp;
+    }
+  }
+
   // TODO: retries
-  async handleInsertError(error, tryNum) {
-    let shouldRetry = false;
-    return shouldRetry;
+  async handleInsertError(error, _tryNum) {
+    throw error;
   }
 
   _generateRandomKeys() {

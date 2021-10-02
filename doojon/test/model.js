@@ -6,9 +6,15 @@ import { Dataservice } from '../src/model/dataservice.js';
 import { DataserviceGuard } from '../src/model/ds_guard.js';
 import { DataserviceSteward } from '../src/model/ds_steward.js';
 
+t.beforeEach(async t => {
+  t.context.app = await startup();
+});
+t.afterEach(async t => {
+  t.context.app.model._container.resolve('/h/db/').close();
+});
+
 t.test('Model', async t => {
-  const app = await startup();
-  const model = app.model;
+  const model = t.context.app.model;
 
   t.ok(model instanceof Model, 'Model is instance of Model class');
 
@@ -16,7 +22,7 @@ t.test('Model', async t => {
 });
 
 t.test('Dataservices', async t => {
-  const app = await startup();
+  const app = t.context.app;
   const model = app.model;
 
   const dsDir = app.home.child('src', 'model', 'dataservices');
@@ -44,7 +50,7 @@ t.test('Dataservices', async t => {
 });
 
 t.test('DataserviceGuards', async t => {
-  const app = await startup();
+  const app = t.context.app;
   const model = app.model;
 
   const guardsDir = app.home.child('src', 'model', 'ds_guards');
@@ -74,7 +80,7 @@ t.test('DataserviceGuards', async t => {
 });
 
 t.test('DataserviceStewards', async t => {
-  const app = await startup();
+  const app = t.context.app;
   const model = app.model;
 
   const stewardsDir = app.home.child('src', 'model', 'ds_stewards');

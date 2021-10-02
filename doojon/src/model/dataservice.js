@@ -2,94 +2,11 @@ import { Service } from './service.js';
 import { State, IdStatus } from './state.js';
 import { ForbiddenError, ValidationError } from './errors.js';
 import { DataserviceGuard } from './ds_guard.js';
-import { Database, Snapshot, Transaction } from '@google-cloud/spanner';
+import { Database } from '@google-cloud/spanner';
 import { Logger } from '@mojojs/core';
 import { DataserviceSteward } from './ds_steward.js';
 
 export class Dataservice extends Service {
-  /**
-   * @type {Database}
-   */
-  _db;
-  /**
-   * @type {Logger}
-   */
-  _log;
-  /**
-   * @type {Object}
-   */
-  _dbschema;
-  /**
-   * @type {DataserviceGuard}
-   *
-   */
-  _guard;
-
-  /**
-   * @type {DataserviceSteward}
-   */
-  _steward;
-
-  static get deps() {
-    const moniker = this._moniker;
-    const tableName = this._tableName;
-
-    return Object.assign(
-      {
-        _log: '/h/log',
-        _db: '/h/db',
-        _schema: `/h/db/schema/${tableName}`,
-        _guard: `/ds_guards/${moniker}`,
-      },
-      this._customDeps
-    );
-  }
-  /**
-   * Custom dependencies are specified in subclasses
-   *
-   * @private
-   */
-  static get _customDeps() {
-    return {};
-  }
-
-  /**
-   * @private
-   */
-  static get _tableName() {
-    throw new Error('_tablename is undefined');
-  }
-
-  static get _moniker() {
-    throw new Error('_moniker is undefined');
-  }
-
-  /**
-   * Object with column names (as keys) and their's defenitions (as values)
-   *
-   * @private
-   * @type {Object}
-   */
-  get fields() {
-    return this._dbschema.tables[this.constructor._tablename];
-  }
-
-  /**
-   * Array of primary keys for dataservice's primary table
-   * @private
-   * @type {Array<string>}
-   */
-  get _primarykeys() {
-    const fields = this.fields;
-    const pkeys = [];
-
-    for (const colname of Object.keys(fields)) {
-      if (this.fields[colname]['is_primary_key']) pkeys.push(colname);
-    }
-
-    return pkeys;
-  }
-
   /**
    * Insert objects on dataservice's primary table
    *
@@ -110,6 +27,9 @@ export class Dataservice extends Service {
 
     let shouldRetry = true;
     let tryNum = 0;
+    let previousError;
+
+    await this._steward.manageMutationsForNewObjects(state, objects);
 
     while (shouldRetry) {
       shouldRetry = false;
@@ -119,19 +39,22 @@ export class Dataservice extends Service {
         this._log.warn(
           'Retrying to insert objects ' +
             `on ${this.constructor._tableName}. ` +
-            `Try: ${tryNum}`
+            `Try: ${tryNum}. ` +
+            `Cause: ${previousError}`
         );
       }
 
       await this._steward.manageKeysForNewObjects(state, objects);
+      await this._steward.manageTimestampsForNewObjects(state, objects);
       try {
         await this._db.table(this.constructor._tableName).insert(objects);
       } catch (error) {
         shouldRetry = await this._steward.handleInsertError(error, tryNum);
+        previousError = error;
       }
     }
 
-    return ids;
+    return;
   }
 
   /**
@@ -200,5 +123,65 @@ export class Dataservice extends Service {
       .delete()
       .where(where)
       .returning(this._primarykeys);
+  }
+
+  constructor(...args) {
+    super(...args);
+
+    /**
+     * @type {Database}
+     */
+    this._db;
+    /**
+     * @type {Logger}
+     */
+    this._log;
+    /**
+     * @type {Object}
+     */
+    this._schema;
+    /**
+     * @type {DataserviceGuard}
+     */
+    this._guard;
+    /**
+     * @type {DataserviceSteward}
+     */
+    this._steward;
+  }
+
+  static get deps() {
+    const moniker = this._moniker;
+    const tableName = this._tableName;
+
+    return Object.assign(
+      {
+        _log: '/h/log',
+        _db: '/h/db',
+        _schema: `/h/db/schema/${tableName}`,
+        _guard: `/ds_guards/${moniker}`,
+        _steward: `/ds_stewards/${moniker}`,
+      },
+      this._customDeps
+    );
+  }
+  /**
+   * Custom dependencies are specified in subclasses
+   *
+   * @private
+   */
+  static get _customDeps() {
+    return {};
+  }
+
+  /**
+   * @private
+   */
+  static get _tableName() {
+    throw new Error('_tablename is undefined');
+  }
+
+  static get _moniker() {
+    throw new Error('_moniker is undefined');
   }
 }

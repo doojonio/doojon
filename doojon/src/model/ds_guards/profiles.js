@@ -1,10 +1,16 @@
 import { DataserviceGuard } from '../ds_guard.js';
+import { ForbiddenError } from '../errors.js';
+import { IdStatus } from '../state.js';
 
 /**
  * @typedef {import('../state.js').State} State
  */
 
 export default class ProfilesGuard extends DataserviceGuard {
+  static get _tableName() {
+    return 'Profiles';
+  }
+
   static get _objectsCreateSchema() {
     return {
       type: 'array',
@@ -14,10 +20,12 @@ export default class ProfilesGuard extends DataserviceGuard {
         type: 'object',
         additionalProperties: false,
         properties: {
-          bio: { type: 'string', maxLength: 256 },
           username: { type: 'string', maxLength: 16 },
+          bio: { type: ['string', 'null'], maxLength: 300 },
+          email: { type: 'string', maxLength: 320 },
+          password: { type: 'string', minLength: 8, maxLength: 32 },
         },
-        required: ['bio', 'username'],
+        required: ['username', 'email', 'password'],
       },
     };
   }
@@ -35,7 +43,10 @@ export default class ProfilesGuard extends DataserviceGuard {
     return {
       type: 'array',
       minItems: 1,
-      items: { type: 'string', enum: ['created', 'bio', 'username', 'id'] },
+      items: {
+        type: 'string',
+        enum: ['username', 'id', 'bio', 'email', 'created', 'password'],
+      },
     };
   }
 
@@ -53,7 +64,12 @@ export default class ProfilesGuard extends DataserviceGuard {
       type: 'object',
       minProperties: 1,
       additionalProperties: false,
-      properties: { bio: { type: 'string' }, username: { type: 'string' } },
+      properties: {
+        username: { type: 'string' },
+        bio: { type: ['string', 'null'] },
+        email: { type: 'string' },
+        password: { type: 'string' },
+      },
     };
   }
 
@@ -73,6 +89,10 @@ export default class ProfilesGuard extends DataserviceGuard {
    * @param {Array<Object>} objects
    */
   _preCreateAdditionalChecks(state, objects) {
-    this.isAuthorized(state);
+    if (state.identity.status !== IdStatus.UNAUTHORIZED) {
+      throw new ForbiddenError(
+        'User has to be unauthorized to create profiles'
+      );
+    }
   }
 }

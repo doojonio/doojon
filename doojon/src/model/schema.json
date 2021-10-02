@@ -122,9 +122,9 @@
       },
       "id": { "spannerType": "STRING(36)", "type": "string", "maxLength": 36 },
       "bio": {
-        "spannerType": "STRING(256)",
-        "type": "string",
-        "maxLength": 256
+        "spannerType": "STRING(300)",
+        "type": ["string", "null"],
+        "maxLength": 300
       },
       "email": {
         "spannerType": "STRING(320)",

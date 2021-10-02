@@ -15,11 +15,29 @@ export const DDL_STATEMENTS = [
   `CREATE TABLE Profiles (
   id       STRING(36)  NOT NULL,
   email    STRING(320) NOT NULL,
-  password STRING(70) NOT NULL,
+  password STRING(70)  NOT NULL,
   username STRING(16)  NOT NULL,
-  bio      STRING(256) NOT NULL,
+  bio      STRING(300),
   created  TIMESTAMP   NOT NULL
 ) PRIMARY KEY (id)`,
+/**
+ * Creates unique index on profiles email
+ *
+ * @name profiles_email_idx
+ * @type {CreateIndex}
+ * @on email
+ */
+`CREATE UNIQUE NULL_FILTERED INDEX profiles_email_idx
+ON Profiles (email)`,
+/**
+ * Creates unique index on profiles username
+ *
+ * @name profiles_username_idx
+ * @type {Index}
+ * @on username
+ */
+`CREATE UNIQUE NULL_FILTERED INDEX profiles_username_idx
+ON Profiles (username)`,
   /**
    * Creates table for user posts
    * @name Posts
