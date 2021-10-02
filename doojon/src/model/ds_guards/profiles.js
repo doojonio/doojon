@@ -75,11 +75,18 @@ export default class ProfilesGuard extends DataserviceGuard {
    * @param {State} state
    * @param {Array<Object>} objects
    */
-  _preCreateAdditionalChecks(state, _objects) {
+  _preCreateAdditionalChecks(state, profiles) {
     if (state.identity.status !== IdStatus.UNAUTHORIZED) {
       throw new ForbiddenError(
         'User has to be unauthorized to create profiles'
       );
+    }
+
+    const forbiddenUsernames = this._config.dataservices.profiles.forbiddenUsernames;
+    for (const profile of profiles) {
+      if (forbiddenUsernames.includes(profile.username)) {
+        throw new ForbiddenError(`Username '${profile.username}' is forbidden`);
+      }
     }
   }
 }

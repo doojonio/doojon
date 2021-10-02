@@ -5,11 +5,9 @@ import { IdStatus, State } from './state.js';
 
 export class DataserviceGuard extends Service {
   static get _objectsCreateSchema() {}
-  static get _whereReadSchema() {}
-  static get _whatReadSchema() {}
-  static get _whereUpdateSchema() {}
-  static get _whatUpdateSchema() {}
-  static get _whereDeleteSchema() {}
+  static get _columnsReadSchema() {}
+  static get _keysSchema() {}
+  static get _rowsUpdateSchema() {}
 
   _guardReadNeededFields = [];
 
@@ -42,6 +40,7 @@ export class DataserviceGuard extends Service {
       {
         _db: '/h/db',
         _validator: '/s/validator',
+        _config: '/conf',
       },
       this._customdeps
     );

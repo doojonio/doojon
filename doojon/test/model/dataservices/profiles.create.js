@@ -144,3 +144,27 @@ t.test('Without username', async t => {
 
   t.end();
 });
+
+t.test('Forbidden username', async t => {
+  const profilesDataservice = t.context.profilesDs;
+
+  const identity = {
+    status: IdStatus.UNAUTHORIZED,
+  };
+  const state = new State(identity);
+
+  const profiles = [
+    {
+      email: 'testone@doojon.com',
+      username: 'api',
+      password: 'password',
+    },
+  ];
+
+  await t.rejects(
+    profilesDataservice.create(state, profiles),
+    new ValidationError("Username 'api' is forbidden")
+  );
+
+  t.end();
+});
