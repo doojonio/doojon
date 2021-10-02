@@ -42,10 +42,10 @@ export class DataserviceGuard extends Service {
         _validator: '/s/validator',
         _config: '/conf',
       },
-      this._customdeps
+      this._customDeps
     );
   }
-  static get _customdeps() {
+  static get _customDeps() {
     return {};
   }
 
@@ -67,7 +67,7 @@ export class DataserviceGuard extends Service {
     return this._preCreateAdditionalChecks(state, objects);
   }
 
-  async _preCreateAdditionalChecks(state, objects) {}
+  async _preCreateAdditionalChecks(_state, _objects) {}
 
   /**
    * Dataservices call this method of their guard to
@@ -88,7 +88,11 @@ export class DataserviceGuard extends Service {
         this._validator.errorsText(this._validateReadColumns.errors)
       );
     }
+
+    return this._preReadAdditionalChecks(state, keys, columns);
   }
+
+  async _preReadAdditionalChecks(_state, _keys, _columns) {}
 
   /**
    * Dataservices call this method of their guard to

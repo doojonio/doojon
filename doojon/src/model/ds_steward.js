@@ -31,11 +31,11 @@ export class DataserviceSteward extends Service {
         _db: '/h/db',
         _schema: `/h/db/schema/${tableName}`,
       },
-      this._customdeps
+      this._customDeps
     );
   }
 
-  static get _customdeps() {
+  static get _customDeps() {
     return {};
   }
 
