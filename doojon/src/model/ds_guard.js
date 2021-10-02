@@ -25,23 +25,15 @@ export class DataserviceGuard extends Service {
      */
     this._validator;
 
+    this._validateKeys = this._validator.compile(this.constructor._keysSchema);
     this._validateCreateWhat = this._validator.compile(
       this.constructor._objectsCreateSchema
     );
-    this._validateReadWhere = this._validator.compile(
-      this.constructor._whereReadSchema
+    this._validateReadColumns = this._validator.compile(
+      this.constructor._columnsReadSchema
     );
-    this._validateReadWhat = this._validator.compile(
-      this.constructor._whatReadSchema
-    );
-    this._validateUpdateWhere = this._validator.compile(
-      this.constructor._whereUpdateSchema
-    );
-    this._validateUpdateWhat = this._validator.compile(
-      this.constructor._whatUpdateSchema
-    );
-    this._validateDeleteWhere = this._validator.compile(
-      this.constructor._whereDeleteSchema
+    this._validateUpdateRows = this._validator.compile(
+      this.constructor._rowsUpdateSchema
     );
   }
 
@@ -86,12 +78,16 @@ export class DataserviceGuard extends Service {
    * @param {State} state
    * @param {Object} where
    */
-  async preReadCheck(state, what, where) {
-    if (!this._validateReadWhat(what)) {
-      throw new ValidationError(this._validator.errorsText);
+  async preReadCheck(state, keys, columns) {
+    if (!this._validateKeys(keys)) {
+      throw new ValidationError(
+        this._validator.errorsText(this._validateKeys.errors)
+      );
     }
-    if (!this._validateReadWhere(where)) {
-      throw new ValidationError(this._validator.errorsText);
+    if (!this._validateReadColumns(columns)) {
+      throw new ValidationError(
+        this._validator.errorsText(this._validateReadColumns.errors)
+      );
     }
   }
 

@@ -5,6 +5,10 @@ import { DataserviceGuard } from '../ds_guard.js';
  */
 
 export default class ProgressesByThingsDonePerPeriodGuard extends DataserviceGuard {
+  static get _tableName() {
+    return 'ProgressesByThingsDonePerPeriod';
+  }
+
   static get _objectsCreateSchema() {
     return {
       type: 'array',
@@ -25,19 +29,22 @@ export default class ProgressesByThingsDonePerPeriodGuard extends DataserviceGua
     };
   }
 
-  static get _whereReadSchema() {
-    return {
-      type: 'object',
-      additionalProperties: false,
-      required: ['acceptanceId'],
-      properties: { acceptanceId: { type: 'string' } },
-    };
-  }
-
-  static get _whatReadSchema() {
+  static get _keysSchema() {
     return {
       type: 'array',
       minItems: 1,
+      maxItems: 1,
+      description: 'acceptanceId',
+      items: { type: 'string' },
+    };
+  }
+
+  static get _columnsReadSchema() {
+    return {
+      type: 'array',
+      minItems: 1,
+      maxItems: 5,
+      uniqueItems: true,
       items: {
         type: 'string',
         enum: ['period', 'times', 'thing', 'acceptanceId', 'periodsNum'],
@@ -45,35 +52,19 @@ export default class ProgressesByThingsDonePerPeriodGuard extends DataserviceGua
     };
   }
 
-  static get _whereUpdateSchema() {
+  static get _rowsUpdateSchema() {
     return {
       type: 'object',
-      additionalProperties: false,
-      required: ['acceptanceId'],
-      properties: { acceptanceId: { type: 'string' } },
-    };
-  }
-
-  static get _whatUpdateSchema() {
-    return {
-      type: 'object',
-      minProperties: 1,
+      minProperties: 2,
       additionalProperties: false,
       properties: {
         period: { type: 'integer' },
         times: { type: 'integer' },
-        thing: { type: 'string' },
+        thing: { type: 'string', maxLength: 150 },
+        acceptanceId: { type: 'string', maxLength: 26 },
         periodsNum: { type: ['integer', 'null'] },
       },
-    };
-  }
-
-  static get _whereDeleteSchema() {
-    return {
-      type: 'object',
-      additionalProperties: false,
       required: ['acceptanceId'],
-      properties: { acceptanceId: { type: 'string' } },
     };
   }
 

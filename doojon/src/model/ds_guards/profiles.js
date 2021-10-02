@@ -30,65 +30,52 @@ export default class ProfilesGuard extends DataserviceGuard {
     };
   }
 
-  static get _whereReadSchema() {
-    return {
-      type: 'object',
-      additionalProperties: false,
-      required: ['id'],
-      properties: { id: { type: 'string' } },
-    };
-  }
-
-  static get _whatReadSchema() {
+  static get _keysSchema() {
     return {
       type: 'array',
       minItems: 1,
+      maxItems: 1,
+      description: 'id',
+      items: { type: 'string' },
+    };
+  }
+
+  static get _columnsReadSchema() {
+    return {
+      type: 'array',
+      minItems: 1,
+      maxItems: 6,
+      uniqueItems: true,
       items: {
         type: 'string',
-        enum: ['username', 'id', 'bio', 'email', 'created', 'password'],
+        enum: ['username', 'id', 'bio', 'created'],
       },
     };
   }
 
-  static get _whereUpdateSchema() {
+  static get _rowsUpdateSchema() {
     return {
       type: 'object',
-      additionalProperties: false,
-      required: ['id'],
-      properties: { id: { type: 'string' } },
-    };
-  }
-
-  static get _whatUpdateSchema() {
-    return {
-      type: 'object',
-      minProperties: 1,
+      minProperties: 2,
       additionalProperties: false,
       properties: {
-        username: { type: 'string' },
-        bio: { type: ['string', 'null'] },
-        email: { type: 'string' },
-        password: { type: 'string' },
+        username: { type: 'string', maxLength: 16 },
+        id: { type: 'string', maxLength: 36 },
+        bio: { type: ['string', 'null'], maxLength: 300 },
+        email: { type: 'string', maxLength: 320 },
+        password: { type: 'string', minLength: 8, maxLength: 32 },
       },
-    };
-  }
-
-  static get _whereDeleteSchema() {
-    return {
-      type: 'object',
-      additionalProperties: false,
       required: ['id'],
-      properties: { id: { type: 'string' } },
     };
   }
 
   /**
-   * - User has to be authorized
+   * - User has to be not authorized
    *
    * @param {State} state
    * @param {Array<Object>} objects
    */
-  _preCreateAdditionalChecks(state, objects) {
+  _preCreateAdditionalChecks(state, _objects) {
     if (state.identity.status !== IdStatus.UNAUTHORIZED) {
       throw new ForbiddenError(
         'User has to be unauthorized to create profiles'

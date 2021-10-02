@@ -16,7 +16,7 @@ t.afterEach(async t => {
 t.test('Model', async t => {
   const model = t.context.app.model;
 
-  t.ok(model instanceof Model, 'Model is instance of Model class');
+  t.type(model, Model, 'Model is instance of Model class');
 
   t.end();
 });
@@ -33,16 +33,16 @@ t.test('Dataservices', async t => {
     const jsClass = (await import(jsFile.toString())).default;
 
     const dataservice = model.getDataservice(name);
-    t.ok(
-      dataservice instanceof Dataservice,
+    t.type(
+      dataservice, Dataservice,
       'Is instance of Dataservice class'
     );
-    t.ok(dataservice instanceof jsClass, "Is instance of it's own class");
+    t.type(dataservice, jsClass, "Is instance of it's own class");
 
     const shouldCan = ['create', 'read', 'update', 'delete'];
 
     for (const method of shouldCan) {
-      t.ok(dataservice[method] instanceof Function, `It has method ${method}`);
+      t.type(dataservice[method], Function, `It has method ${method}`);
     }
   }
 
@@ -61,8 +61,8 @@ t.test('DataserviceGuards', async t => {
 
     const guard = model.getDsGuard(name);
 
-    t.ok(guard instanceof DataserviceGuard, 'Is instance of DataserviceGuard');
-    t.ok(guard instanceof jsClass, 'Is instance of it class');
+    t.type(guard, DataserviceGuard, 'Is instance of DataserviceGuard');
+    t.type(guard, jsClass, 'Is instance of it class');
 
     const shouldCan = [
       'preCreateCheck',
@@ -72,7 +72,7 @@ t.test('DataserviceGuards', async t => {
     ];
 
     for (const method of shouldCan) {
-      t.ok(guard[method] instanceof Function, `Has method ${method}`);
+      t.type(guard[method], Function, `Has method ${method}`);
     }
   }
 
@@ -91,11 +91,11 @@ t.test('DataserviceStewards', async t => {
 
     const steward = model._container.resolve(`/ds_stewards/${name}`);
 
-    t.ok(
-      steward instanceof DataserviceSteward,
+    t.type(
+      steward, DataserviceSteward,
       'Is instance of DataserviceSteward'
     );
-    t.ok(steward instanceof jsClass, 'Is instance of it class');
+    t.type(steward, jsClass, 'Is instance of it class');
 
     const shouldCan = [
       'handleInsertError',
@@ -105,7 +105,7 @@ t.test('DataserviceStewards', async t => {
     ];
 
     for (const method of shouldCan) {
-      t.ok(steward[method] instanceof Function, `Has method ${method}`);
+      t.type(steward[method], Function, `Has method ${method}`);
     }
   }
 

@@ -2,6 +2,7 @@ import t from 'tap';
 import { startup } from '../../../src/lib.js';
 import { ForbiddenError, ValidationError } from '../../../src/model/errors.js';
 import { IdStatus, State } from '../../../src/model/state.js';
+import { compareSync } from 'bcrypt';
 
 t.beforeEach(async t => {
   const app = await startup();
@@ -10,7 +11,50 @@ t.beforeEach(async t => {
 
 t.afterEach(async t => {
   await t.context.profilesDs._db.close();
-})
+});
+
+t.test('When everything is ok', async t => {
+  const profilesDataservice = t.context.profilesDs;
+
+  const identity = {
+    status: IdStatus.UNAUTHORIZED,
+  };
+  const state = new State(identity);
+
+  const originalPassword = 'password';
+  const profiles = [
+    {
+      email: 'testone@doojon.com',
+      username: 'testone',
+      password: originalPassword,
+    },
+  ];
+
+  let isInsertCalled = false;
+
+  profilesDataservice._db.table = (tableName) =>
+    new Object({
+      insert: ([obj]) => {
+        isInsertCalled = true;
+
+        t.equal(tableName, 'Profiles');
+        t.notSame(obj.password, originalPassword);
+        t.ok(
+          compareSync(originalPassword, obj.password),
+          'Passwords successfully compared'
+        );
+      },
+    });
+
+  await t.resolves(
+    profilesDataservice.create(state, profiles),
+    'Create profile resolves'
+  );
+
+  t.ok(isInsertCalled, 'Insert was called');
+
+  t.end();
+});
 
 t.test('When already authorized', async t => {
   const profilesDataservice = t.context.profilesDs;

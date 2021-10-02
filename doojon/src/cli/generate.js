@@ -78,29 +78,38 @@ function _getOptions(args) {
   return options;
 }
 
-function _getWhatUpdateSchemaCode(schema) {
+function _getRowsUpdateSchemaCode(schema) {
   const properties = {};
 
   for (const [columnName, columnSchema] of Object.entries(schema.columns)) {
-    if ([...schema.keys, 'updated', 'created'].includes(columnName)) {
+    if (['updated', 'created'].includes(columnName)) {
       continue;
     }
 
-    properties[columnName] = { type: columnSchema.type };
+    const definition = { type: columnSchema.type };
+
+    if (columnSchema.maxLength) {
+      definition.maxLength = columnSchema.maxLength;
+    }
+
+    properties[columnName] = definition;
   }
 
   return JSON.stringify({
     type: 'object',
-    minProperties: 1,
+    minProperties: schema.keys.length + 1,
     additionalProperties: false,
     properties,
+    required: schema.keys
   });
 }
 
-function _getWhatReadSchemaCode(schema) {
+function _getColumnsReadSchemaCode(schema) {
   return JSON.stringify({
     type: 'array',
     minItems: 1,
+    maxItems: Object.keys(schema.columns).length,
+    uniqueItems: true,
     items: {
       type: 'string',
       enum: Object.keys(schema.columns),
@@ -108,18 +117,25 @@ function _getWhatReadSchemaCode(schema) {
   });
 }
 
-function _getWhereSchemaCode(schema) {
-  const properties = {};
-
-  for (const key of schema.keys) {
-    properties[key] = { type: schema.columns[key].type };
+function _getKeysSchemaCode(schema) {
+  let keysTypes;
+  if (schema.keys.length === 1) {
+    keysTypes = schema.columns[schema.keys[0]].type;
+  } else {
+    keysTypes = [];
+    for (const key of schema.keys) {
+      keysTypes.push(schema.columns[key].type);
+    }
   }
 
   return JSON.stringify({
-    type: 'object',
-    additionalProperties: false,
-    required: schema.keys,
-    properties,
+    type: 'array',
+    minItems: schema.keys.length,
+    maxItems: schema.keys.length,
+    description: schema.keys.toString(),
+    items: {
+      type: keysTypes,
+    },
   });
 }
 
@@ -172,10 +188,12 @@ async function _generateDsSteward(app, namesAndSchema, options) {
 
   if (
     (await file.exists()) &&
-    options.rewriteStewards?.includes(file.basename('.js'))
+    !options.rewriteStewards?.includes(file.basename('.js'))
   ) {
+    console.log(`Skipping ${file}`);
     return;
   }
+  console.log(`Writing ${file}`);
 
   let dsStewardCode = ejs.render(DSSTEWARD_TEMPLATE, {
     className: namesAndSchema.className,
@@ -199,20 +217,22 @@ async function _generateDsGuard(app, namesAndSchema, options) {
     (await file.exists()) &&
     !options.rewriteGuards?.includes(file.basename('.js'))
   ) {
+    console.log(`Skipping ${file}`);
     return;
   }
+  console.log(`Writing ${file}`);
 
   const schema = namesAndSchema.schema;
   const objectsCreateSchemaCode = _getObjectsCreateSchemaCode(schema);
-  const whatReadSchemaCode = _getWhatReadSchemaCode(schema);
-  const whatUpdateSchemaCode = _getWhatUpdateSchemaCode(schema);
-  const whereSchemaCode = _getWhereSchemaCode(schema);
+  const columnsReadSchemaCode = _getColumnsReadSchemaCode(schema);
+  const rowsUpdateSchemaCode = _getRowsUpdateSchemaCode(schema);
+  const keysSchemaCode = _getKeysSchemaCode(schema);
 
   let dsGuardCode = ejs.render(DSGUARD_TEMPLATE, {
     objectsCreateSchemaCode,
-    whatReadSchemaCode,
-    whatUpdateSchemaCode,
-    whereSchemaCode,
+    columnsReadSchemaCode,
+    rowsUpdateSchemaCode,
+    keysSchemaCode,
     className: namesAndSchema.className,
     tableName: namesAndSchema.tableName,
   });
@@ -236,8 +256,10 @@ async function _generateDs(app, names, options) {
     (await file.exists()) &&
     !options.rewriteDataservices?.includes(moniker)
   ) {
+    console.log(`Skipping ${file}`);
     return;
   }
+  console.log(`Writing ${file}`);
 
   let dataserviceCode = ejs.render(DATASERVICE_TEMPLATE, {
     className: names.className,
@@ -442,24 +464,16 @@ export default class <%=className%> extends DataserviceGuard {
     return <%- objectsCreateSchemaCode %>
   }
 
-  static get _whereReadSchema() {
-    return <%- whereSchemaCode %>
+  static get _keysSchema() {
+    return <%- keysSchemaCode %>
   }
 
-  static get _whatReadSchema() {
-    return <%- whatReadSchemaCode %>
+  static get _columnsReadSchema() {
+    return <%- columnsReadSchemaCode %>
   }
 
-  static get _whereUpdateSchema() {
-    return <%- whereSchemaCode %>
-  }
-
-  static get _whatUpdateSchema() {
-    return <%- whatUpdateSchemaCode %>
-  }
-
-  static get _whereDeleteSchema() {
-    return <%- whereSchemaCode %>
+  static get _rowsUpdateSchema() {
+    return <%- rowsUpdateSchemaCode %>
   }
 
   /**

@@ -5,6 +5,10 @@ import { DataserviceGuard } from '../ds_guard.js';
  */
 
 export default class ProgressesBySpendedDaysGuard extends DataserviceGuard {
+  static get _tableName() {
+    return 'ProgressesBySpendedDays';
+  }
+
   static get _objectsCreateSchema() {
     return {
       type: 'array',
@@ -23,19 +27,22 @@ export default class ProgressesBySpendedDaysGuard extends DataserviceGuard {
     };
   }
 
-  static get _whereReadSchema() {
-    return {
-      type: 'object',
-      additionalProperties: false,
-      required: ['acceptanceId'],
-      properties: { acceptanceId: { type: 'string' } },
-    };
-  }
-
-  static get _whatReadSchema() {
+  static get _keysSchema() {
     return {
       type: 'array',
       minItems: 1,
+      maxItems: 1,
+      description: 'acceptanceId',
+      items: { type: 'string' },
+    };
+  }
+
+  static get _columnsReadSchema() {
+    return {
+      type: 'array',
+      minItems: 1,
+      maxItems: 3,
+      uniqueItems: true,
       items: {
         type: 'string',
         enum: ['untillDate', 'acceptanceId', 'spendedDays'],
@@ -43,33 +50,17 @@ export default class ProgressesBySpendedDaysGuard extends DataserviceGuard {
     };
   }
 
-  static get _whereUpdateSchema() {
+  static get _rowsUpdateSchema() {
     return {
       type: 'object',
-      additionalProperties: false,
-      required: ['acceptanceId'],
-      properties: { acceptanceId: { type: 'string' } },
-    };
-  }
-
-  static get _whatUpdateSchema() {
-    return {
-      type: 'object',
-      minProperties: 1,
+      minProperties: 2,
       additionalProperties: false,
       properties: {
         untillDate: { type: ['string', 'null'] },
+        acceptanceId: { type: 'string', maxLength: 26 },
         spendedDays: { type: 'integer' },
       },
-    };
-  }
-
-  static get _whereDeleteSchema() {
-    return {
-      type: 'object',
-      additionalProperties: false,
       required: ['acceptanceId'],
-      properties: { acceptanceId: { type: 'string' } },
     };
   }
 

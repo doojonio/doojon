@@ -2,7 +2,7 @@ import { Service } from './service.js';
 import { State, IdStatus } from './state.js';
 import { ForbiddenError, ValidationError } from './errors.js';
 import { DataserviceGuard } from './ds_guard.js';
-import { Database } from '@google-cloud/spanner';
+import { Database, Table } from '@google-cloud/spanner';
 import { Logger } from '@mojojs/core';
 import { DataserviceSteward } from './ds_steward.js';
 
@@ -61,22 +61,27 @@ export class Dataservice extends Service {
    * Read objects from dataservice's primary table
    *
    * @param {Stae} state
-   * @param {Object} where
+   * @param {Object} columns
    * @returns TODO
    */
-  async read(state, where) {
-    if (state.uinfo.status !== IdStatus.SYSTEM) {
-      if (!this._guard) {
-        throw new ForbiddenError('read action has been forbidden');
-      }
-      await this._guard.preReadCheck(state, where);
+  async read(state, keys, columns) {
+    await this._guard.preReadCheck(state, keys, columns);
+
+    this._log.trace(`Reading objects from ${this.constructor._tableName}`);
+
+    const table = this._db.table(this.constructor._tableName);
+    const readRequest = {
+      columns,
+      keys,
+    };
+
+    const [rows] = await table.read(readRequest);
+    const objects = [];
+    for (const row of rows) {
+      objects.push(row.toJSON());
     }
 
-    this._log.trace(`Reading objects from ${this.constructor._tablename}`);
-    return await this._db
-      .select()
-      .from(this.constructor._tablename)
-      .where(where);
+    return objects;
   }
 
   /**

@@ -5,6 +5,10 @@ import { DataserviceGuard } from '../ds_guard.js';
  */
 
 export default class CommentsGuard extends DataserviceGuard {
+  static get _tableName() {
+    return 'Comments';
+  }
+
   static get _objectsCreateSchema() {
     return {
       type: 'array',
@@ -23,19 +27,22 @@ export default class CommentsGuard extends DataserviceGuard {
     };
   }
 
-  static get _whereReadSchema() {
-    return {
-      type: 'object',
-      additionalProperties: false,
-      required: ['id'],
-      properties: { id: { type: 'string' } },
-    };
-  }
-
-  static get _whatReadSchema() {
+  static get _keysSchema() {
     return {
       type: 'array',
       minItems: 1,
+      maxItems: 1,
+      description: 'id',
+      items: { type: 'string' },
+    };
+  }
+
+  static get _columnsReadSchema() {
+    return {
+      type: 'array',
+      minItems: 1,
+      maxItems: 5,
+      uniqueItems: true,
       items: {
         type: 'string',
         enum: ['text', 'postId', 'authorId', 'id', 'created'],
@@ -43,34 +50,18 @@ export default class CommentsGuard extends DataserviceGuard {
     };
   }
 
-  static get _whereUpdateSchema() {
+  static get _rowsUpdateSchema() {
     return {
       type: 'object',
-      additionalProperties: false,
-      required: ['id'],
-      properties: { id: { type: 'string' } },
-    };
-  }
-
-  static get _whatUpdateSchema() {
-    return {
-      type: 'object',
-      minProperties: 1,
+      minProperties: 2,
       additionalProperties: false,
       properties: {
-        text: { type: 'string' },
-        postId: { type: 'string' },
-        authorId: { type: 'string' },
+        text: { type: 'string', maxLength: 10000 },
+        postId: { type: 'string', maxLength: 11 },
+        authorId: { type: 'string', maxLength: 36 },
+        id: { type: 'string', maxLength: 26 },
       },
-    };
-  }
-
-  static get _whereDeleteSchema() {
-    return {
-      type: 'object',
-      additionalProperties: false,
       required: ['id'],
-      properties: { id: { type: 'string' } },
     };
   }
 
