@@ -10,15 +10,20 @@ export default async function startup() {
    * @type {Container}
    */
   const h = this._container.addContainer('h');
+  const dbContainer = h.addContainer('db');
 
-  const redisOptions = this._conf.handlers.redis;
-  const redisClient = createRedisClient(redisOptions);
-  redisClient.connect();
+  await setupRedis.call(this, { h });
+  await setupSpanner.call(this, { dbContainer, h });
+  await setupSchema.call(this, { dbContainer });
+  await setupLog.call(this, {h});
+}
 
-  h.addService('redis', {
-    block: () => redisClient
-  });
+async function setupLog({h}) {
+  const log = this._log;
+  h.addService('log', { block: () => log });
+}
 
+async function setupSpanner({ dbContainer, h }) {
   const projectId = process.env.GCP_PROJECT;
   if (!projectId) {
     throw new Error('env GCP_PROJECT is not specified');
@@ -33,10 +38,6 @@ export default async function startup() {
     throw new Error('env SPANNER_DATABASE is not specified');
   }
 
-  const dbContainer = h.addContainer('db');
-
-  await setupSchema.call(this, dbContainer);
-
   const spanner = new Spanner({ projectId });
   dbContainer.addService('spanner', { block: () => spanner });
 
@@ -46,12 +47,19 @@ export default async function startup() {
   const poolOptions = this._conf.spanner?.poolOptions;
   const database = instance.database(spannerDatabase, poolOptions);
   h.addService('db', { block: () => database });
-
-  const log = this._log;
-  h.addService('log', { block: () => log });
 }
 
-async function setupSchema(dbContainer) {
+async function setupRedis({ dbContainer, h }) {
+  const redisOptions = this._conf.handlers.redis;
+  const redisClient = createRedisClient(redisOptions);
+  redisClient.connect();
+
+  h.addService('redis', {
+    block: () => redisClient,
+  });
+}
+
+async function setupSchema({ dbContainer }) {
   const dbSchema = JSON.parse(
     await this._appHome.child('src', 'model', 'schema.json').readFile()
   );

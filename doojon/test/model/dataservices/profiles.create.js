@@ -119,7 +119,7 @@ t.test('When objects array is null', async t => {
 
   await t.rejects(
     profilesDataservice.create(state, profiles),
-    new ValidationError('objects (second argument) is not array of objects')
+    new ValidationError('data must be array')
   );
 
   t.end();

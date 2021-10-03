@@ -15,21 +15,16 @@ export class Dataservice extends Service {
    * @returns {Array<Object>} array of {id: string}
    */
   async create(state, objects) {
-    if (!Array.isArray(objects)) {
-      throw new ValidationError(
-        'objects (second argument) is not array of objects'
-      );
-    }
-
     await this._guard.preCreateCheck(state, objects);
 
     this._log.trace(`Inserting objects in ${this.constructor._tableName}`);
 
+    await this._steward.manageMutationsForNewObjects(state, objects);
+    await this._steward.manageTimestampsForNewObjects(state, objects);
+
     let shouldRetry = true;
     let tryNum = 0;
     let previousError;
-
-    await this._steward.manageMutationsForNewObjects(state, objects);
 
     while (shouldRetry) {
       shouldRetry = false;
@@ -45,7 +40,6 @@ export class Dataservice extends Service {
       }
 
       await this._steward.manageKeysForNewObjects(state, objects);
-      await this._steward.manageTimestampsForNewObjects(state, objects);
       try {
         await this._db.table(this.constructor._tableName).insert(objects);
       } catch (error) {
@@ -92,19 +86,12 @@ export class Dataservice extends Service {
    * @param {Object} newFields
    * @returns TODO
    */
-  async update(state, where, newFields) {
-    if (state.uinfo.status !== IdStatus.SYSTEM) {
-      if (!this._guard) {
-        throw new ForbiddenError('update action has been forbidden');
-      }
-      await this._guard.preUpdateCheck(state, where, newFields);
-    }
+  async update(state, rows) {
+    await this._guard.preUpdateCheck(state, rows);
 
-    this._log.trace(`updating objects in ${this.constructor._tablename}`);
-    return await this._db(this.constructor._tablename)
-      .where(where)
-      .update(newFields)
-      .returning(this._primarykeys);
+    this._log.trace(`Updating objects in ${this.constructor._tablename}`);
+
+    await this._db.table(this.constructor.table).update(rows);
   }
 
   /**
@@ -114,20 +101,12 @@ export class Dataservice extends Service {
    * @param {Object} where
    * @returns TODO
    */
-  async delete(state, where) {
-    if (state.uinfo.status !== IdStatus.SYSTEM) {
-      if (!this._guard) {
-        throw new ForbiddenError('delete action has been forbidden');
-      }
-      await this._guard.preDeleteCheck(state, where);
-    }
+  async delete(state, keys) {
+    await this._guard.preDeleteCheck(state, keys);
 
-    this._log.trace(`deleting objects from ${this.constructor._tablename}`);
+    this._log.trace(`Deleting objects from ${this.constructor._tablename}`);
 
-    return await this._db(this.constructor._tablename)
-      .delete()
-      .where(where)
-      .returning(this._primarykeys);
+    await this._db.table(this.constructor._tablename).deleteRows(keys);
   }
 
   constructor(...args) {
