@@ -32,8 +32,8 @@ t.test('When everything is ok', async t => {
   ];
 
   let isInsertCalled = false;
-
-  profilesDataservice._db.table = (tableName) =>
+  let inseredObjectId;
+  profilesDataservice._db.table = tableName =>
     new Object({
       insert: ([obj]) => {
         isInsertCalled = true;
@@ -46,15 +46,23 @@ t.test('When everything is ok', async t => {
         );
         t.ok(obj.id, 'Has assigned id');
         t.equal(obj.id.length, 36, 'Id length equal 36');
+
+        inseredObjectId = obj.id;
       },
     });
 
+  let returnedObjectsKeys;
   await t.resolves(
-    profilesDataservice.create(state, profiles),
+    profilesDataservice
+      .create(state, profiles)
+      .then(keys => (returnedObjectsKeys = keys)),
     'Create profile resolves'
   );
 
   t.ok(isInsertCalled, 'Insert was called');
+  t.type(returnedObjectsKeys, Array);
+  t.ok(returnedObjectsKeys.length === 1, 'Returns one new key');
+  t.equal(returnedObjectsKeys[0].id, inseredObjectId, 'Returned profile id equal inserted');
 
   t.end();
 });

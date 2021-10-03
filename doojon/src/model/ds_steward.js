@@ -43,13 +43,18 @@ export class DataserviceSteward extends Service {
   async manageMutationsForNewObjects(_state, _objects) {}
 
   async manageKeysForNewObjects(_state, objects) {
+    let newObjectsKeys = [];
     for (const object of objects) {
       const keys = this._generateRandomKeys();
 
       for (const [key, value] of Object.entries(keys)) {
         object[key] = value;
       }
+
+      newObjectsKeys.push(keys);
     }
+
+    return newObjectsKeys;
   }
 
   async manageTimestampsForNewObjects(_state, objects) {

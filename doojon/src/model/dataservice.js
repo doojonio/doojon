@@ -24,6 +24,7 @@ export class Dataservice extends Service {
     let shouldRetry = true;
     let tryNum = 0;
     let previousError;
+    let insertedObjectsKeys;
 
     while (shouldRetry) {
       shouldRetry = false;
@@ -38,7 +39,7 @@ export class Dataservice extends Service {
         );
       }
 
-      await this._steward.manageKeysForNewObjects(state, objects);
+      insertedObjectsKeys = await this._steward.manageKeysForNewObjects(state, objects);
       try {
         await this._db.table(this.constructor._tableName).insert(objects);
       } catch (error) {
@@ -47,7 +48,7 @@ export class Dataservice extends Service {
       }
     }
 
-    return;
+    return insertedObjectsKeys;
   }
 
   /**
