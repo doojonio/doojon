@@ -9,19 +9,23 @@ services:
         VARIANT: 16
         USER_UID: 1000
         USER_GID: 1000
-
     volumes:
       - ../..:/workspace:cached
     command: sleep infinity
-  doojon_db:
-    image: postgres:latest
-    restart: unless-stopped
-    volumes:
-      - doojon-data:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: password
-      POSTGRES_USER: doojon
-      POSTGRES_DB: doojon
+      GCP_PROJECT: doojon-dev
+      SPANNER_EMULATOR_HOST: doojon_db:9010
+      SPANNER_INSTANCE: doojon-dev
+      SPANNER_DATABASE: doojon
+  doojon_db:
+    image: gcr.io/cloud-spanner-emulator/emulator
+    ports:
+      - 9010:9010
+      - 9020:9020
+    restart: unless-stopped
+  doojon_redis:
+    image: redis
+    restart: unless-stopped
 volumes:
   doojon-data:
   accounts-data:

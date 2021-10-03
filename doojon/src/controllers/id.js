@@ -1,10 +1,7 @@
-
 export default class IdController {
-
-  async getUserInfo(ctx) {
+  async id(ctx) {
     const state = await ctx.getState(ctx);
 
-    ctx.render({json: state.uinfo})
+    ctx.render({ json: state.uinfo });
   }
-
 }

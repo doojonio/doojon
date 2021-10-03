@@ -1,0 +1,30 @@
+{
+  "dataservices": {
+    "profiles": {
+      "forbiddenUsernames": [
+        "api",
+        "show",
+        "login",
+        "signup",
+        "signin",
+        "settings",
+        "explore"
+      ]
+    }
+  },
+  "handlers": {
+    "spanner": {
+      "poolOptions": {}
+    },
+    "redis": {
+      "url": "redis://doojon_redis:6379"
+    }
+  },
+  "web": {
+    "authCookie": {
+      "name": "SID",
+      "expiresAfterDays": 365,
+      "secure": false
+    }
+  }
+}

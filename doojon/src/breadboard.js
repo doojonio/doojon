@@ -8,6 +8,22 @@ export class Container {
     }
   }
 
+  initAll() {
+    for (const service of Object.values(this._services)) {
+      service.get();
+    }
+
+    for (const container of Object.values(this._containers)) {
+      container.initAll();
+    }
+  }
+
+  /**
+   *
+   * @param {string} serviceName
+   * @param {Object} conf
+   * @returns {Service}
+   */
   addService(serviceName, conf) {
     if (this._services[serviceName]) {
       throw new Error(`service ${serviceName} already exists`);
@@ -23,6 +39,11 @@ export class Container {
     return Object.keys(this._services);
   }
 
+  /**
+   *
+   * @param {string} containerName
+   * @returns {Container} container
+   */
   addContainer(containerName) {
     if (this._containers[containerName]) {
       throw new Error(`container ${containerName} already exists`);
@@ -34,6 +55,11 @@ export class Container {
     return container;
   }
 
+  /**
+   *
+   * @param {string} containerName
+   * @returns {Container}
+   */
   getContainer(containerName) {
     const container = this._containers[containerName];
 
@@ -42,6 +68,11 @@ export class Container {
     return container;
   }
 
+  /**
+   *
+   * @param {string} serviceName
+   * @returns {Service}
+   */
   getService(serviceName) {
     const service = this._services[serviceName];
 
@@ -50,6 +81,12 @@ export class Container {
     return service;
   }
 
+  /**
+   *
+   * @param {string} path
+   * @param {boolean} isContainer
+   * @returns {Service | Container}
+   */
   fetch(path, isContainer = false) {
     path = path.split('/').filter(el => el);
 
@@ -69,6 +106,11 @@ export class Container {
     return currentContainer.getService(lastEl);
   }
 
+  /**
+   *
+   * @param {string} path
+   * @returns Dereferenced service (result of `block` or `class` constructor)
+   */
   resolve(path) {
     return this.fetch(path).get();
   }
@@ -76,19 +118,19 @@ export class Container {
 
 class Service {
   constructor(conf, parentContainer) {
-    if (!parentContainer)
-      throw new Error('missing parent container for service');
+    if (!parentContainer) {
+      throw new Error('Missing parent container for service');
+    }
 
     if (conf.block) {
       this._block = conf.block;
     } else if (conf.class) {
       this._serviceClass = conf.class;
     } else {
-      throw new Error('missing block or class');
+      throw new Error('Missing block or class');
     }
 
     this.isLocked = false;
-    this._isSingletone = conf.isSingletone || false;
     this._parentRef = new WeakRef(parentContainer);
   }
 
@@ -106,8 +148,12 @@ class Service {
     return this._serviceClass.deps;
   }
 
+  /**
+   *
+   * @returns Dereferenced service (result of `block` or `class` constructor)
+   */
   get() {
-    if (this._isSingletone && this._instance) {
+    if (this._instance) {
       return this._instance;
     }
 
@@ -119,7 +165,7 @@ class Service {
       object = new this._serviceClass(deps);
     }
 
-    if (this._isSingletone) this._instance = object;
+    this._instance = object;
 
     return object;
   }

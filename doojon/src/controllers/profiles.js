@@ -1,26 +1,23 @@
+/**
+ * @typedef {import('@mojojs/core').MojoContext} Context
+ */
 
 export default class ProfilesController {
-  async getProfileCommonInfo(ctx) {
-    const username = ctx.req.query.get('username');
-    if (!username)
-      return ctx.res.status(400).send('username missing');
-
-    const info = await ctx.app.model.getDataservice('profiles').getCommonInfo({username});
-
-    if (!info)
-      return ctx.res.status(404).send('profile not found');
-
-    ctx.render({json: info});
-  }
-
+  /**
+   * Returns true if username in request is available. False otherwise
+   *
+   * @param {Context} ctx
+   * @returns
+   */
   async isUsernameAvailable(ctx) {
     const username = ctx.req.query.get('username');
 
-    if (!username)
-      return ctx.res.status(400).send('username missing');
+    if (!username) return ctx.res.status(400).send('username missing');
 
-    const itIs = await ctx.app.model.getDataservice('profiles').isUsernameAvailable(username)
+    const itIs = await ctx.app.model
+      .getDataservice('profiles')
+      .isUsernameAvailable(username);
 
-    ctx.render({json: itIs});
+    ctx.render({ json: itIs });
   }
 }

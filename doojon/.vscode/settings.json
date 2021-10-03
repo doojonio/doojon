@@ -2,5 +2,18 @@
   "[javascript]": {
     "editor.tabSize": 2,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "Google Cloud Spanner Driver",
+      "name": "Emulator connection",
+      "project": "doojon-dev",
+      "instance": "doojon-dev",
+      "database": "doojon",
+      "connectToEmulator": true,
+      "emulatorHost": "doojon_db",
+      "emulatorPort": 9010
+    }
+  ]
 }

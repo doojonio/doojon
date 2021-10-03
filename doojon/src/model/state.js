@@ -1,8 +1,22 @@
-export const ID_STATUS_UNAUTHORIZED = 'UNAUTHORIZED';
-export const ID_STATUS_NOPROFILE = 'NOPROFILE';
-export const ID_STATUS_AUTHORIZED = 'AUTHORIZED';
-export const ID_STATUS_SYSTEM = 'SYSTEM';
+export const IdStatus = {
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  AUTHORIZED: 'AUTHORIZED',
+};
 
 export class State {
-  uinfo = undefined;
+  /**
+   * @type {Identity}
+   */
+  identity;
+
+  constructor(identity) {
+    this.identity = identity;
+  }
 }
+
+/**
+ * @typedef {object} Identity
+ * @property {string} profileId
+ * @property {string} username
+ * @property {string} status
+ */
