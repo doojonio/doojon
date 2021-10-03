@@ -33,9 +33,13 @@ export default class ProgressesByThingsDonePerPeriodGuard extends DataserviceGua
     return {
       type: 'array',
       minItems: 1,
-      maxItems: 1,
-      description: 'acceptanceId',
-      items: { type: 'string' },
+      items: {
+        type: 'array',
+        minItems: 1,
+        maxItems: 1,
+        description: 'acceptanceId',
+        items: { type: 'string' },
+      },
     };
   }
 

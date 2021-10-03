@@ -21,7 +21,7 @@ t.test('Everything is ok', async t => {
   };
   const state = new State(identity);
 
-  const keys = ['Angular, Google Cloud and Mojolicious teams, thank you'];
+  const keys = [['Angular, Google Cloud and Mojolicious teams, thank you']];
   const columns = ['username'];
 
   let isReadCalled = false;
@@ -57,7 +57,7 @@ t.test('When empty array of keys', async t => {
 
   await t.rejects(
     profilesDataservice.read(state, keys, columns),
-    new ValidationError('data must NOT have fewer than 1 items')
+    new ValidationError('keys - data must NOT have fewer than 1 items')
   );
 
   t.end();
@@ -71,12 +71,12 @@ t.test('When empty columns', async t => {
   };
   const state = new State(identity);
 
-  const keys = ['someId'];
+  const keys = [['someId']];
   const columns = [];
 
   await t.rejects(
     profilesDataservice.read(state, keys, columns),
-    new ValidationError('data must NOT have fewer than 1 items')
+    new ValidationError('columns - data must NOT have fewer than 1 items')
   );
 
   t.end();
@@ -90,12 +90,12 @@ t.test('Reading secret fields', async t => {
   };
   const state = new State(identity);
 
-  const keys = ['someId'];
+  const keys = [['someId']];
   const columns = ['email', 'password'];
 
   await t.rejects(
     profilesDataservice.read(state, keys, columns),
-    new ValidationError('data/0 must be equal to one of the allowed values')
+    new ValidationError('columns - data/0 must be equal to one of the allowed values')
   );
 
   t.end();

@@ -31,9 +31,13 @@ export default class RepliesGuard extends DataserviceGuard {
     return {
       type: 'array',
       minItems: 1,
-      maxItems: 1,
-      description: 'id',
-      items: { type: 'string' },
+      items: {
+        type: 'array',
+        minItems: 1,
+        maxItems: 1,
+        description: 'id',
+        items: { type: 'string' },
+      },
     };
   }
 

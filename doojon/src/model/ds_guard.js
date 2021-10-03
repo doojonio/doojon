@@ -80,12 +80,13 @@ export class DataserviceGuard extends Service {
   async preReadCheck(state, keys, columns) {
     if (!this._validateKeys(keys)) {
       throw new ValidationError(
-        this._validator.errorsText(this._validateKeys.errors)
+        'keys - ' + this._validator.errorsText(this._validateKeys.errors)
       );
     }
     if (!this._validateReadColumns(columns)) {
       throw new ValidationError(
-        this._validator.errorsText(this._validateReadColumns.errors)
+        'columns - ' +
+          this._validator.errorsText(this._validateReadColumns.errors)
       );
     }
 
@@ -103,12 +104,14 @@ export class DataserviceGuard extends Service {
    * @param {Object} where
    * @param {Object} fields - new values
    */
-  async preUpdateCheck(_state, rows) {
+  async preUpdateCheck(state, rows) {
     if (!this._validateUpdateRows(rows)) {
       throw new ValidationError(
         this._validator.errorsText(this._validateUpdateRows.errors)
       );
     }
+
+    return this._preUpdateAdditionalChecks(state, rows);
   }
   async _preUpdateAdditionalChecks(_state, _rows) {}
 
@@ -120,11 +123,16 @@ export class DataserviceGuard extends Service {
    * @param {State} state
    * @param {Object} where
    */
-  async preDeleteCheck(state, where) {
-    if (!this._validateDeleteWhere(where)) {
-      throw new ValidationError(this._validator.errorsText);
+  async preDeleteCheck(state, keys) {
+    if (!this._validateKeys(keys)) {
+      throw new ValidationError(
+        this._validator.errorsText(this._validateKeys.errors)
+      );
     }
+
+    return this._preDeleteAdditionalChecks(state, keys);
   }
+  async _preDeleteAdditionalChecks(_state, _keys) {}
 
   /**
    * @throws NotAuthorizedError unless user in state is authorized

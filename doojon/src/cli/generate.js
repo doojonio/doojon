@@ -139,11 +139,15 @@ function _getKeysSchemaCode(schema) {
 
   return JSON.stringify({
     type: 'array',
-    minItems: schema.keys.length,
-    maxItems: schema.keys.length,
-    description: schema.keys.toString(),
+    minItems: 1,
     items: {
-      type: keysTypes,
+      type: 'array',
+      minItems: schema.keys.length,
+      maxItems: schema.keys.length,
+      description: schema.keys.toString(),
+      items: {
+        type: keysTypes,
+      },
     },
   });
 }

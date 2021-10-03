@@ -88,7 +88,7 @@ export class Dataservice extends Service {
   async update(state, rows) {
     await this._guard.preUpdateCheck(state, rows);
 
-    this._log.trace(`Updating objects in ${this.constructor._tablename}`);
+    this._log.trace(`Updating objects in ${this.constructor._tableName}`);
 
     await this._steward.manageMutationsForUpdatedRows(state, rows);
     await this._db.table(this.constructor._tableName).update(rows);
@@ -104,9 +104,9 @@ export class Dataservice extends Service {
   async delete(state, keys) {
     await this._guard.preDeleteCheck(state, keys);
 
-    this._log.trace(`Deleting objects from ${this.constructor._tablename}`);
+    this._log.trace(`Deleting objects from ${this.constructor._tableName}`);
 
-    await this._db.table(this.constructor._tablename).deleteRows(keys);
+    await this._db.table(this.constructor._tableName).deleteRows(keys);
   }
 
   constructor(...args) {
