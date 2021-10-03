@@ -44,6 +44,8 @@ t.test('When everything is ok', async t => {
           compareSync(originalPassword, obj.password),
           'Passwords successfully compared'
         );
+        t.ok(obj.id, 'Has assigned id');
+        t.equal(obj.id.length, 36, 'Id length equal 36');
       },
     });
 

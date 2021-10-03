@@ -30,6 +30,7 @@ export class DataserviceSteward extends Service {
       {
         _db: '/h/db',
         _schema: `/h/db/schema/${tableName}`,
+        _crypt: '/s/crypt',
       },
       this._customDeps
     );
@@ -74,34 +75,11 @@ export class DataserviceSteward extends Service {
 
     for (const key of schema.keys) {
       const columnSchema = schema.columns[key];
-
-      const randomBytesBuffer = randomBytes(
-        (columnSchema.maxLength * 3) / 4 + 1
+      generatedValues[key] = this._crypt.generateUrlSafeKey(
+        columnSchema.maxLength
       );
-      const base64 = randomBytesBuffer.toString('base64');
-
-      let urlSafeId = base64
-        .replace(/\+/g, 'd')
-        .replace(/\//g, 'j')
-        .replace(/=/g, 'n');
-
-      if (urlSafeId.length > columnSchema.maxLength) {
-        urlSafeId = urlSafeId.substring(0, columnSchema.maxLength);
-      }
-
-      generatedValues[key] = urlSafeId;
     }
 
     return generatedValues;
-  }
-
-  _generateRandomUUID() {
-    /**
-     * By default, to improve performance, Node.js generates and
-     * caches enough random data to generate up to 128 random UUIDs.
-     * To generate a UUID without using the cache, set disableEntropyCache
-     * to true. Default: false.
-     */
-    return randomUUID({ disableEntropyCache: true });
   }
 }

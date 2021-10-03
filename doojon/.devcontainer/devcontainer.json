@@ -6,11 +6,12 @@
   "workspaceFolder": "/workspace/doojon",
   // Add the IDs of extensions you want installed when the container is created.
   "extensions": [
-    "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
-    "google-cloud-spanner-ecosystem.google-cloud-spanner-driver",
-    "mtxr.sqltools"
-  ],
+	"dbaeumer.vscode-eslint",
+	"esbenp.prettier-vscode",
+	"google-cloud-spanner-ecosystem.google-cloud-spanner-driver",
+	"mtxr.sqltools",
+	"dunn.redis"
+],
   "settings": {
     "sqltools.connections": [
       {

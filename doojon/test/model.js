@@ -101,7 +101,6 @@ t.test('DataserviceStewards', async t => {
       'handleInsertError',
       'manageKeysForNewObjects',
       '_generateRandomKeys',
-      '_generateRandomUUID',
     ];
 
     for (const method of shouldCan) {
