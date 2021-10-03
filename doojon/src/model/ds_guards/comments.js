@@ -52,16 +52,20 @@ export default class CommentsGuard extends DataserviceGuard {
 
   static get _rowsUpdateSchema() {
     return {
-      type: 'object',
-      minProperties: 2,
-      additionalProperties: false,
-      properties: {
-        text: { type: 'string', maxLength: 10000 },
-        postId: { type: 'string', maxLength: 11 },
-        authorId: { type: 'string', maxLength: 36 },
-        id: { type: 'string', maxLength: 26 },
+      type: 'array',
+      minItems: 1,
+      items: {
+        type: 'object',
+        minProperties: 2,
+        additionalProperties: false,
+        properties: {
+          text: { type: 'string', maxLength: 10000 },
+          postId: { type: 'string', maxLength: 11 },
+          authorId: { type: 'string', maxLength: 36 },
+          id: { type: 'string', maxLength: 26 },
+        },
+        required: ['id'],
       },
-      required: ['id'],
     };
   }
 

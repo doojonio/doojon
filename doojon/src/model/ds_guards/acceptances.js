@@ -59,16 +59,20 @@ export default class AcceptancesGuard extends DataserviceGuard {
 
   static get _rowsUpdateSchema() {
     return {
-      type: 'object',
-      minProperties: 2,
-      additionalProperties: false,
-      properties: {
-        challengeId: { type: 'string', maxLength: 11 },
-        profileId: { type: 'string', maxLength: 36 },
-        id: { type: 'string', maxLength: 26 },
-        status: { type: 'string', maxLength: 16 },
+      type: 'array',
+      minItems: 1,
+      items: {
+        type: 'object',
+        minProperties: 2,
+        additionalProperties: false,
+        properties: {
+          challengeId: { type: 'string', maxLength: 11 },
+          profileId: { type: 'string', maxLength: 36 },
+          id: { type: 'string', maxLength: 26 },
+          status: { type: 'string', maxLength: 16 },
+        },
+        required: ['id'],
       },
-      required: ['id'],
     };
   }
 

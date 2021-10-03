@@ -55,17 +55,21 @@ export default class ProfilesGuard extends DataserviceGuard {
 
   static get _rowsUpdateSchema() {
     return {
-      type: 'object',
-      minProperties: 2,
-      additionalProperties: false,
-      properties: {
-        username: { type: 'string', maxLength: 16 },
-        id: { type: 'string', maxLength: 36 },
-        bio: { type: ['string', 'null'], maxLength: 300 },
-        email: { type: 'string', maxLength: 320 },
-        password: { type: 'string', minLength: 8, maxLength: 32 },
+      type: 'array',
+      minItems: 1,
+      items: {
+        type: 'object',
+        minProperties: 2,
+        additionalProperties: false,
+        properties: {
+          username: { type: 'string', maxLength: 16 },
+          id: { type: 'string', maxLength: 36 },
+          bio: { type: ['string', 'null'], maxLength: 300 },
+          email: { type: 'string', maxLength: 320 },
+          password: { type: 'string', minLength: 8, maxLength: 32 },
+        },
+        required: ['id'],
       },
-      required: ['id'],
     };
   }
 
@@ -82,7 +86,8 @@ export default class ProfilesGuard extends DataserviceGuard {
       );
     }
 
-    const forbiddenUsernames = this._config.dataservices.profiles.forbiddenUsernames;
+    const forbiddenUsernames =
+      this._config.dataservices.profiles.forbiddenUsernames;
     for (const profile of profiles) {
       if (forbiddenUsernames.includes(profile.username)) {
         throw new ForbiddenError(`Username '${profile.username}' is forbidden`);

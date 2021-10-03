@@ -63,6 +63,8 @@ export class DataserviceSteward extends Service {
     }
   }
 
+  async manageMutationsForUpdatedRows(_state, objects) {}
+
   // TODO: retries
   async handleInsertError(error, _tryNum) {
     throw error;

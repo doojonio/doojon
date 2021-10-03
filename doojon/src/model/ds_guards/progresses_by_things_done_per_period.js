@@ -54,17 +54,21 @@ export default class ProgressesByThingsDonePerPeriodGuard extends DataserviceGua
 
   static get _rowsUpdateSchema() {
     return {
-      type: 'object',
-      minProperties: 2,
-      additionalProperties: false,
-      properties: {
-        period: { type: 'integer' },
-        times: { type: 'integer' },
-        thing: { type: 'string', maxLength: 150 },
-        acceptanceId: { type: 'string', maxLength: 26 },
-        periodsNum: { type: ['integer', 'null'] },
+      type: 'array',
+      minItems: 1,
+      items: {
+        type: 'object',
+        minProperties: 2,
+        additionalProperties: false,
+        properties: {
+          period: { type: 'integer' },
+          times: { type: 'integer' },
+          thing: { type: 'string', maxLength: 150 },
+          acceptanceId: { type: 'string', maxLength: 26 },
+          periodsNum: { type: ['integer', 'null'] },
+        },
+        required: ['acceptanceId'],
       },
-      required: ['acceptanceId'],
     };
   }
 

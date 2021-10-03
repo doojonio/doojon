@@ -1,8 +1,7 @@
 import { Service } from './service.js';
-import { State, IdStatus } from './state.js';
-import { ForbiddenError, ValidationError } from './errors.js';
+import { State } from './state.js';
 import { DataserviceGuard } from './ds_guard.js';
-import { Database, Table } from '@google-cloud/spanner';
+import { Database } from '@google-cloud/spanner';
 import { Logger } from '@mojojs/core';
 import { DataserviceSteward } from './ds_steward.js';
 
@@ -91,7 +90,8 @@ export class Dataservice extends Service {
 
     this._log.trace(`Updating objects in ${this.constructor._tablename}`);
 
-    await this._db.table(this.constructor.table).update(rows);
+    await this._steward.manageMutationsForUpdatedRows(state, rows);
+    await this._db.table(this.constructor._tableName).update(rows);
   }
 
   /**

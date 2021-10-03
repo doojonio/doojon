@@ -62,18 +62,22 @@ export default class ChallengesGuard extends DataserviceGuard {
 
   static get _rowsUpdateSchema() {
     return {
-      type: 'object',
-      minProperties: 2,
-      additionalProperties: false,
-      properties: {
-        criterionType: { type: 'string', maxLength: 16 },
-        id: { type: 'string', maxLength: 11 },
-        title: { type: 'string', maxLength: 100 },
-        authorId: { type: ['string', 'null'], maxLength: 36 },
-        description: { type: 'string', maxLength: 10000 },
-        isPublic: { type: 'boolean' },
+      type: 'array',
+      minItems: 1,
+      items: {
+        type: 'object',
+        minProperties: 2,
+        additionalProperties: false,
+        properties: {
+          criterionType: { type: 'string', maxLength: 16 },
+          id: { type: 'string', maxLength: 11 },
+          title: { type: 'string', maxLength: 100 },
+          authorId: { type: ['string', 'null'], maxLength: 36 },
+          description: { type: 'string', maxLength: 10000 },
+          isPublic: { type: 'boolean' },
+        },
+        required: ['id'],
       },
-      required: ['id'],
     };
   }
 

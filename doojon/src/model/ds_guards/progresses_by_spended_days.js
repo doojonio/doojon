@@ -52,15 +52,19 @@ export default class ProgressesBySpendedDaysGuard extends DataserviceGuard {
 
   static get _rowsUpdateSchema() {
     return {
-      type: 'object',
-      minProperties: 2,
-      additionalProperties: false,
-      properties: {
-        untillDate: { type: ['string', 'null'] },
-        acceptanceId: { type: 'string', maxLength: 26 },
-        spendedDays: { type: 'integer' },
+      type: 'array',
+      minItems: 1,
+      items: {
+        type: 'object',
+        minProperties: 2,
+        additionalProperties: false,
+        properties: {
+          untillDate: { type: ['string', 'null'] },
+          acceptanceId: { type: 'string', maxLength: 26 },
+          spendedDays: { type: 'integer' },
+        },
+        required: ['acceptanceId'],
       },
-      required: ['acceptanceId'],
     };
   }
 

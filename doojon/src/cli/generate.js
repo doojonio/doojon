@@ -17,11 +17,9 @@ export default async function run(app, args) {
    * @type {import('@google-cloud/spanner').Database}
    */
   const db = app.model._container.resolve('/h/db');
-  db.getSnapshot(async (err, transaction) => {
-    if (err) {
-      console.log('Unable to start read transaction: ' + err);
-      process.exit(1);
-    }
+
+  try {
+    const [transaction] = await db.getSnapshot();
 
     const schema = await _getSchema(transaction);
     if (Object.keys(schema).length === 0) {
@@ -30,7 +28,14 @@ export default async function run(app, args) {
     }
 
     await _generateDsEntities(app, schema, options);
-  });
+
+    transaction.end();
+  } catch (error) {
+    console.log('Unable to start read transaction: ' + err);
+    process.exit(1);
+  }
+
+  app.model.closeAllConnections();
 }
 
 function _getOptions(args) {
@@ -96,11 +101,15 @@ function _getRowsUpdateSchemaCode(schema) {
   }
 
   return JSON.stringify({
-    type: 'object',
-    minProperties: schema.keys.length + 1,
-    additionalProperties: false,
-    properties,
-    required: schema.keys
+    type: 'array',
+    minItems: 1,
+    items: {
+      type: 'object',
+      minProperties: schema.keys.length + 1,
+      additionalProperties: false,
+      properties,
+      required: schema.keys,
+    },
   });
 }
 

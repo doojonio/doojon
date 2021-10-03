@@ -48,15 +48,19 @@ export default class PostsGuard extends DataserviceGuard {
 
   static get _rowsUpdateSchema() {
     return {
-      type: 'object',
-      minProperties: 2,
-      additionalProperties: false,
-      properties: {
-        text: { type: 'string', maxLength: 10000 },
-        authorId: { type: 'string', maxLength: 36 },
-        id: { type: 'string', maxLength: 11 },
+      type: 'array',
+      minItems: 1,
+      items: {
+        type: 'object',
+        minProperties: 2,
+        additionalProperties: false,
+        properties: {
+          text: { type: 'string', maxLength: 10000 },
+          authorId: { type: 'string', maxLength: 36 },
+          id: { type: 'string', maxLength: 11 },
+        },
+        required: ['id'],
       },
-      required: ['id'],
     };
   }
 

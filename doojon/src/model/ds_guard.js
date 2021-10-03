@@ -99,18 +99,18 @@ export class DataserviceGuard extends Service {
    * ensure that update action is allowed for user defined in state
    * by domain logic
    *
-   * @param {State} state
+   * @param {State} _state
    * @param {Object} where
    * @param {Object} fields - new values
    */
-  async preUpdateCheck(state, where, what) {
-    if (!this._validateUpdateWhat(what)) {
-      throw new ValidationError(this._validator.errorsText);
-    }
-    if (!this._validateUpdateWhere(where)) {
-      throw new ValidationError(this._validator.errorsText);
+  async preUpdateCheck(_state, rows) {
+    if (!this._validateUpdateRows(rows)) {
+      throw new ValidationError(
+        this._validator.errorsText(this._validateUpdateRows.errors)
+      );
     }
   }
+  async _preUpdateAdditionalChecks(_state, _rows) {}
 
   /**
    * Dataservices call this method of their guard to

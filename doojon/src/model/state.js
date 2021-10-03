@@ -17,6 +17,6 @@ export class State {
 /**
  * @typedef {object} Identity
  * @property {string} profileId
- * @property {username} string
+ * @property {string} username
  * @property {string} status
  */
