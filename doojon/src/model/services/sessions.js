@@ -24,6 +24,6 @@ export default class SessionsService extends Service {
   // TODO
   async create(profileId) {
     const session = this._crypt.generateUUID();
-    return this._redis.hSet('sessions2users', session, profileId),
+    return this._redis.hSet('sessions2users', session, profileId);
   }
 }
