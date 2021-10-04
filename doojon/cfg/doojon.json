@@ -12,6 +12,12 @@
       ]
     }
   },
+  "services": {
+    "sessions": {
+      "sessionsRedisPrefix": "ses",
+      "profilesToSessionsRedisPrefix": "pses"
+    }
+  },
   "handlers": {
     "spanner": {
       "poolOptions": {}
@@ -25,6 +31,7 @@
       "name": "SID",
       "expiresAfterDays": 365,
       "secure": false
-    }
+    },
+    "forwardedForIpHeaderName": "X-Forwarded-For"
   }
 }
