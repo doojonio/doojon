@@ -3,15 +3,7 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false,
-  apis: {
-    doojon: {
-      v1endpoint: '/api/svc/doojon/1'
-    },
-    accounts: {
-      v1endpoint: '/api/svc/accounts/1'
-    }
-  }
+  production: false
 };
 
 /*
