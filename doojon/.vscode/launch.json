@@ -9,7 +9,7 @@
       "request": "launch",
       "name": "Migrations",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/test/resource.js",
+      "program": "${workspaceFolder}/script/doojon.js",
       "args": ["migrations", "run"]
     }
   ]

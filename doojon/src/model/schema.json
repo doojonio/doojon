@@ -19,7 +19,8 @@
         "maxLength": 10000
       }
     },
-    "keys": ["id"]
+    "keys": ["id"],
+    "indexes": {}
   },
   "ProgressesByThingsDonePerPeriod": {
     "columns": {
@@ -37,7 +38,8 @@
       },
       "periodsNum": { "spannerType": "INT64", "type": ["integer", "null"] }
     },
-    "keys": ["acceptanceId"]
+    "keys": ["acceptanceId"],
+    "indexes": {}
   },
   "Comments": {
     "columns": {
@@ -59,7 +61,8 @@
       "id": { "spannerType": "STRING(26)", "type": "string", "maxLength": 26 },
       "created": { "spannerType": "TIMESTAMP", "type": "string" }
     },
-    "keys": ["id"]
+    "keys": ["id"],
+    "indexes": {}
   },
   "ProgressesBySpendedDays": {
     "columns": {
@@ -71,7 +74,8 @@
       },
       "spendedDays": { "spannerType": "INT64", "type": "integer" }
     },
-    "keys": ["acceptanceId"]
+    "keys": ["acceptanceId"],
+    "indexes": {}
   },
   "Posts": {
     "columns": {
@@ -88,7 +92,8 @@
       },
       "id": { "spannerType": "STRING(11)", "type": "string", "maxLength": 11 }
     },
-    "keys": ["id"]
+    "keys": ["id"],
+    "indexes": {}
   },
   "Acceptances": {
     "columns": {
@@ -111,7 +116,8 @@
         "maxLength": 16
       }
     },
-    "keys": ["id"]
+    "keys": ["id"],
+    "indexes": {}
   },
   "Profiles": {
     "columns": {
@@ -138,7 +144,11 @@
         "maxLength": 70
       }
     },
-    "keys": ["id"]
+    "keys": ["id"],
+    "indexes": {
+      "ProfilesByEmail": { "keys": ["email"], "storing": ["password"] },
+      "ProfilesByUsername": { "keys": ["username"], "storing": [] }
+    }
   },
   "Challenges": {
     "columns": {
@@ -166,6 +176,7 @@
       "isPublic": { "spannerType": "BOOL", "type": "boolean" },
       "created": { "spannerType": "TIMESTAMP", "type": "string" }
     },
-    "keys": ["id"]
+    "keys": ["id"],
+    "indexes": {}
   }
 }

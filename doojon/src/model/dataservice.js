@@ -11,7 +11,7 @@ export class Dataservice extends Service {
    *
    * @param {State} state
    * @param {Array<Object>} objects
-   * @returns {Array<Object>} array of {id: string}
+   * @returns {Promise<Array<Object>>} array of {id: string}
    */
   async create(state, objects) {
     await this._guard.preCreateCheck(state, objects);

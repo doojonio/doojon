@@ -27,8 +27,8 @@ export const DDL_STATEMENTS = [
  * @type {CreateIndex}
  * @on email
  */
-`CREATE UNIQUE NULL_FILTERED INDEX profiles_email_idx
-ON Profiles (email)`,
+`CREATE UNIQUE NULL_FILTERED INDEX ProfilesByEmail
+ON Profiles (email) STORING (password)`,
 /**
  * Creates unique index on profiles username
  *
@@ -36,7 +36,7 @@ ON Profiles (email)`,
  * @type {Index}
  * @on username
  */
-`CREATE UNIQUE NULL_FILTERED INDEX profiles_username_idx
+`CREATE UNIQUE NULL_FILTERED INDEX ProfilesByUsername
 ON Profiles (username)`,
   /**
    * Creates table for user posts

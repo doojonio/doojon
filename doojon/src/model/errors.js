@@ -52,3 +52,22 @@ export class ValidationError extends Error {
     };
   }
 }
+
+export class NotFoundError extends Error {
+  toString() {
+    let errorString = 'NotFoundError';
+
+    if (this.message) {
+      errorString += `: ${this.message}`;
+    }
+
+    return errorString;
+  }
+
+  toJSON() {
+    return {
+      kind: 'NotFoundError',
+      message: this.message,
+    };
+  }
+}

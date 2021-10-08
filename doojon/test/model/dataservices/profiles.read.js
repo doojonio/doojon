@@ -95,7 +95,9 @@ t.test('Reading secret fields', async t => {
 
   await t.rejects(
     profilesDataservice.read(state, keys, columns),
-    new ValidationError('columns - data/0 must be equal to one of the allowed values')
+    new ValidationError(
+      'columns - data/0 must be equal to one of the allowed values'
+    )
   );
 
   t.end();

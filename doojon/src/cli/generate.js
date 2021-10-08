@@ -31,7 +31,7 @@ export default async function run(app, args) {
 
     transaction.end();
   } catch (error) {
-    console.log('Unable to start read transaction: ' + err);
+    console.log(error);
     process.exit(1);
   }
 
@@ -372,10 +372,57 @@ async function _getSchema(transaction) {
   for (let row of tablesRows) {
     const tableInfo = row.toJSON();
 
-    let columnsQuery = {
+    const indexesQuery = {
       sql:
-        `SELECT * FROM INFORMATION_SCHEMA.COLUMNS ` +
-        `WHERE TABLE_NAME = @table AND TABLE_SCHEMA = @schema`,
+        'SELECT * FROM INFORMATION_SCHEMA.INDEXES ' +
+        'WHERE TABLE_NAME = @table AND TABLE_SCHEMA = @schema ' +
+        "AND SPANNER_IS_MANAGED = false AND INDEX_TYPE = 'INDEX'",
+      params: {
+        table: tableInfo.TABLE_NAME,
+        schema: tableInfo.TABLE_SCHEMA,
+      },
+    };
+
+    const [indexesRows] = await transaction.run(indexesQuery);
+    const indexes = {};
+    for (const indexRow of indexesRows) {
+      const index = indexRow.toJSON();
+
+      const indexColumnsQuery = {
+        sql:
+          'SELECT * FROM INFORMATION_SCHEMA.INDEX_COLUMNS ' +
+          'WHERE TABLE_NAME = @table AND TABLE_SCHEMA = @schema ' +
+          "AND INDEX_TYPE = 'INDEX' AND INDEX_NAME = @index " +
+          'ORDER BY ORDINAL_POSITION',
+        params: {
+          table: tableInfo.TABLE_NAME,
+          schema: tableInfo.TABLE_SCHEMA,
+          index: index.INDEX_NAME,
+        },
+      };
+      const [indexColumnsRows] = await transaction.run(indexColumnsQuery);
+      const storing = [];
+      const keys = [];
+      for (const indexColumnRow of indexColumnsRows) {
+        const indexColumn = indexColumnRow.toJSON();
+
+        if (indexColumn.ORDINAL_POSITION === null) {
+          storing.push(indexColumn.COLUMN_NAME);
+        } else {
+          keys.push(indexColumn.COLUMN_NAME);
+        }
+      }
+
+      indexes[index.INDEX_NAME] = {
+        keys,
+        storing,
+      };
+    }
+
+    const columnsQuery = {
+      sql:
+        'SELECT * FROM INFORMATION_SCHEMA.COLUMNS ' +
+        'WHERE TABLE_NAME = @table AND TABLE_SCHEMA = @schema',
       params: {
         table: tableInfo.TABLE_NAME,
         schema: tableInfo.TABLE_SCHEMA,
@@ -386,6 +433,7 @@ async function _getSchema(transaction) {
     const tableSchema = {
       columns: {},
       keys: [],
+      indexes,
     };
     for (let colRow of columnsRows) {
       const column = colRow.toJSON();
