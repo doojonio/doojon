@@ -6,7 +6,7 @@
   </mat-card-header>
   <mat-card-content>
     <mat-stepper orientation="vertical" linear>
-      <mat-step>
+      <mat-step [formGroup]="securityForm" [stepControl]="securityForm">
         <ng-template
           matStepLabel
           i18n="signup step security|Name of the security step in sign up form"
@@ -15,7 +15,7 @@
         <div>
           <mat-form-field color="accent" appearance="outline">
             <mat-label i18n="email form|Email form field">Email</mat-label>
-            <input matInput />
+            <input matInput formControlName="email"/>
           </mat-form-field>
         </div>
         <div>
@@ -23,7 +23,7 @@
             <mat-label i18n="password form|Password form field"
               >Password</mat-label
             >
-            <input matInput [type]="showPassword ? 'text' : 'password'" />
+            <input matInput formControlName="password" [type]="showPassword ? 'text' : 'password'" />
             <button
               mat-icon-button
               matSuffix
@@ -39,7 +39,7 @@
           <button mat-button matStepperNext>Next</button>
         </div>
       </mat-step>
-      <mat-step>
+      <mat-step [stepControl]="usernameForm">
         <ng-template
           matStepLabel
           i18n="signup step profile|Name of the profile step in sign up form"
@@ -50,7 +50,7 @@
             <mat-label i18n="username form|Username form field in sign up form"
               >Username</mat-label
             >
-            <input matInput />
+            <input matInput [formControl]="usernameForm"/>
           </mat-form-field>
         </div>
         <div>

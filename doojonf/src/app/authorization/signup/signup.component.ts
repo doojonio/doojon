@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 
 @Component({
   selector: 'app-signup',
@@ -7,32 +12,33 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrls: ['./signup.component.scss'],
 })
 export class SignupComponent implements OnInit {
-  signUpForm: FormGroup;
+  securityForm: FormGroup;
+  usernameForm: FormControl;
 
   constructor(formBuilder: FormBuilder) {
-    this.signUpForm = formBuilder.group({
+    this.securityForm = formBuilder.group({
       email: ['', this.emailValidators],
       password: ['', this.passwordValidators],
-      username: ['', this.usernameValidators],
     });
+    this.usernameForm = formBuilder.control('', this.usernameValidators);
   }
 
   showPassword = false;
 
   private emailValidators = [
-    Validators.requiredTrue,
+    Validators.required,
     Validators.email,
     Validators.maxLength(320),
   ];
 
   private passwordValidators = [
-    Validators.requiredTrue,
+    Validators.required,
     Validators.minLength(8),
     Validators.maxLength(32),
   ];
 
   private usernameValidators = [
-    Validators.requiredTrue,
+    Validators.required,
     Validators.minLength(3),
     Validators.maxLength(16),
   ];
@@ -41,5 +47,9 @@ export class SignupComponent implements OnInit {
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
+  }
+
+  getEmailError() {
+    const email = this.securityForm.get('security.email');
   }
 }
