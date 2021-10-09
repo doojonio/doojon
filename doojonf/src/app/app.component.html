@@ -1,6 +1,9 @@
+<app-toolbar [sidenav]="sidenav"></app-toolbar>
 <mat-sidenav-container>
-  <mat-sidenav></mat-sidenav>
+  <mat-sidenav #sidenav fixedInViewport fixedTopGap="64">
+  </mat-sidenav>
   <mat-sidenav-content>
+    <div id="toolbar-placeholder"></div>
     <router-outlet></router-outlet>
   </mat-sidenav-content>
 </mat-sidenav-container>

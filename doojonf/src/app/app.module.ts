@@ -6,11 +6,10 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { ToolbarModule } from './toolbar/toolbar.module';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent],
   imports: [
     /**
      * Angular builtin imports
@@ -23,8 +22,13 @@ import { MatSidenavModule } from '@angular/material/sidenav';
      * Material imports
      */
     MatSidenavModule,
+
+    /**
+     * Doojon imports
+     */
+    ToolbarModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
