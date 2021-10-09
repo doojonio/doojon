@@ -1,7 +1,62 @@
 <mat-card>
   <mat-card-header>
     <mat-card-title i18n="createProfileTitle|Title of the form on signup page"
-      >Create your Doojon Profile</mat-card-title
+      >Create your Doojon profile</mat-card-title
     >
   </mat-card-header>
+  <mat-card-content>
+    <mat-stepper orientation="vertical" linear>
+      <mat-step>
+        <ng-template
+          matStepLabel
+          i18n="signup step security|Name of the security step in sign up form"
+          >Security</ng-template
+        >
+        <div>
+          <mat-form-field color="accent" appearance="outline">
+            <mat-label i18n="email form|Email form field">Email</mat-label>
+            <input matInput />
+          </mat-form-field>
+        </div>
+        <div>
+          <mat-form-field color="accent" appearance="outline">
+            <mat-label i18n="password form|Password form field"
+              >Password</mat-label
+            >
+            <input matInput [type]="showPassword ? 'text' : 'password'" />
+            <button
+              mat-icon-button
+              matSuffix
+              (click)="togglePasswordVisibility()"
+            >
+              <mat-icon>{{
+                showPassword ? 'visibility' : 'visibility_off'
+              }}</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+        <div>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </mat-step>
+      <mat-step>
+        <ng-template
+          matStepLabel
+          i18n="signup step profile|Name of the profile step in sign up form"
+          >Profile</ng-template
+        >
+        <div>
+          <mat-form-field color="accent" appearance="outline">
+            <mat-label i18n="username form|Username form field in sign up form"
+              >Username</mat-label
+            >
+            <input matInput />
+          </mat-form-field>
+        </div>
+        <div>
+          <button mat-button>Finish</button>
+        </div>
+      </mat-step>
+    </mat-stepper>
+  </mat-card-content>
 </mat-card>
