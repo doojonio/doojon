@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import {
+  AbstractControl,
   FormBuilder,
   FormControl,
   FormGroup,
+  ValidationErrors,
+  ValidatorFn,
   Validators,
 } from '@angular/forms';
 
@@ -12,9 +15,6 @@ import {
   styleUrls: ['./signup.component.scss'],
 })
 export class SignupComponent implements OnInit {
-  securityForm: FormGroup;
-  usernameForm: FormControl;
-
   constructor(formBuilder: FormBuilder) {
     this.securityForm = formBuilder.group({
       email: ['', this.emailValidators],
@@ -24,11 +24,11 @@ export class SignupComponent implements OnInit {
   }
 
   showPassword = false;
+  usernameForbiddenRegex = /[^a-zA-Z0-9_]+/;
+  securityForm: FormGroup;
+  usernameForm: FormControl;
 
-  private emailValidators = [
-    Validators.required,
-    Validators.email,
-  ];
+  private emailValidators = [Validators.required, Validators.email];
 
   private passwordValidators = [
     Validators.required,
@@ -40,6 +40,7 @@ export class SignupComponent implements OnInit {
     Validators.required,
     Validators.minLength(3),
     Validators.maxLength(16),
+    this.getForbiddenNameValidator(),
   ];
 
   ngOnInit(): void {}
@@ -48,12 +49,22 @@ export class SignupComponent implements OnInit {
     this.showPassword = !this.showPassword;
   }
 
+  getForbiddenNameValidator(): ValidatorFn {
+    const forbiddenRegex = this.usernameForbiddenRegex;
+    return (control: AbstractControl): ValidationErrors | null => {
+      const isForbidden = forbiddenRegex.test(control.value);
+
+      if (isForbidden) {
+        return { forbidden: { value: control.value } };
+      }
+
+      return null;
+    };
+  }
+
   getEmailError() {
     const email = this.securityForm.get('email');
-    const possibleErrorCodes = [
-      'required',
-      'email',
-    ];
+    const possibleErrorCodes = ['required', 'email'];
 
     for (const possibleErrorCode of possibleErrorCodes) {
       if (email?.hasError(possibleErrorCode)) {
@@ -66,11 +77,7 @@ export class SignupComponent implements OnInit {
 
   getPasswordError() {
     const password = this.securityForm.get('password');
-    const possibleErrorCodes = [
-      'required',
-      'minlength',
-      'maxlength',
-    ];
+    const possibleErrorCodes = ['required', 'minlength', 'maxlength'];
 
     for (const possibleErrorCode of possibleErrorCodes) {
       if (password?.hasError(possibleErrorCode)) {
@@ -87,6 +94,7 @@ export class SignupComponent implements OnInit {
       'required',
       'minlength',
       'maxlength',
+      'forbidden',
     ];
 
     for (const possibleErrorCode of possibleErrorCodes) {

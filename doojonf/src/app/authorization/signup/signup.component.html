@@ -79,6 +79,9 @@
             <mat-error *ngIf="getUsernameError() === 'maxlength'" i18n
               >Please, enter username shorter than 16 characters</mat-error
             >
+            <mat-error *ngIf="getUsernameError() === 'forbidden'" i18n
+              >Sorry, but this username is forbidden</mat-error
+            >
           </mat-form-field>
         </div>
         <div>
