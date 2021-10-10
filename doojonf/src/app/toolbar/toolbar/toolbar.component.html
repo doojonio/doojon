@@ -1,4 +1,12 @@
 <mat-toolbar>
-  <button (click)="toggleSidenav()" mat-icon-button><mat-icon>menu</mat-icon></button>
+  <button (click)="toggleSidenav()" mat-icon-button>
+    <mat-icon>menu</mat-icon>
+  </button>
   <h1><a routerLink="/" routerLinkActive="active">Doojon</a></h1>
+  <span style="flex: 1"></span>
+  <!-- TODO: Replace it with /a/signin-->
+  <a mat-stroked-button routerLink="/a/signup">
+    <mat-icon style="margin-right: 12px">person</mat-icon>
+    <span i18n="sign in toolbar|Sign in button at toolbar when user is not authorized">SIGN IN</span>
+  </a>
 </mat-toolbar>

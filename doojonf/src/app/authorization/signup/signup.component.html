@@ -15,7 +15,13 @@
         <div>
           <mat-form-field color="accent" appearance="outline">
             <mat-label i18n="email form|Email form field">Email</mat-label>
-            <input matInput formControlName="email"/>
+            <input matInput formControlName="email" />
+            <mat-error *ngIf="getEmailError() === 'required'" i18n
+              >Please, enter your email</mat-error
+            >
+            <mat-error *ngIf="getEmailError() === 'email'" i18n
+              >Please, enter a valid email</mat-error
+            >
           </mat-form-field>
         </div>
         <div>
@@ -23,7 +29,11 @@
             <mat-label i18n="password form|Password form field"
               >Password</mat-label
             >
-            <input matInput formControlName="password" [type]="showPassword ? 'text' : 'password'" />
+            <input
+              matInput
+              formControlName="password"
+              [type]="showPassword ? 'text' : 'password'"
+            />
             <button
               mat-icon-button
               matSuffix
@@ -33,6 +43,15 @@
                 showPassword ? 'visibility' : 'visibility_off'
               }}</mat-icon>
             </button>
+            <mat-error *ngIf="getPasswordError() === 'required'" i18n
+              >Please, enter secure password</mat-error
+            >
+            <mat-error *ngIf="getPasswordError() === 'minlength'" i18n
+              >Please, enter password longer than 8 characters</mat-error
+            >
+            <mat-error *ngIf="getPasswordError() === 'maxlength'" i18n
+              >Please, enter password shorter than 32 characters</mat-error
+            >
           </mat-form-field>
         </div>
         <div>
@@ -50,11 +69,20 @@
             <mat-label i18n="username form|Username form field in sign up form"
               >Username</mat-label
             >
-            <input matInput [formControl]="usernameForm"/>
+            <input matInput [formControl]="usernameForm" />
+            <mat-error *ngIf="getUsernameError() === 'required'" i18n
+              >Please, enter your future username</mat-error
+            >
+            <mat-error *ngIf="getUsernameError() === 'minlength'" i18n
+              >Please, enter username longer than 2 characters</mat-error
+            >
+            <mat-error *ngIf="getUsernameError() === 'maxlength'" i18n
+              >Please, enter username shorter than 16 characters</mat-error
+            >
           </mat-form-field>
         </div>
         <div>
-          <button mat-button>Finish</button>
+          <button mat-button [disabled]="usernameForm.invalid">Finish</button>
         </div>
       </mat-step>
     </mat-stepper>

@@ -28,7 +28,6 @@ export class SignupComponent implements OnInit {
   private emailValidators = [
     Validators.required,
     Validators.email,
-    Validators.maxLength(320),
   ];
 
   private passwordValidators = [
@@ -50,6 +49,52 @@ export class SignupComponent implements OnInit {
   }
 
   getEmailError() {
-    const email = this.securityForm.get('security.email');
+    const email = this.securityForm.get('email');
+    const possibleErrorCodes = [
+      'required',
+      'email',
+    ];
+
+    for (const possibleErrorCode of possibleErrorCodes) {
+      if (email?.hasError(possibleErrorCode)) {
+        return possibleErrorCode;
+      }
+    }
+
+    return;
+  }
+
+  getPasswordError() {
+    const password = this.securityForm.get('password');
+    const possibleErrorCodes = [
+      'required',
+      'minlength',
+      'maxlength',
+    ];
+
+    for (const possibleErrorCode of possibleErrorCodes) {
+      if (password?.hasError(possibleErrorCode)) {
+        return possibleErrorCode;
+      }
+    }
+
+    return;
+  }
+
+  getUsernameError() {
+    const username = this.usernameForm;
+    const possibleErrorCodes = [
+      'required',
+      'minlength',
+      'maxlength',
+    ];
+
+    for (const possibleErrorCode of possibleErrorCodes) {
+      if (username?.hasError(possibleErrorCode)) {
+        return possibleErrorCode;
+      }
+    }
+
+    return;
   }
 }
