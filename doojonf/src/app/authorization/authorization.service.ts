@@ -1,10 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ConfigService } from '../app-services/config.service';
-import { AuthorizationModule } from './authorization.module';
 
 @Injectable({
-  providedIn: AuthorizationModule,
+  providedIn: 'any',
 })
 export class AuthorizationService {
   constructor(private _http: HttpClient, private _config: ConfigService) {}

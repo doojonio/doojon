@@ -13,6 +13,8 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { HttpClientModule } from '@angular/common/http';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { AuthorizationService } from './authorization.service';
 
 @NgModule({
   declarations: [SignupComponent, SigninComponent],
@@ -31,6 +33,10 @@ import { HttpClientModule } from '@angular/common/http';
     MatStepperModule,
     MatButtonModule,
     MatIconModule,
+    MatSnackBarModule,
+  ],
+  providers: [
+    AuthorizationService,
   ],
 })
 export class AuthorizationModule {}

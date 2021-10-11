@@ -8,6 +8,10 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { SorrySnackBarComponent } from 'src/app/app-components/sorry-snack-bar/sorry-snack-bar.component';
+import { LoggerService } from 'src/app/app-services/logger.service';
+import { AuthorizationService, SignUpForm } from '../authorization.service';
 
 @Component({
   selector: 'app-signup',
@@ -15,12 +19,17 @@ import {
   styleUrls: ['./signup.component.scss'],
 })
 export class SignupComponent implements OnInit {
-  constructor(formBuilder: FormBuilder) {
+  constructor(
+    private _authService: AuthorizationService,
+    private _loggerService: LoggerService,
+    private _snackBar: MatSnackBar,
+    formBuilder: FormBuilder
+  ) {
     this.securityForm = formBuilder.group({
-      email: ['', this.emailValidators],
-      password: ['', this.passwordValidators],
+      email: ['', this._emailValidators],
+      password: ['', this._passwordValidators],
     });
-    this.usernameForm = formBuilder.control('', this.usernameValidators);
+    this.usernameForm = formBuilder.control('', this._usernameValidators);
   }
 
   showPassword = false;
@@ -28,15 +37,14 @@ export class SignupComponent implements OnInit {
   securityForm: FormGroup;
   usernameForm: FormControl;
 
-  private emailValidators = [Validators.required, Validators.email];
-
-  private passwordValidators = [
+  private _isSignUpInProgress = false;
+  private _emailValidators = [Validators.required, Validators.email];
+  private _passwordValidators = [
     Validators.required,
     Validators.minLength(8),
     Validators.maxLength(32),
   ];
-
-  private usernameValidators = [
+  private _usernameValidators = [
     Validators.required,
     Validators.minLength(3),
     Validators.maxLength(16),
@@ -44,6 +52,35 @@ export class SignupComponent implements OnInit {
   ];
 
   ngOnInit(): void {}
+
+  isFinishLocked() {
+    return (
+      this.securityForm.invalid ||
+      this.usernameForm.invalid ||
+      this._isSignUpInProgress
+    );
+  }
+
+  doSignUp() {
+    const username = this.usernameForm.value;
+    const security = this.securityForm.value;
+
+    const signUpForm: SignUpForm = {
+      email: security.email,
+      password: security.password,
+      username: username,
+    };
+
+    this._isSignUpInProgress = true;
+    this._authService.signUp(signUpForm).subscribe(
+      result => {},
+      error => {
+        this._loggerService.logError(error);
+        this._saySorry();
+        this._isSignUpInProgress = false;
+      },
+    );
+  }
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
@@ -104,5 +141,11 @@ export class SignupComponent implements OnInit {
     }
 
     return;
+  }
+
+  private _saySorry() {
+    this._snackBar.openFromComponent(SorrySnackBarComponent, {
+      duration: 3000,
+    });
   }
 }

@@ -85,7 +85,7 @@
           </mat-form-field>
         </div>
         <div>
-          <button mat-button [disabled]="usernameForm.invalid">Finish</button>
+          <button mat-button [disabled]="isFinishLocked()" (click)="doSignUp()">Finish</button>
         </div>
       </mat-step>
     </mat-stepper>
