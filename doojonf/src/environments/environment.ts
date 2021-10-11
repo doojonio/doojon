@@ -3,7 +3,21 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  /**
+   * People on stackoverflow say that it's bad idea
+   * to save api endpoints in environment file, but
+   * I don't like idea to waste user time to fetch
+   * config every time. Moreover, It's gonna be really bad
+   * if someone will forget to put frontend config on server.
+   * It doesn't sound bad to me if I will have to recompile
+   * project to update config.
+   */
+  apis: {
+    doojon: {
+      endpointV1: '/api/doojon/v1/',
+    }
+  }
 };
 
 /*
