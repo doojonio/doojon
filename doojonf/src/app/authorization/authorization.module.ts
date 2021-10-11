@@ -12,6 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [SignupComponent, SigninComponent],
@@ -19,6 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
     CommonModule,
     AuthorizationRoutingModule,
     ReactiveFormsModule,
+    HttpClientModule,
 
     /**
      * Angular Material
