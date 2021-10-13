@@ -1,0 +1,26 @@
+{
+  "name": "@doojons/breadboard",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Lightweight DI system",
+  "main": "src/lib.js",
+  "scripts": {
+    "test": "npx tap"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/doojonio/doojon"
+  },
+  "keywords": [
+    "Dependency",
+    "Injection"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Anton Fedotov",
+  "license": "ISC",
+  "devDependencies": {
+    "tap": "^15.0.10"
+  }
+}
