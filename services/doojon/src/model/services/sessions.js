@@ -1,4 +1,4 @@
-import { Service } from '../service.js';
+import { Service } from '@doojons/breadboard';
 import CryptService from './crypt.js';
 
 export default class SessionsService extends Service {

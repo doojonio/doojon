@@ -1,4 +1,4 @@
-import { Service } from './service.js';
+import { Service } from '@doojons/breadboard';
 import { State } from './state.js';
 import { DataserviceGuard } from './ds_guard.js';
 import { Database } from '@google-cloud/spanner';

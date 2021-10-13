@@ -10,7 +10,7 @@ services:
         USER_UID: 1000
         USER_GID: 1000
     volumes:
-      - ../..:/workspace:cached
+      - ../../..:/workspace
     command: sleep infinity
     environment:
       GCP_PROJECT: doojon-dev

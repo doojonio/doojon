@@ -1,4 +1,4 @@
-import { Container } from './breadboard.js';
+import { Container } from '@doojons/breadboard';
 
 export class Model {
   constructor(deps) {

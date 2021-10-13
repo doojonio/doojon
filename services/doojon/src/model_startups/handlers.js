@@ -1,6 +1,6 @@
 import { Spanner } from '@google-cloud/spanner';
 import { createClient as createRedisClient } from 'redis';
-import { Container } from '../breadboard.js';
+import { Container } from '@doojons/breadboard';
 
 /**
  * @this {import('../model.js').Model}

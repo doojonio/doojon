@@ -1,4 +1,4 @@
-import { Service } from '../service.js';
+import { Service } from '@doojons/breadboard';
 import { IdStatus } from '../state.js';
 
 export default class IdService extends Service {

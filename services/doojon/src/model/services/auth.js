@@ -1,5 +1,5 @@
 import { NotAuthorizedError, NotFoundError, ValidationError } from '../errors.js';
-import { Service } from '../service.js';
+import { Service } from '@doojons/breadboard';
 
 export default class AuthService extends Service {
   static get deps() {

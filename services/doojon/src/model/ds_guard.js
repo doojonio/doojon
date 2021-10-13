@@ -1,6 +1,6 @@
 import { Database } from '@google-cloud/spanner';
 import { NotAuthorizedError, ValidationError } from './errors.js';
-import { Service } from './service.js';
+import { Service } from '@doojons/breadboard';
 import { IdStatus, State } from './state.js';
 
 export class DataserviceGuard extends Service {

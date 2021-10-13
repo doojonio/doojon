@@ -1,5 +1,5 @@
 import { Database, Spanner } from '@google-cloud/spanner';
-import { Service } from './service.js';
+import { Service } from '@doojons/breadboard';
 import { randomBytes, randomUUID } from 'crypto';
 
 /**
