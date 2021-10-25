@@ -1,0 +1,30 @@
+{
+  "name": "@doojons/cli",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "preferGlobal": true,
+  "main": "src/bin/main.js",
+  "bin": {
+    "djn": "src/bin/main.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/doojonio/doojon.git"
+  },
+  "author": "Anton Fedotov",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/doojonio/doojon/issues"
+  },
+  "homepage": "https://github.com/doojonio/doojon#readme",
+  "dependencies": {
+    "yargs": "^17.1.1-candidate.0"
+  },
+  "devDependencies": {
+    "prettier": "^2.4.1"
+  }
+}
