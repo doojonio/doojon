@@ -5,15 +5,15 @@ services:
       context: ..
       dockerfile: .devcontainer/Dockerfile
       args:
-        - VARIANT=16
+        - VARIANT=latest
     command: sleep infinity
     volumes:
-      - ../../:/workspace/
+      - ../../../:/workspace/
 volumes:
   accounts-data:
   doojon-data:
 
 networks:
   default:
-    external: true
+    external: yes
     name: doojondev
