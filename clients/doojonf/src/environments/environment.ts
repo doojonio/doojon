@@ -14,9 +14,9 @@ export const environment = {
    * project to update config.
    */
   apis: {
-    doojon: {
-      endpointV1: '/api/doojon/v1/',
-    }
+    auth: {
+      endpointV1: '/api/auth/v1/',
+    },
   }
 };
 

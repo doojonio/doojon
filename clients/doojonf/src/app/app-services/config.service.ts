@@ -9,7 +9,7 @@ export class ConfigService {
 
   private _apis = environment.apis;
 
-  getDoojonApiConfig() {
-    return this._apis.doojon;
+  getAuthApiConfig() {
+    return this._apis.auth;
   }
 }

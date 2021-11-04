@@ -9,8 +9,8 @@ export class AuthorizationService {
   constructor(private _http: HttpClient, private _config: ConfigService) {}
 
   signUp(form: SignUpForm) {
-    const doojonApiConfig = this._config.getDoojonApiConfig();
-    const endpoint = doojonApiConfig.endpointV1 + 'a/signup';
+    const authApiConfig = this._config.getAuthApiConfig();
+    const endpoint = authApiConfig.endpointV1;
 
     return this._http.post(endpoint, form);
   }
