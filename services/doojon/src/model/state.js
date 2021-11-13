@@ -4,12 +4,10 @@ export const IdStatus = {
 };
 
 export class State {
-  /**
-   * @type {Identity}
-   */
-  identity;
-
   constructor(identity) {
+    /**
+     * @type {Identity}
+     */
     this.identity = identity;
   }
 }

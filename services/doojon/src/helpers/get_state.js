@@ -1,3 +1,4 @@
+import { State } from '../model/state.js';
 
 export default async function getState(ctx) {
   const authCookieName = ctx.app.config.web.authCookie.name;
