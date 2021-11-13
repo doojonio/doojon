@@ -73,7 +73,9 @@ export class SignupComponent implements OnInit {
 
     this._isSignUpInProgress = true;
     this._authService.signUp(signUpForm).subscribe(
-      result => {},
+      result => {
+        this._isSignUpInProgress = false;
+      },
       error => {
         this._loggerService.logError(error);
         this._saySorry();
