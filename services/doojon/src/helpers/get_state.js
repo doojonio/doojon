@@ -1,8 +1,8 @@
 import { State } from '../model/state.js';
 
 export default async function getState(ctx) {
-  const authCookieName = ctx.app.config.web.authCookie.name;
-  const forwardedForHeaderName = ctx.app.config.web.forwardedForIpHeaderName;
+  const authCookieName = ctx.app.config.auth.web.authCookie.name;
+  const forwardedForHeaderName = ctx.app.config.id.web.forwardedForIpHeaderName;
 
   const session = ctx.req.getCookie(authCookieName);
 

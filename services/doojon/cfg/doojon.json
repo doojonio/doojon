@@ -1,4 +1,19 @@
 {
+  "auth": {
+    "web": {
+      "authCookie": {
+        "name": "SID",
+        "expiresAfterDays": 365,
+        "path": "/",
+        "secure": false
+      }
+    }
+  },
+  "id": {
+    "web": {
+      "forwardedForIpHeaderName": "X-Forwarded-For"
+    }
+  },
   "dataservices": {
     "profiles": {
       "forbiddenUsernames": [
@@ -25,13 +40,5 @@
     "redis": {
       "url": "redis://doojon_redis:6379"
     }
-  },
-  "web": {
-    "authCookie": {
-      "name": "SID",
-      "expiresAfterDays": 365,
-      "secure": false
-    },
-    "forwardedForIpHeaderName": "X-Forwarded-For"
   }
 }

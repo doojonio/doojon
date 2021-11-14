@@ -16,19 +16,30 @@ export default class AuthController {
       return ctx.renderError(new ValidationError('Failed to parse JSON'));
     }
 
-    const authService = model.getService('auth');
+    let signUpResult;
     try {
-      const result = await authService.signup(state, form);
-      ctx.render({
-        json: { kind: 'SignUpResponse', profileId: result.profileId },
-      });
-
-      return ctx.res.setCookie(
-        ctx.app.config.web.authCookie.name,
-        result.sessionId
-      );
+      const authService = model.getService('auth');
+      signUpResult = await authService.signup(state, form);
     } catch (error) {
-      ctx.renderError(error);
+      return ctx.renderError(error);
     }
+
+    ctx.render({
+      json: { kind: 'SignUpResponse', profileId: signUpResult.profileId },
+    });
+
+    const cookieName = ctx.app.config.auth.web.authCookie.name;
+    const cookieExpiresAfterDays =
+      ctx.app.config.auth.web.authCookie.expiresAfterDays;
+    const cookiePath = ctx.app.config.auth.web.authCookie.path;
+
+    const expires = new Date(
+      Date.now() + cookieExpiresAfterDays * 1000 * 60 * 60 * 24
+    );
+
+    return ctx.res.setCookie(cookieName, signUpResult.sessionId, {
+      expires,
+      path: cookiePath,
+    });
   }
 }
