@@ -1,3 +1,4 @@
+import { ParsingError } from '../errors.js';
 import {
   NotAuthorizedError,
   ValidationError,
@@ -9,7 +10,7 @@ export default async function renderError(ctx, error) {
   console.log(error);
 
   let status;
-  if (error instanceof ValidationError) {
+  if (error instanceof ValidationError || error instanceof ParsingError) {
     status = 400;
   } else if (error instanceof NotAuthorizedError) {
     status = 401;

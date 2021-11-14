@@ -1,4 +1,4 @@
-import { NotAuthorizedError, NotFoundError, ValidationError } from '../errors.js';
+import { FailedAuthError, ValidationError } from '../errors.js';
 import { Service } from '@doojons/breadboard';
 
 export default class AuthService extends Service {
@@ -53,7 +53,7 @@ export default class AuthService extends Service {
     this._validateSigninCreds = this._validator.compile(signinCredsSchema);
   }
 
-  async signup(state, credentials) {
+  async signUp(state, credentials) {
     this._stateChecker.ensureNotAuthorized(state);
 
     const [keys] = await this._profiles.create(state, [credentials]);
@@ -65,7 +65,7 @@ export default class AuthService extends Service {
     };
   }
 
-  async signin(state, credentials) {
+  async signIn(state, credentials) {
     this._stateChecker.ensureNotAuthorized(state);
 
     if (!this._validateSigninCreds(credentials)) {
@@ -74,20 +74,26 @@ export default class AuthService extends Service {
       );
     }
 
-    const idAndPassword = await this._profiles.getIdAndPasswordByEmail(state, credentials.email);
+    const idAndPassword = await this._profiles.getIdAndPasswordByEmail(
+      state,
+      credentials.email
+    );
 
-    const areEqual = await this._crypt.comparePasswords(credentials.password, idAndPassword.password);
+    const areEqual = await this._crypt.comparePasswords(
+      credentials.password,
+      idAndPassword.password
+    );
 
     if (!areEqual) {
-      throw new NotAuthorizedError('Password is incorrect');
+      throw new FailedAuthError();
     }
 
     const profileId = idAndPassword.id;
-    const sessionId = this._sessions.create(state, profileId);
+    const sessionId = await this._sessions.create(state, profileId);
 
     return {
       sessionId,
       profileId,
-    }
+    };
   }
 }

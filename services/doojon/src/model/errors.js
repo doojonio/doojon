@@ -71,3 +71,22 @@ export class NotFoundError extends Error {
     };
   }
 }
+
+export class FailedAuthError extends Error {
+  toString() {
+    let errorString = 'FailedAuthError';
+
+    if (this.message) {
+      errorString += `: ${this.message}`;
+    }
+
+    return errorString;
+  }
+
+  toJSON() {
+    return {
+      kind: 'FailedAuthError',
+      message: this.message,
+    };
+  }
+}
