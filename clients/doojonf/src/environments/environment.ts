@@ -15,7 +15,7 @@ export const environment = {
    */
   apis: {
     auth: {
-      endpointV1: '/api/auth/v1/',
+      endpointV1: '/api/auth/v1',
     },
   }
 };

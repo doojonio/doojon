@@ -11,7 +11,7 @@ import {
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SorrySnackBarComponent } from 'src/app/app-components/sorry-snack-bar/sorry-snack-bar.component';
 import { LoggerService } from 'src/app/app-services/logger.service';
-import { AuthorizationService, SignUpForm } from '../authorization.service';
+import { AuthorizationService, SignUpForm } from '../auth.service';
 
 @Component({
   selector: 'app-signup',

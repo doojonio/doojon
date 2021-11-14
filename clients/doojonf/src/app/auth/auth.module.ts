@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { AuthorizationRoutingModule } from './authorization-routing.module';
+import { AuthorizationRoutingModule } from './auth-routing.module';
 import { SignupComponent } from './signup/signup.component';
 import { SigninComponent } from './signin/signin.component';
 
@@ -14,7 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { HttpClientModule } from '@angular/common/http';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { AuthorizationService } from './authorization.service';
+import { AuthorizationService } from './auth.service';
 
 @NgModule({
   declarations: [SignupComponent, SigninComponent],
