@@ -1,5 +1,9 @@
 import { ParsingError } from '../errors.js';
-import { FailedAuthError, NotAuthorizedError, NotFoundError } from '../model/errors.js';
+import {
+  FailedAuthError,
+  NotAuthorizedError,
+  NotFoundError,
+} from '../model/errors.js';
 
 export default class AuthController {
   /**
@@ -40,9 +44,8 @@ export default class AuthController {
     let form;
     try {
       form = await ctx.req.json();
-    }
-    catch (error) {
-      return ctx.renderError(new ParsingError(error.message))
+    } catch (error) {
+      return ctx.renderError(new ParsingError(error.message));
     }
 
     const state = await ctx.getState();
@@ -52,16 +55,18 @@ export default class AuthController {
       signInResult = await authService.signIn(state, form);
     } catch (error) {
       if (error instanceof NotFoundError || error instanceof FailedAuthError) {
-        error = new NotAuthorizedError('email or password is incorrect')
+        error = new NotAuthorizedError('email or password is incorrect');
       }
 
       return ctx.renderError(error);
     }
 
-    ctx.render({json: {
-      kind: 'SignInResponse',
-      profileId: signInResult.profileId
-    }})
+    ctx.render({
+      json: {
+        kind: 'SignInResponse',
+        profileId: signInResult.profileId,
+      },
+    });
 
     return this._setResponseAuthCookie(ctx, signInResult.sessionId);
   }

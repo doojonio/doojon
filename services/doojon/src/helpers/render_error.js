@@ -22,11 +22,11 @@ export default async function renderError(ctx, error) {
 
   if (status === undefined) {
     status = 500;
-    error = { kind: "UnhandledException", message: error.message };
+    error = { kind: 'UnhandledException', message: error.message };
   }
 
   ctx.render({
     status,
-    json: error
-  })
+    json: error,
+  });
 }
