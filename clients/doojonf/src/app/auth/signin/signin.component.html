@@ -1,1 +1,58 @@
-<p>signin works!</p>
+<mat-card>
+  <mat-card-header>
+    <mat-card-title i18n="sign in form title|Title of the form on signin page"
+      >Sign In</mat-card-title
+    >
+  </mat-card-header>
+  <mat-card-content [formGroup]="signInForm">
+    <form>
+      <div>
+        <mat-form-field color="accent" appearance="outline">
+          <mat-label i18n="email form|Email form field">Email</mat-label>
+          <input matInput formControlName="email" />
+          <mat-error *ngIf="getEmailError() === 'required'" i18n
+            >Please, enter your email</mat-error
+          >
+          <mat-error *ngIf="getEmailError() === 'email'" i18n
+            >Please, enter a valid email</mat-error
+          >
+        </mat-form-field>
+      </div>
+      <div>
+        <mat-form-field color="accent" appearance="outline">
+          <mat-label i18n="password form|Password form field"
+            >Password</mat-label
+          >
+          <input
+            matInput
+            formControlName="password"
+            [type]="showPassword ? 'text' : 'password'"
+          />
+          <button
+            mat-icon-button
+            matSuffix
+            (click)="togglePasswordVisibility()"
+          >
+            <mat-icon>{{
+              showPassword ? 'visibility' : 'visibility_off'
+            }}</mat-icon>
+          </button>
+          <mat-error *ngIf="getPasswordError() === 'required'" i18n
+            >Please, enter secure password</mat-error
+          >
+          <mat-error *ngIf="getPasswordError() === 'minlength'" i18n
+            >Please, enter password longer than 8 characters</mat-error
+          >
+          <mat-error *ngIf="getPasswordError() === 'maxlength'" i18n
+            >Please, enter password shorter than 32 characters</mat-error
+          >
+        </mat-form-field>
+      </div>
+      <div>
+        <button mat-button [disabled]="isSignInLocked()" (click)="doSignIn()">
+          Finish
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

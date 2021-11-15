@@ -1,0 +1,18 @@
+:host {
+  display: flex;
+  justify-content: center;
+  padding-top: 32px;
+}
+
+mat-card {
+  width: 396px;
+  min-height: 404px;
+}
+
+mat-form-field {
+  width: 232px;
+}
+
+form {
+  padding: 60px 24px 24px 60px;
+}

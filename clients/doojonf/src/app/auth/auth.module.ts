@@ -14,10 +14,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { HttpClientModule } from '@angular/common/http';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { AuthorizationService } from './auth.service';
+import { AuthService } from './auth.service';
+import { FailedAuthSnackBarComponent } from './failed-auth-snack-bar/failed-auth-snack-bar.component';
 
 @NgModule({
-  declarations: [SignupComponent, SigninComponent],
+  declarations: [SignupComponent, SigninComponent, FailedAuthSnackBarComponent],
   imports: [
     CommonModule,
     AuthorizationRoutingModule,
@@ -35,8 +36,6 @@ import { AuthorizationService } from './auth.service';
     MatIconModule,
     MatSnackBarModule,
   ],
-  providers: [
-    AuthorizationService,
-  ],
+  providers: [AuthService],
 })
 export class AuthorizationModule {}

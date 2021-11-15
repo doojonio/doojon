@@ -11,7 +11,7 @@ import {
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SorrySnackBarComponent } from 'src/app/app-components/sorry-snack-bar/sorry-snack-bar.component';
 import { LoggerService } from 'src/app/app-services/logger.service';
-import { AuthorizationService, SignUpForm } from '../auth.service';
+import { AuthService, SignUpForm } from '../auth.service';
 
 @Component({
   selector: 'app-signup',
@@ -20,7 +20,7 @@ import { AuthorizationService, SignUpForm } from '../auth.service';
 })
 export class SignupComponent implements OnInit {
   constructor(
-    private _authService: AuthorizationService,
+    private _authService: AuthService,
     private _loggerService: LoggerService,
     private _snackBar: MatSnackBar,
     formBuilder: FormBuilder
