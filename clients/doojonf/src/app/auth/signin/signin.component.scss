@@ -6,7 +6,6 @@
 
 mat-card {
   width: 396px;
-  min-height: 404px;
 }
 
 mat-form-field {
@@ -15,4 +14,11 @@ mat-form-field {
 
 form {
   padding: 60px 24px 24px 60px;
+}
+
+mat-card-footer {
+  div {
+    display: flex;
+    justify-content: center;
+  }
 }
