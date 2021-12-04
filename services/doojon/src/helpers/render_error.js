@@ -4,11 +4,10 @@ import {
   ValidationError,
   NotFoundError,
   ForbiddenError,
+  ConflictError,
 } from '../model/errors.js';
 
 export default async function renderError(ctx, error) {
-  console.log(error);
-
   let status;
   if (error instanceof ValidationError || error instanceof ParsingError) {
     status = 400;
@@ -18,6 +17,8 @@ export default async function renderError(ctx, error) {
     status = 403;
   } else if (error instanceof NotFoundError) {
     status = 404;
+  } else if (error instanceof ConflictError) {
+    status = 409;
   }
 
   if (status === undefined) {

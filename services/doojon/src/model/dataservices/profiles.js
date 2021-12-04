@@ -10,7 +10,7 @@ export default class ProfilesDataservice extends Dataservice {
     return 'profiles';
   }
 
-  async getIdAndPasswordByEmail(_state, email) {
+  async getIdAndPasswordByEmail(email) {
     const request = {
       columns: ['id', 'password'],
       keys: [[email]],
@@ -23,5 +23,21 @@ export default class ProfilesDataservice extends Dataservice {
       throw new NotFoundError('No user with this email was found');
     }
     return rows[0].toJSON();
+  }
+
+  async isUsernameFree(username) {
+    const request = {
+      columns: ['id'],
+      keys: [[username]],
+      index: 'ProfilesByUsername',
+    };
+
+    const [rows] = await this._db.table('Profiles').read(request);
+
+    if (rows.length === 0) {
+      return true;
+    }
+
+    return false;
   }
 }

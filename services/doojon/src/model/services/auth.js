@@ -74,7 +74,6 @@ export default class AuthService {
     }
 
     const idAndPassword = await this._profiles.getIdAndPasswordByEmail(
-      state,
       credentials.email
     );
 

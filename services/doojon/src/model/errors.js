@@ -1,6 +1,6 @@
-export class NotAuthorizedError extends Error {
+export class SerializableError extends Error {
   toString() {
-    let errorString = 'NotAuthorizedError';
+    let errorString = this.constructor.name;
 
     if (this.message) {
       errorString += `: ${this.message}`;
@@ -11,82 +11,15 @@ export class NotAuthorizedError extends Error {
 
   toJSON() {
     return {
-      kind: 'NotAuthorizedError',
-      message: this.message,
-    };
-  }
-}
-export class ForbiddenError extends Error {
-  toString() {
-    let errorString = 'ForbiddenError';
-
-    if (this.message) {
-      errorString += `: ${this.message}`;
-    }
-
-    return errorString;
-  }
-
-  toJSON() {
-    return {
-      kind: 'ForbiddenError',
-      message: this.message,
-    };
-  }
-}
-export class ValidationError extends Error {
-  toString() {
-    let errorString = 'ValidationError';
-
-    if (this.message) {
-      errorString += `: ${this.message}`;
-    }
-
-    return errorString;
-  }
-
-  toJSON() {
-    return {
-      kind: 'ValidationError',
+      kind: this.constructor.name,
       message: this.message,
     };
   }
 }
 
-export class NotFoundError extends Error {
-  toString() {
-    let errorString = 'NotFoundError';
-
-    if (this.message) {
-      errorString += `: ${this.message}`;
-    }
-
-    return errorString;
-  }
-
-  toJSON() {
-    return {
-      kind: 'NotFoundError',
-      message: this.message,
-    };
-  }
-}
-
-export class FailedAuthError extends Error {
-  toString() {
-    let errorString = 'FailedAuthError';
-
-    if (this.message) {
-      errorString += `: ${this.message}`;
-    }
-
-    return errorString;
-  }
-
-  toJSON() {
-    return {
-      kind: 'FailedAuthError',
-      message: this.message,
-    };
-  }
-}
+export class NotAuthorizedError extends SerializableError {}
+export class ForbiddenError extends SerializableError {}
+export class ValidationError extends SerializableError {}
+export class NotFoundError extends SerializableError {}
+export class ConflictError extends SerializableError {}
+export class FailedAuthError extends SerializableError {}

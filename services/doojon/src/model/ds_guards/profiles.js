@@ -1,14 +1,21 @@
 import { DataserviceGuard } from '../ds_guard.js';
-import { ForbiddenError } from '../errors.js';
+import { ConflictError, ForbiddenError } from '../errors.js';
 import { IdStatus } from '../state.js';
 
 /**
  * @typedef {import('../state.js').State} State
+ * @typedef {import('../dataservices/profiles').default} ProfilesDataservice
  */
 
 export default class ProfilesGuard extends DataserviceGuard {
   static get _tableName() {
     return 'Profiles';
+  }
+
+  static get _customDeps() {
+    return {
+      _ds: 'weak:/ds/profiles'
+    }
   }
 
   static get _objectsCreateSchema() {
@@ -83,7 +90,7 @@ export default class ProfilesGuard extends DataserviceGuard {
    * @param {State} state
    * @param {Array<Object>} objects
    */
-  _preCreateAdditionalChecks(state, profiles) {
+  async _preCreateAdditionalChecks(state, profiles) {
     if (state.identity.status !== IdStatus.UNAUTHORIZED) {
       throw new ForbiddenError(
         'User has to be unauthorized to create profiles'
@@ -96,6 +103,11 @@ export default class ProfilesGuard extends DataserviceGuard {
       if (forbiddenUsernames.includes(profile.username)) {
         throw new ForbiddenError(`Username '${profile.username}' is forbidden`);
       }
+
+      if (!await this._ds.deref().isUsernameFree(profile.username)) {
+          throw new ConflictError(`Username '${profile.username}' already taken`);
+      }
     }
+
   }
 }

@@ -49,6 +49,9 @@ t.test('When everything is ok', async t => {
 
         inseredObjectId = obj.id;
       },
+      read: () => {
+        return [[]]
+      }
     });
 
   let returnedObjectsKeys;
