@@ -1,28 +1,3 @@
-/**
- * General class for services. Use it in pair with `breadboard.js`.
- * Every service constructor will expect object with dependencies.
- * Dependencies of a service described in `deps` getter in `{name: absolutePathInBreadBoard}` form.
- * Construct will expect every dependency to be accessed on the same key as it described
- * in `deps` getter and insert every dependency as attribute of the created object
- */
-export class Service {
-  /**
-   * @type {Object}
-   */
-  static get deps() {
-    return {};
-  }
-
-  /**
-   *
-   * @param {Object} deps - Object with all dependencies
-   */
-  constructor(deps) {
-    for (const depName in this.constructor.deps) {
-      this[depName] = deps[depName];
-    }
-  }
-}
 
 export class Container {
   constructor(parentContainer) {
@@ -170,7 +145,7 @@ class ContainerService {
     return container;
   }
 
-  get _deps() {
+  get _dependencies() {
     return this._serviceClass.deps;
   }
 
@@ -178,42 +153,56 @@ class ContainerService {
    *
    * @returns Dereferenced service (result of `block` or `class` constructor)
    */
-  get() {
+  get(options) {
     if (this._instance) {
       return this._instance;
     }
 
-    let object;
     if (this._block) {
-      object = this._block();
+      this._instance = this._block();
     } else {
-      const deps = this._resolveDependencies();
-      object = new this._serviceClass(deps);
+      this._instance = new this._serviceClass();
+      const dependencies = this._resolveDependencies(options);
+      for (const [dependencyName, dependencyObject] of Object.entries(dependencies)) {
+        this._instance[dependencyName] = dependencyObject;
+      }
     }
 
-    this._instance = object;
-
-    return object;
+    return this._instance;
   }
 
-  _resolveDependencies() {
-    if (!this._deps) return {};
+  _resolveDependencies(options) {
+    if (!this._dependencies) return {};
 
     this.isLocked = true;
     const root = this._rootContainer;
     const resolvedDeps = {};
 
-    for (const [depName, depPath] of Object.entries(this._deps)) {
-      if (!depPath.startsWith('/')) {
-        throw new Error(`dependency path should be absolute (${depPath})`);
+    for (let [dependencyName, dependencyPath] of Object.entries(this._dependencies)) {
+      const dependencyServiceGetOptions = { };
+      const isWeak = dependencyPath.substring(0, 5) === 'weak:';
+
+      if (isWeak) {
+        dependencyServiceGetOptions.weakFrom = this;
+        dependencyPath = dependencyPath.substring(5);
       }
 
-      const service = root.fetch(depPath);
+      if (!dependencyPath.startsWith('/')) {
+        throw new Error(`dependency path should be absolute (${dependencyPath})`);
+      }
 
-      if (service.isLocked)
-        throw new Error(`circular dependency forbidden (${depName})`);
+      const service = root.fetch(dependencyPath);
 
-      resolvedDeps[depName] = service.get();
+      if (service.isLocked && !isWeak && options.weakFrom !== service)
+        throw new Error(`circular dependency forbidden (${dependencyName})`);
+
+      let dependencyObject = service.get(dependencyServiceGetOptions);
+
+      if (isWeak) {
+        dependencyObject = new WeakRef(dependencyObject);
+      }
+
+      resolvedDeps[dependencyName] = dependencyObject;
     }
 
     this.isLocked = false;
