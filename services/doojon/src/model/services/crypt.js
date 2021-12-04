@@ -1,8 +1,7 @@
 import { compare, hash } from 'bcrypt';
-import { Service } from '@doojons/breadboard';
 import { randomBytes, randomUUID } from 'crypto';
 
-export default class CryptService extends Service {
+export default class CryptService {
   async hashPassword(password) {
     return hash(password, 10);
   }

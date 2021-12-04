@@ -1,7 +1,6 @@
-import { Service } from '@doojons/breadboard';
 import { IdStatus } from '../state.js';
 
-export default class IdService extends Service {
+export default class IdService {
   static get deps() {
     return {
       _profiles: '/ds/profiles',

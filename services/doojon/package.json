@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/doojonio/doojon#readme",
   "dependencies": {
-    "@doojons/breadboard": "^1.0.0",
+    "@doojon/breadboard": "^2.1.1",
     "@google-cloud/spanner": "^5.15.0",
     "@mojojs/core": "^0.0.8",
     "ajv": "^8.6.3",

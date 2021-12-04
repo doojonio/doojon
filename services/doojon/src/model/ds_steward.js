@@ -1,19 +1,11 @@
-import { Database, Spanner } from '@google-cloud/spanner';
-import { Service } from '@doojons/breadboard';
-import { randomBytes, randomUUID } from 'crypto';
+import { Spanner } from '@google-cloud/spanner';
 
 /**
  * General class for dataservice stewards.
  * Stewards modify incoming data and run post-actions
  */
-export class DataserviceSteward extends Service {
-  constructor(...args) {
-    super(...args);
-
-    /**
-     * @type {Database}
-     */
-    this._db;
+export class DataserviceSteward {
+  constructor() {
     /**
      * @type {Object}
      */
@@ -28,7 +20,6 @@ export class DataserviceSteward extends Service {
     const tableName = this._tableName;
     return Object.assign(
       {
-        _db: '/h/db',
         _schema: `/h/db/schema/${tableName}`,
         _crypt: '/s/crypt',
       },

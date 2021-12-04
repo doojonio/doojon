@@ -1,11 +1,10 @@
-import { Service } from '@doojons/breadboard';
 import { State } from './state.js';
 import { DataserviceGuard } from './ds_guard.js';
 import { Database } from '@google-cloud/spanner';
 import { Logger } from '@mojojs/core';
 import { DataserviceSteward } from './ds_steward.js';
 
-export class Dataservice extends Service {
+export class Dataservice {
   /**
    * Insert objects on dataservice's primary table
    *
@@ -39,7 +38,10 @@ export class Dataservice extends Service {
         );
       }
 
-      insertedObjectsKeys = await this._steward.manageKeysForNewObjects(state, objects);
+      insertedObjectsKeys = await this._steward.manageKeysForNewObjects(
+        state,
+        objects
+      );
       try {
         await this._db.table(this.constructor._tableName).insert(objects);
       } catch (error) {
@@ -110,9 +112,7 @@ export class Dataservice extends Service {
     await this._db.table(this.constructor._tableName).deleteRows(keys);
   }
 
-  constructor(...args) {
-    super(...args);
-
+  constructor() {
     /**
      * @type {Database}
      */

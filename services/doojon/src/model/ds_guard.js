@@ -1,9 +1,7 @@
-import { Database } from '@google-cloud/spanner';
 import { NotAuthorizedError, ValidationError } from './errors.js';
-import { Service } from '@doojons/breadboard';
 import { IdStatus, State } from './state.js';
 
-export class DataserviceGuard extends Service {
+export class DataserviceGuard {
   static get _objectsCreateSchema() {}
   static get _columnsReadSchema() {}
   static get _keysSchema() {}
@@ -11,18 +9,14 @@ export class DataserviceGuard extends Service {
 
   _guardReadNeededFields = [];
 
-  constructor(...args) {
-    super(...args);
-
-    /**
-     * @type {Database}
-     */
-    this._db;
+  constructor() {
     /**
      * @type {import('ajv').default}
      */
     this._validator;
+  }
 
+  onInit() {
     this._validateKeys = this._validator.compile(this.constructor._keysSchema);
     this._validateCreateWhat = this._validator.compile(
       this.constructor._objectsCreateSchema
@@ -38,7 +32,6 @@ export class DataserviceGuard extends Service {
   static get deps() {
     return Object.assign(
       {
-        _db: '/h/db',
         _validator: '/s/validator',
         _config: '/conf',
       },

@@ -1,7 +1,6 @@
 import { FailedAuthError, ValidationError } from '../errors.js';
-import { Service } from '@doojons/breadboard';
 
-export default class AuthService extends Service {
+export default class AuthService {
   static get deps() {
     return {
       _stateChecker: '/s/state_checker',
@@ -12,9 +11,7 @@ export default class AuthService extends Service {
     };
   }
 
-  constructor(...args) {
-    super(...args);
-
+  constructor() {
     /**
      * @type {import('./state_checker').default}
      */
@@ -39,7 +36,9 @@ export default class AuthService extends Service {
      * @type {import('ajv').default}
      */
     this._validator;
+  }
 
+  onInit() {
     const signinCredsSchema = {
       type: 'object',
       additionalProperties: false,
