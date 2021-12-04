@@ -23,6 +23,30 @@ t.test('Block', t => {
   t.end();
 });
 
+t.test('OnInit', t => {
+  const container = new Container();
+
+  container.addService('some_dep', { block: () => 1 });
+  let onInitCalled = false;
+  class Test {
+    static get deps() {
+      return {
+        someDep: '/some_dep'
+      }
+    }
+    onInit() {
+      t.equal(this.someDep, 1);
+      onInitCalled = true;
+    }
+  }
+  container.addService('test', { class: Test });
+  const testInstance = container.resolve('/test');
+
+  t.ok(onInitCalled, 'onInit called');
+
+  t.end();
+});
+
 t.test('Circular dependency', t => {
   const container = new Container();
 

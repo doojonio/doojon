@@ -168,6 +168,10 @@ class ContainerService {
       }
     }
 
+    if (this._instance.onInit instanceof Function) {
+      this._instance.onInit();
+    }
+
     return this._instance;
   }
 
