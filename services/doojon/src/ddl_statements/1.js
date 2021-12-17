@@ -20,23 +20,23 @@ export const DDL_STATEMENTS = [
   bio      STRING(300),
   created  TIMESTAMP   NOT NULL
 ) PRIMARY KEY (id)`,
-/**
- * Creates unique index on profiles email
- *
- * @name profiles_email_idx
- * @type {CreateIndex}
- * @on email
- */
-`CREATE UNIQUE NULL_FILTERED INDEX ProfilesByEmail
+  /**
+   * Creates unique index on profiles email
+   *
+   * @name profiles_email_idx
+   * @type {CreateIndex}
+   * @on email
+   */
+  `CREATE UNIQUE NULL_FILTERED INDEX ProfilesByEmail
 ON Profiles (email) STORING (password)`,
-/**
- * Creates unique index on profiles username
- *
- * @name profiles_username_idx
- * @type {Index}
- * @on username
- */
-`CREATE UNIQUE NULL_FILTERED INDEX ProfilesByUsername
+  /**
+   * Creates unique index on profiles username
+   *
+   * @name profiles_username_idx
+   * @type {Index}
+   * @on username
+   */
+  `CREATE UNIQUE NULL_FILTERED INDEX ProfilesByUsername
 ON Profiles (username)`,
   /**
    * Creates table for user posts

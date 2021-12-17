@@ -50,8 +50,8 @@ t.test('When everything is ok', async t => {
         inseredObjectId = obj.id;
       },
       read: () => {
-        return [[]]
-      }
+        return [[]];
+      },
     });
 
   let returnedObjectsKeys;
@@ -65,7 +65,11 @@ t.test('When everything is ok', async t => {
   t.ok(isInsertCalled, 'Insert was called');
   t.type(returnedObjectsKeys, Array);
   t.ok(returnedObjectsKeys.length === 1, 'Returns one new key');
-  t.equal(returnedObjectsKeys[0].id, inseredObjectId, 'Returned profile id equal inserted');
+  t.equal(
+    returnedObjectsKeys[0].id,
+    inseredObjectId,
+    'Returned profile id equal inserted'
+  );
 
   t.end();
 });

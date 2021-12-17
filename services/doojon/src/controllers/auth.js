@@ -9,10 +9,14 @@ export default class AuthController {
   async checkUsername(ctx) {
     const username = ctx.stash.username;
 
-    return ctx.render({json: {
-      kind: 'CheckUsernameResponse',
-      isFree: await ctx.app.model.getDataservice('profiles').isUsernameFree(username),
-    }})
+    return ctx.render({
+      json: {
+        kind: 'CheckUsernameResponse',
+        isFree: await ctx.app.model
+          .getDataservice('profiles')
+          .isUsernameFree(username),
+      },
+    });
   }
 
   /**

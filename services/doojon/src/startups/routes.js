@@ -3,6 +3,6 @@ export default async function routesStartup(app) {
 
   for await (const apiFile of routesDirectory.list()) {
     const routesFunction = (await import(apiFile)).default;
-    routesFunction.call(app)
+    routesFunction.call(app);
   }
 }

@@ -15,10 +15,10 @@ export default async function startup() {
   await setupRedis.call(this, { h });
   await setupSpanner.call(this, { dbContainer, h });
   await setupSchema.call(this, { dbContainer });
-  await setupLog.call(this, {h});
+  await setupLog.call(this, { h });
 }
 
-async function setupLog({h}) {
+async function setupLog({ h }) {
   const log = this._log;
   h.addService('log', { block: () => log });
 }

@@ -14,8 +14,8 @@ export default class ProfilesGuard extends DataserviceGuard {
 
   static get _customDeps() {
     return {
-      _ds: 'weak:/ds/profiles'
-    }
+      _ds: 'weak:/ds/profiles',
+    };
   }
 
   static get _objectsCreateSchema() {
@@ -104,10 +104,9 @@ export default class ProfilesGuard extends DataserviceGuard {
         throw new ForbiddenError(`Username '${profile.username}' is forbidden`);
       }
 
-      if (!await this._ds.deref().isUsernameFree(profile.username)) {
-          throw new ConflictError(`Username '${profile.username}' already taken`);
+      if (!(await this._ds.deref().isUsernameFree(profile.username))) {
+        throw new ConflictError(`Username '${profile.username}' already taken`);
       }
     }
-
   }
 }
