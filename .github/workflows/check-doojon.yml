@@ -3,7 +3,10 @@ name: Check Doojon
 on:
   push:
     branches: [ main ]
-    paths: ["services/doojon/**"]
+    paths:
+      - "services/doojon/**"
+      - ".github/workflows/*doojon*"
+
   pull_request:
     branches: [ main ]
     paths: ["services/doojon/**"]
