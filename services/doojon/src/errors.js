@@ -1,18 +1,3 @@
-export class ParsingError extends Error {
-  toString() {
-    let errorString = 'ParsingError';
+import { SerializableError } from './model/errors.js';
 
-    if (this.message) {
-      errorString += `: ${this.message}`;
-    }
-
-    return errorString;
-  }
-
-  toJSON() {
-    return {
-      kind: 'ParsingError',
-      message: this.message,
-    };
-  }
-}
+export class ParsingError extends SerializableError {}
