@@ -53,7 +53,7 @@ async function setupRedis({ dbContainer, h }) {
   const redisOptions = this._conf.handlers.redis;
 
   if (process.env.REDIS_URL !== undefined) {
-    redisOptions.url  = process.env.REDIS_URL;
+    redisOptions.url = process.env.REDIS_URL;
   }
 
   if (redisOptions.url === undefined) {
