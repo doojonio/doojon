@@ -512,10 +512,6 @@ export default class <%=className%> extends Dataservice {
 const DSGUARD_TEMPLATE = `
 import { DataserviceGuard } from '../ds_guard.js';
 
-/**
- * @typedef {import('../state.js').State} State
- */
-
 export default class <%=className%> extends DataserviceGuard {
   static get _tableName() {
     return '<%=tableName%>';
@@ -536,25 +532,11 @@ export default class <%=className%> extends DataserviceGuard {
   static get _rowsUpdateSchema() {
     return <%- rowsUpdateSchemaCode %>
   }
-
-  /**
-   * - User has to be authorized
-   *
-   * @param {State} state
-   * @param {Array<Object>} objects
-   */
-  _preCreateAdditionalChecks(state, objects) {
-    this.isAuthorized(state);
-  }
 }
 `;
 
 const DSSTEWARD_TEMPLATE = `
 import { DataserviceSteward } from '../ds_steward.js';
-
-/**
- * @typedef {import('../state.js').State} State
- */
 
 export default class <%=className%> extends DataserviceSteward {
   static get _tableName() {

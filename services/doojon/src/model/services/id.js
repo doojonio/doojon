@@ -8,11 +8,27 @@ export default class IdService {
     };
   }
 
-  async getIdentityBySessionId(sessionId) {
+  async updateIdentityForSession(state, sessionId) {
     if (!sessionId) {
-      return { status: IdStatus.UNAUTHORIZED };
+      this._setUnauthorized(state);
+      return;
     }
 
-    return { status: IdStatus.AUTHORIZED };
+    const profileId = await this._sessions.readSession(sessionId);
+    if (profileId === undefined) {
+      this._setUnauthorized(state);
+      return;
+    }
+    const username = await this._profiles.read([[profileId]], ['username']);
+
+    state.identity.status = IdStatus.AUTHORIZED;
+    state.identity.username = username;
+    state.identity.profileId = profileId;
+  }
+
+  _setUnauthorized(state) {
+    state.identity.status = IdStatus.UNAUTHORIZED;
+    state.identity.profileId = undefined;
+    state.identity.username = undefined;
   }
 }

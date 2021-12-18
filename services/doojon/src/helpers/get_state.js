@@ -1,4 +1,4 @@
-import { State } from '../model/state.js';
+import { IdStatus, State } from '../model/state.js';
 
 export default async function getState(ctx) {
   const authCookieName = ctx.app.config.auth.web.authCookie.name;
@@ -9,10 +9,10 @@ export default async function getState(ctx) {
   const ipFromHeader = ctx.req.get(forwardedForHeaderName);
   const ip = ipFromHeader ?? ctx.req.ip;
 
-  const idService = ctx.app.model.getService('id');
-  const identity = await idService.getIdentityBySessionId(session);
+  const identity = { status: IdStatus.UNAUTHORIZED, ip };
+  const state = new State(identity);
 
-  identity.ip = ip;
+  await ctx.getService('id').updateIdentityForSession(state, session);
 
-  return new State(identity);
+  return state;
 }

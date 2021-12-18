@@ -55,7 +55,7 @@ export default class AuthService {
   async signUp(state, credentials) {
     this._stateChecker.ensureNotAuthorized(state);
 
-    const [keys] = await this._profiles.create(state, [credentials]);
+    const [keys] = await this._profiles.create([credentials]);
     const sessionId = await this._sessions.create(state, keys.id);
 
     return {

@@ -51,4 +51,23 @@ export default class SessionsService {
 
     return sessionId;
   }
+
+  async readSession(state, session) {
+    const profileId = await this._redis.hGet(session, 'profileId');
+
+    if (profileId === undefined) {
+      return;
+    }
+
+    const nowTime = new Date().toUTCString();
+    const ip = state.identity.ip;
+
+    await this._redis
+      .multi()
+      .hSet(session, 'lastTimeUsed', nowTime)
+      .hSet('lastTimeUsedBy', ip)
+      .exec();
+
+    return profileId;
+  }
 }

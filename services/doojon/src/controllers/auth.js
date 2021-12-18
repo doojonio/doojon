@@ -31,12 +31,11 @@ export default class AuthController {
       return ctx.renderError(new ParsingError(error.message));
     }
 
-    const model = ctx.app.model;
     const state = await ctx.getState();
 
     let signUpResult;
     try {
-      const authService = model.getService('auth');
+      const authService = ctx.getService('auth');
       signUpResult = await authService.signUp(state, form);
     } catch (error) {
       return ctx.renderError(error);
@@ -64,7 +63,7 @@ export default class AuthController {
     const state = await ctx.getState();
     let signInResult;
     try {
-      const authService = ctx.app.model.getService('auth');
+      const authService = ctx.getService('auth');
       signInResult = await authService.signIn(state, form);
     } catch (error) {
       if (error instanceof NotFoundError || error instanceof FailedAuthError) {
