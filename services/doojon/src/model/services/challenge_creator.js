@@ -12,6 +12,5 @@ export default class ChallengeCreatorService {
     };
   }
 
-  createChallenge(state, challenge) {
-  }
+  createChallenge(state, challenge) {}
 }

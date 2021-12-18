@@ -14,8 +14,7 @@ export default class ChallengesController {
       new ParsingError(err);
     }
 
-    if (challenge.type == "A") {
-
+    if (challenge.type == 'A') {
     }
   }
 }
