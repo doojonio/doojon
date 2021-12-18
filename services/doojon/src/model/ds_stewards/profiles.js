@@ -1,9 +1,5 @@
 import { DataserviceSteward } from '../ds_steward.js';
 
-/**
- * @typedef {import('../state.js').State} State
- */
-
 export default class ProfilesSteward extends DataserviceSteward {
   static get _tableName() {
     return 'Profiles';
@@ -14,7 +10,7 @@ export default class ProfilesSteward extends DataserviceSteward {
     };
   }
 
-  async manageMutationsForNewObjects(state, profiles) {
+  async manageMutationsForNewObjects(profiles) {
     const promises = [];
     for (const profile of profiles) {
       promises.push(
@@ -27,7 +23,7 @@ export default class ProfilesSteward extends DataserviceSteward {
     await Promise.all(promises);
   }
 
-  async manageMutationsForUpdatedRows(_state, profiles) {
+  async manageMutationsForUpdatedRows(profiles) {
     const promises = [];
     for (const profile of profiles) {
       promises.push(

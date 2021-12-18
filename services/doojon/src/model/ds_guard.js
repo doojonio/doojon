@@ -1,5 +1,4 @@
 import { NotAuthorizedError, ValidationError } from './errors.js';
-import { IdStatus, State } from './state.js';
 
 export class DataserviceGuard {
   static get _objectsCreateSchema() {}
@@ -42,35 +41,19 @@ export class DataserviceGuard {
     return {};
   }
 
-  /**
-   * Dataservices call this method of their guard to
-   * ensure that create action is allowed for user defined in state
-   * by domain logic
-   *
-   * @param {State} state
-   * @param {Array<Object>} objects
-   */
-  async preCreateCheck(state, objects) {
-    if (!this._validateCreateWhat(objects)) {
+  async preCreateCheck(rows) {
+    if (!this._validateCreateWhat(rows)) {
       throw new ValidationError(
         this._validator.errorsText(this._validateCreateWhat.errors)
       );
     }
 
-    return this._preCreateAdditionalChecks(state, objects);
+    return this._preCreateAdditionalChecks(rows);
   }
 
-  async _preCreateAdditionalChecks(_state, _objects) {}
+  async _preCreateAdditionalChecks(_rows) {}
 
-  /**
-   * Dataservices call this method of their guard to
-   * ensure that read action is allowed for user defined in state
-   * by domain logic
-   *
-   * @param {State} state
-   * @param {Object} where
-   */
-  async preReadCheck(state, keys, columns) {
+  async preReadCheck(keys, columns) {
     if (!this._validateKeys(keys)) {
       throw new ValidationError(
         'keys - ' + this._validator.errorsText(this._validateKeys.errors)
@@ -83,58 +66,30 @@ export class DataserviceGuard {
       );
     }
 
-    return this._preReadAdditionalChecks(state, keys, columns);
+    return this._preReadAdditionalChecks(keys, columns);
   }
 
-  async _preReadAdditionalChecks(_state, _keys, _columns) {}
+  async _preReadAdditionalChecks(keys, _columns) {}
 
-  /**
-   * Dataservices call this method of their guard to
-   * ensure that update action is allowed for user defined in state
-   * by domain logic
-   *
-   * @param {State} _state
-   * @param {Object} where
-   * @param {Object} fields - new values
-   */
-  async preUpdateCheck(state, rows) {
+  async preUpdateCheck(rows) {
     if (!this._validateUpdateRows(rows)) {
       throw new ValidationError(
         this._validator.errorsText(this._validateUpdateRows.errors)
       );
     }
 
-    return this._preUpdateAdditionalChecks(state, rows);
+    return this._preUpdateAdditionalChecks(rows);
   }
-  async _preUpdateAdditionalChecks(_state, _rows) {}
+  async _preUpdateAdditionalChecks(_rows) {}
 
-  /**
-   * Dataservices call this method of their guard to
-   * ensure that delete action is allowed for user defined in state
-   * by domain logic
-   *
-   * @param {State} state
-   * @param {Object} where
-   */
-  async preDeleteCheck(state, keys) {
+  async preDeleteCheck(keys) {
     if (!this._validateKeys(keys)) {
       throw new ValidationError(
         this._validator.errorsText(this._validateKeys.errors)
       );
     }
 
-    return this._preDeleteAdditionalChecks(state, keys);
+    return this._preDeleteAdditionalChecks(keys);
   }
-  async _preDeleteAdditionalChecks(_state, _keys) {}
-
-  /**
-   * @throws NotAuthorizedError unless user in state is authorized
-   *
-   * @param {State} state
-   */
-  isAuthorized(state) {
-    if (state.identity.status !== IdStatus.AUTHORIZED) {
-      throw new NotAuthorizedError();
-    }
-  }
+  async _preDeleteAdditionalChecks(_keys) {}
 }

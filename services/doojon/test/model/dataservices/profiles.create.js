@@ -1,7 +1,6 @@
 import t from 'tap';
 import { startup } from '../../../src/lib.js';
 import { ForbiddenError, ValidationError } from '../../../src/model/errors.js';
-import { IdStatus, State } from '../../../src/model/state.js';
 import { compareSync } from 'bcrypt';
 
 t.beforeEach(async t => {
@@ -16,11 +15,6 @@ t.afterEach(async t => {
 
 t.test('When everything is ok', async t => {
   const profilesDataservice = t.context.profilesDs;
-
-  const identity = {
-    status: IdStatus.UNAUTHORIZED,
-  };
-  const state = new State(identity);
 
   const originalPassword = 'password';
   const profiles = [
@@ -57,7 +51,7 @@ t.test('When everything is ok', async t => {
   let returnedObjectsKeys;
   await t.resolves(
     profilesDataservice
-      .create(state, profiles)
+      .create(profiles)
       .then(keys => (returnedObjectsKeys = keys)),
     'Create profile resolves'
   );
@@ -74,37 +68,8 @@ t.test('When everything is ok', async t => {
   t.end();
 });
 
-t.test('When already authorized', async t => {
-  const profilesDataservice = t.context.profilesDs;
-
-  const identity = {
-    status: IdStatus.AUTHORIZED,
-  };
-  const state = new State(identity);
-
-  const profiles = [
-    {
-      email: 'testone@doojon.com',
-      username: 'testone',
-      password: 'password',
-    },
-  ];
-
-  await t.rejects(
-    profilesDataservice.create(state, profiles),
-    new ForbiddenError('User has to be unauthorized to create profiles')
-  );
-
-  t.end();
-});
-
 t.test('With short password', async t => {
   const profilesDataservice = t.context.profilesDs;
-
-  const identity = {
-    status: IdStatus.UNAUTHORIZED,
-  };
-  const state = new State(identity);
 
   const profiles = [
     {
@@ -115,7 +80,7 @@ t.test('With short password', async t => {
   ];
 
   await t.rejects(
-    profilesDataservice.create(state, profiles),
+    profilesDataservice.create(profiles),
     new ValidationError('data/0/password must NOT have fewer than 8 characters')
   );
 
@@ -125,15 +90,10 @@ t.test('With short password', async t => {
 t.test('When objects array is null', async t => {
   const profilesDataservice = t.context.profilesDs;
 
-  const identity = {
-    status: IdStatus.UNAUTHORIZED,
-  };
-  const state = new State(identity);
-
   const profiles = null;
 
   await t.rejects(
-    profilesDataservice.create(state, profiles),
+    profilesDataservice.create(profiles),
     new ValidationError('data must be array')
   );
 
@@ -143,11 +103,6 @@ t.test('When objects array is null', async t => {
 t.test('Without username', async t => {
   const profilesDataservice = t.context.profilesDs;
 
-  const identity = {
-    status: IdStatus.UNAUTHORIZED,
-  };
-  const state = new State(identity);
-
   const profiles = [
     {
       email: 'testone@doojon.com',
@@ -156,7 +111,7 @@ t.test('Without username', async t => {
   ];
 
   await t.rejects(
-    profilesDataservice.create(state, profiles),
+    profilesDataservice.create(profiles),
     new ValidationError("data/0 must have required property 'username'")
   );
 
@@ -165,11 +120,6 @@ t.test('Without username', async t => {
 
 t.test('Forbidden username', async t => {
   const profilesDataservice = t.context.profilesDs;
-
-  const identity = {
-    status: IdStatus.UNAUTHORIZED,
-  };
-  const state = new State(identity);
 
   const profiles = [
     {
@@ -180,7 +130,7 @@ t.test('Forbidden username', async t => {
   ];
 
   await t.rejects(
-    profilesDataservice.create(state, profiles),
+    profilesDataservice.create(profiles),
     new ValidationError("Username 'api' is forbidden")
   );
 

@@ -1,9 +1,7 @@
 import { DataserviceGuard } from '../ds_guard.js';
 import { ConflictError, ForbiddenError } from '../errors.js';
-import { IdStatus } from '../state.js';
 
 /**
- * @typedef {import('../state.js').State} State
  * @typedef {import('../dataservices/profiles').default} ProfilesDataservice
  */
 
@@ -84,19 +82,7 @@ export default class ProfilesGuard extends DataserviceGuard {
     };
   }
 
-  /**
-   * - User has to be not authorized
-   *
-   * @param {State} state
-   * @param {Array<Object>} objects
-   */
-  async _preCreateAdditionalChecks(state, profiles) {
-    if (state.identity.status !== IdStatus.UNAUTHORIZED) {
-      throw new ForbiddenError(
-        'User has to be unauthorized to create profiles'
-      );
-    }
-
+  async _preCreateAdditionalChecks(profiles) {
     const forbiddenUsernames =
       this._config.dataservices.profiles.forbiddenUsernames;
     for (const profile of profiles) {

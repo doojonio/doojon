@@ -1,9 +1,5 @@
 import { DataserviceGuard } from '../ds_guard.js';
 
-/**
- * @typedef {import('../state.js').State} State
- */
-
 export default class ProgressesByThingsDonePerPeriodGuard extends DataserviceGuard {
   static get _tableName() {
     return 'ProgressesByThingsDonePerPeriod';
@@ -74,15 +70,5 @@ export default class ProgressesByThingsDonePerPeriodGuard extends DataserviceGua
         required: ['acceptanceId'],
       },
     };
-  }
-
-  /**
-   * - User has to be authorized
-   *
-   * @param {State} state
-   * @param {Array<Object>} objects
-   */
-  _preCreateAdditionalChecks(state, objects) {
-    this.isAuthorized(state);
   }
 }

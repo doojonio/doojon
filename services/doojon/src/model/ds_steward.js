@@ -31,9 +31,9 @@ export class DataserviceSteward {
     return {};
   }
 
-  async manageMutationsForNewObjects(_state, _objects) {}
+  async manageMutationsForNewObjects(_objects) {}
 
-  async manageKeysForNewObjects(_state, objects) {
+  async manageKeysForNewObjects(objects) {
     let newObjectsKeys = [];
     for (const object of objects) {
       const keys = this._generateRandomKeys();
@@ -48,7 +48,7 @@ export class DataserviceSteward {
     return newObjectsKeys;
   }
 
-  async manageTimestampsForNewObjects(_state, objects) {
+  async manageTimestampsForNewObjects(objects) {
     if (this._schema.columns.created === undefined) {
       return;
     }
@@ -59,7 +59,7 @@ export class DataserviceSteward {
     }
   }
 
-  async manageMutationsForUpdatedRows(_state, objects) {}
+  async manageMutationsForUpdatedRows(objects) {}
 
   // TODO: retries
   async handleInsertError(error, _tryNum) {

@@ -1,6 +1,5 @@
 import t from 'tap';
 import { startup } from '../../../src/lib.js';
-import { IdStatus, State } from '../../../src/model/state.js';
 import { compareSync } from 'bcrypt';
 import { ValidationError } from '../../../src/model/errors.js';
 
@@ -18,11 +17,6 @@ t.test('Everything is ok', async t => {
   const profilesDataservice = t.context.profilesDs;
 
   const profileId = 'someId';
-  const identity = {
-    status: IdStatus.AUTHORIZED,
-    profileId,
-  };
-  const state = new State(identity);
 
   const originalPassword = 'myNewPassword';
   const rows = [
@@ -50,7 +44,7 @@ t.test('Everything is ok', async t => {
       },
     });
 
-  await t.resolves(profilesDataservice.update(state, rows));
+  await t.resolves(profilesDataservice.update(rows));
 
   t.ok(isUpdateCalled, 'Update was called');
 
@@ -60,13 +54,6 @@ t.test('Everything is ok', async t => {
 t.test('Without id', async t => {
   const profilesDataservice = t.context.profilesDs;
 
-  const profileId = 'someId';
-  const identity = {
-    status: IdStatus.AUTHORIZED,
-    profileId,
-  };
-  const state = new State(identity);
-
   const rows = [
     {
       password: 'does not matter',
@@ -75,7 +62,7 @@ t.test('Without id', async t => {
   ];
 
   await t.rejects(
-    profilesDataservice.update(state, rows),
+    profilesDataservice.update(rows),
     new ValidationError("data/0 must have required property 'id'")
   );
 
@@ -86,12 +73,6 @@ t.test('Only id', async t => {
   const profilesDataservice = t.context.profilesDs;
 
   const profileId = 'someId';
-  const identity = {
-    status: IdStatus.AUTHORIZED,
-    profileId,
-  };
-  const state = new State(identity);
-
   const rows = [
     {
       id: profileId,
@@ -99,7 +80,7 @@ t.test('Only id', async t => {
   ];
 
   await t.rejects(
-    profilesDataservice.update(state, rows),
+    profilesDataservice.update(rows),
     new ValidationError('data/0 must NOT have fewer than 2 items')
   );
 

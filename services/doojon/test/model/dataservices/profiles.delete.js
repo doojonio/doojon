@@ -1,6 +1,5 @@
 import t from 'tap';
 import { startup } from '../../../src/lib.js';
-import { IdStatus, State } from '../../../src/model/state.js';
 import { ValidationError } from '../../../src/model/errors.js';
 
 t.beforeEach(async t => {
@@ -17,11 +16,6 @@ t.test('Everything is ok', async t => {
   const profilesDataservice = t.context.profilesDs;
 
   const profileId = 'someId';
-  const identity = {
-    status: IdStatus.AUTHORIZED,
-    profileId,
-  };
-  const state = new State(identity);
 
   const keys = [[profileId]];
 
@@ -35,7 +29,7 @@ t.test('Everything is ok', async t => {
       },
     });
 
-  await t.resolves(profilesDataservice.delete(state, keys));
+  await t.resolves(profilesDataservice.delete(keys));
 
   t.ok(isDeleteCalled, 'Delete was called');
 
@@ -45,17 +39,10 @@ t.test('Everything is ok', async t => {
 t.test('Keys are undefined', async t => {
   const profilesDataservice = t.context.profilesDs;
 
-  const profileId = 'someId';
-  const identity = {
-    status: IdStatus.AUTHORIZED,
-    profileId,
-  };
-  const state = new State(identity);
-
   const keys = undefined;
 
   await t.rejects(
-    profilesDataservice.delete(state, keys),
+    profilesDataservice.delete(keys),
     new ValidationError('data must be array')
   );
 

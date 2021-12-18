@@ -9,7 +9,7 @@
     "ddl": "node script/doojon.js ddl run",
     "test": "npx tap",
     "style-check": "npx prettier -c src/ test/ script/ cfg/",
-    "style-fix" : "npx prettier -w src/ test/ script/ cfg/"
+    "style-fix": "npx prettier -w src/ test/ script/ cfg/"
   },
   "repository": {
     "type": "git",

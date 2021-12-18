@@ -1,4 +1,3 @@
-import { State } from './state.js';
 import { DataserviceGuard } from './ds_guard.js';
 import { Database } from '@google-cloud/spanner';
 import { Logger } from '@mojojs/core';
@@ -8,17 +7,16 @@ export class Dataservice {
   /**
    * Insert objects on dataservice's primary table
    *
-   * @param {State} state
    * @param {Array<Object>} objects
    * @returns {Promise<Array<Object>>} array of {id: string}
    */
-  async create(state, objects) {
-    await this._guard.preCreateCheck(state, objects);
+  async create(objects) {
+    await this._guard.preCreateCheck(objects);
 
     this._log.trace(`Inserting objects in ${this.constructor._tableName}`);
 
-    await this._steward.manageMutationsForNewObjects(state, objects);
-    await this._steward.manageTimestampsForNewObjects(state, objects);
+    await this._steward.manageMutationsForNewObjects(objects);
+    await this._steward.manageTimestampsForNewObjects(objects);
 
     let shouldRetry = true;
     let tryNum = 0;
@@ -39,7 +37,6 @@ export class Dataservice {
       }
 
       insertedObjectsKeys = await this._steward.manageKeysForNewObjects(
-        state,
         objects
       );
       try {
@@ -56,12 +53,11 @@ export class Dataservice {
   /**
    * Read objects from dataservice's primary table
    *
-   * @param {Stae} state
    * @param {Object} columns
    * @returns TODO
    */
-  async read(state, keys, columns) {
-    await this._guard.preReadCheck(state, keys, columns);
+  async read(keys, columns) {
+    await this._guard.preReadCheck(keys, columns);
 
     this._log.trace(`Reading objects from ${this.constructor._tableName}`);
 
@@ -83,29 +79,27 @@ export class Dataservice {
   /**
    * Update objects in dataservice's primary table
    *
-   * @param {State} state
    * @param {Object} where
    * @param {Object} newFields
    * @returns TODO
    */
-  async update(state, rows) {
-    await this._guard.preUpdateCheck(state, rows);
+  async update(rows) {
+    await this._guard.preUpdateCheck(rows);
 
     this._log.trace(`Updating objects in ${this.constructor._tableName}`);
 
-    await this._steward.manageMutationsForUpdatedRows(state, rows);
+    await this._steward.manageMutationsForUpdatedRows(rows);
     await this._db.table(this.constructor._tableName).update(rows);
   }
 
   /**
    * Delete objects from dataservice's primary table
    *
-   * @param {State} state
    * @param {Object} where
    * @returns TODO
    */
-  async delete(state, keys) {
-    await this._guard.preDeleteCheck(state, keys);
+  async delete(keys) {
+    await this._guard.preDeleteCheck(keys);
 
     this._log.trace(`Deleting objects from ${this.constructor._tableName}`);
 
