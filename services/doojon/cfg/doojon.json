@@ -37,8 +37,6 @@
     "spanner": {
       "poolOptions": {}
     },
-    "redis": {
-      "url": "redis://doojon_redis:6379"
-    }
+    "redis": {}
   }
 }

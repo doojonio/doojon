@@ -17,6 +17,7 @@ services:
       SPANNER_EMULATOR_HOST: doojon_db:9010
       SPANNER_INSTANCE: doojon-dev
       SPANNER_DATABASE: doojon
+      REDIS_URL: redis://doojon_redis
   doojon_db:
     image: gcr.io/cloud-spanner-emulator/emulator
     ports:

@@ -51,6 +51,15 @@ async function setupSpanner({ dbContainer, h }) {
 
 async function setupRedis({ dbContainer, h }) {
   const redisOptions = this._conf.handlers.redis;
+
+  if (process.env.REDIS_URL !== undefined) {
+    redisOptions.url  = process.env.REDIS_URL;
+  }
+
+  if (redisOptions.url === undefined) {
+    throw new Error('missing redis url in config or in env (REDIS_URL)');
+  }
+
   const redisClient = createRedisClient(redisOptions);
   redisClient.connect();
 

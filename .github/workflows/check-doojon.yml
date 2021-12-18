@@ -14,18 +14,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [16.x]
+    container: node:16
+    services:
+      redis:
+        image: redis
 
     steps:
     - uses: actions/checkout@v2
-
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
 
     - name: Build
       working-directory: "services/doojon"
@@ -44,5 +39,6 @@ jobs:
         SPANNER_EMULATOR_HOST: test:123
         SPANNER_INSTANCE: test
         SPANNER_DATABASE: test
+        REDIS_URL: redis://redis
       run: |
         npm run test
