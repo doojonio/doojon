@@ -1,10 +1,6 @@
 import { DataserviceGuard } from '../ds_guard.js';
 import { ConflictError, ForbiddenError } from '../errors.js';
 
-/**
- * @typedef {import('../dataservices/profiles').default} ProfilesDataservice
- */
-
 export default class ProfilesGuard extends DataserviceGuard {
   static get _tableName() {
     return 'Profiles';

@@ -14,7 +14,7 @@ export default class ChallengesController {
       new ParsingError(err);
     }
 
-    if (challenge.type == 'A') {
-    }
+    const state = ctx.getState();
+    ctx.getService('challenge_creator').createChallenge(state, challenge);
   }
 }

@@ -1,8 +1,8 @@
 import { DataserviceGuard } from '../ds_guard.js';
 
-export default class ProgressesByThingsDonePerPeriodGuard extends DataserviceGuard {
+export default class ChallengeCrSettingsSDGuard extends DataserviceGuard {
   static get _tableName() {
-    return 'ProgressesByThingsDonePerPeriod';
+    return 'ChallengeCrSettingsSD';
   }
 
   static get _objectsCreateSchema() {
@@ -14,13 +14,11 @@ export default class ProgressesByThingsDonePerPeriodGuard extends DataserviceGua
         type: 'object',
         additionalProperties: false,
         properties: {
-          period: { type: 'integer' },
-          times: { type: 'integer' },
-          thing: { type: 'string', maxLength: 150 },
-          acceptanceId: { type: 'string', maxLength: 26 },
-          periodsNum: { type: ['integer', 'null'] },
+          challengeId: { type: 'string', maxLength: 11 },
+          minNeedToSpend: { type: 'integer' },
+          maxNeedToSpend: { type: ['integer', 'null'] },
         },
-        required: ['period', 'times', 'thing', 'acceptanceId'],
+        required: ['challengeId', 'minNeedToSpend'],
       },
     };
   }
@@ -33,7 +31,7 @@ export default class ProgressesByThingsDonePerPeriodGuard extends DataserviceGua
         type: 'array',
         minItems: 1,
         maxItems: 1,
-        description: 'acceptanceId',
+        description: 'challengeId',
         items: { type: 'string' },
       },
     };
@@ -43,11 +41,11 @@ export default class ProgressesByThingsDonePerPeriodGuard extends DataserviceGua
     return {
       type: 'array',
       minItems: 1,
-      maxItems: 5,
+      maxItems: 3,
       uniqueItems: true,
       items: {
         type: 'string',
-        enum: ['period', 'times', 'thing', 'acceptanceId', 'periodsNum'],
+        enum: ['challengeId', 'minNeedToSpend', 'maxNeedToSpend'],
       },
     };
   }
@@ -61,13 +59,11 @@ export default class ProgressesByThingsDonePerPeriodGuard extends DataserviceGua
         minProperties: 2,
         additionalProperties: false,
         properties: {
-          period: { type: 'integer' },
-          times: { type: 'integer' },
-          thing: { type: 'string', maxLength: 150 },
-          acceptanceId: { type: 'string', maxLength: 26 },
-          periodsNum: { type: ['integer', 'null'] },
+          challengeId: { type: 'string', maxLength: 11 },
+          minNeedToSpend: { type: 'integer' },
+          maxNeedToSpend: { type: ['integer', 'null'] },
         },
-        required: ['acceptanceId'],
+        required: ['challengeId'],
       },
     };
   }

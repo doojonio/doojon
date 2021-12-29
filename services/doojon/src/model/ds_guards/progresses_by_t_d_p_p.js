@@ -1,8 +1,8 @@
 import { DataserviceGuard } from '../ds_guard.js';
 
-export default class ChallengesGuard extends DataserviceGuard {
+export default class ProgressesByTDPPGuard extends DataserviceGuard {
   static get _tableName() {
-    return 'Challenges';
+    return 'ProgressesByTDPP';
   }
 
   static get _objectsCreateSchema() {
@@ -14,11 +14,12 @@ export default class ChallengesGuard extends DataserviceGuard {
         type: 'object',
         additionalProperties: false,
         properties: {
-          criterionType: { type: 'integer' },
-          isPublic: { type: 'boolean' },
-          authorId: { type: ['string', 'null'], maxLength: 36 },
+          periodsNum: { type: ['integer', 'null'] },
+          period: { type: 'integer' },
+          times: { type: 'integer' },
+          acceptanceId: { type: 'string', maxLength: 26 },
         },
-        required: ['criterionType', 'isPublic'],
+        required: ['period', 'times', 'acceptanceId'],
       },
     };
   }
@@ -31,7 +32,7 @@ export default class ChallengesGuard extends DataserviceGuard {
         type: 'array',
         minItems: 1,
         maxItems: 1,
-        description: 'id',
+        description: 'acceptanceId',
         items: { type: 'string' },
       },
     };
@@ -41,11 +42,11 @@ export default class ChallengesGuard extends DataserviceGuard {
     return {
       type: 'array',
       minItems: 1,
-      maxItems: 5,
+      maxItems: 4,
       uniqueItems: true,
       items: {
         type: 'string',
-        enum: ['criterionType', 'isPublic', 'authorId', 'id', 'created'],
+        enum: ['periodsNum', 'period', 'times', 'acceptanceId'],
       },
     };
   }
@@ -59,12 +60,12 @@ export default class ChallengesGuard extends DataserviceGuard {
         minProperties: 2,
         additionalProperties: false,
         properties: {
-          criterionType: { type: 'integer' },
-          isPublic: { type: 'boolean' },
-          authorId: { type: ['string', 'null'], maxLength: 36 },
-          id: { type: 'string', maxLength: 11 },
+          periodsNum: { type: ['integer', 'null'] },
+          period: { type: 'integer' },
+          times: { type: 'integer' },
+          acceptanceId: { type: 'string', maxLength: 26 },
         },
-        required: ['id'],
+        required: ['acceptanceId'],
       },
     };
   }

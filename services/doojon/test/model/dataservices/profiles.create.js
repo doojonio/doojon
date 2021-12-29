@@ -1,6 +1,6 @@
 import t from 'tap';
 import { startup } from '../../../src/lib.js';
-import { ForbiddenError, ValidationError } from '../../../src/model/errors.js';
+import { ValidationError } from '../../../src/model/errors.js';
 import { compareSync } from 'bcrypt';
 
 t.beforeEach(async t => {

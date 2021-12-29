@@ -90,6 +90,10 @@ function _getRowsUpdateSchemaCode(schema) {
     if (['updated', 'created'].includes(columnName)) {
       continue;
     }
+    if (columnSchema.spannerType === 'JSON') {
+      properties[columnName] = {};
+      continue;
+    }
 
     const definition = { type: columnSchema.type };
 
@@ -133,7 +137,11 @@ function _getKeysSchemaCode(schema) {
   } else {
     keysTypes = [];
     for (const key of schema.keys) {
-      keysTypes.push(schema.columns[key].type);
+      const type = schema.columns[key].type;
+
+      if (!keysTypes.includes(type)) {
+        keysTypes.push(schema.columns[key].type);
+      }
     }
   }
 
@@ -159,8 +167,13 @@ function _getObjectsCreateSchemaCode(schema) {
     if (['id', 'created', 'updated'].includes(columnName)) {
       continue;
     }
-
     const columnSchema = schema.columns[columnName];
+
+    if (columnSchema.spannerType === 'JSON') {
+      properties[columnName] = {};
+      continue;
+    }
+
     const type = columnSchema.type;
 
     const definition = { type };

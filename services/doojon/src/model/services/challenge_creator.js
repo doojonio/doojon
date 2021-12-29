@@ -1,7 +1,4 @@
-import { FailedAuthError, ValidationError } from '../errors.js';
-
-const CRITERION_BY_SPENDED_DAYS = 'bySpendedDays';
-const CRITERION_BY_THINGS_DONE_PER_PERIOD = 'byThingsDonePerPeriod';
+import { ValidationError } from '../errors.js';
 
 export default class ChallengeCreatorService {
   static get deps() {
@@ -12,5 +9,7 @@ export default class ChallengeCreatorService {
     };
   }
 
-  createChallenge(state, challenge) {}
+  async createChallenge(state, challenge) {
+    this._stateChecker.ensureAuthroized(state);
+  }
 }

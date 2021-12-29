@@ -1,8 +1,8 @@
 import { DataserviceGuard } from '../ds_guard.js';
 
-export default class ProgressesBySpendedDaysGuard extends DataserviceGuard {
+export default class ProgressesBySDGuard extends DataserviceGuard {
   static get _tableName() {
-    return 'ProgressesBySpendedDays';
+    return 'ProgressesBySD';
   }
 
   static get _objectsCreateSchema() {
@@ -14,11 +14,11 @@ export default class ProgressesBySpendedDaysGuard extends DataserviceGuard {
         type: 'object',
         additionalProperties: false,
         properties: {
-          untillDate: { type: ['string', 'null'] },
+          finishedOnDay: { type: ['integer', 'null'] },
           acceptanceId: { type: 'string', maxLength: 26 },
-          spendedDays: { type: 'integer' },
+          needToSpend: { type: ['integer', 'null'] },
         },
-        required: ['acceptanceId', 'spendedDays'],
+        required: ['acceptanceId'],
       },
     };
   }
@@ -45,7 +45,7 @@ export default class ProgressesBySpendedDaysGuard extends DataserviceGuard {
       uniqueItems: true,
       items: {
         type: 'string',
-        enum: ['untillDate', 'acceptanceId', 'spendedDays'],
+        enum: ['finishedOnDay', 'acceptanceId', 'needToSpend'],
       },
     };
   }
@@ -59,9 +59,9 @@ export default class ProgressesBySpendedDaysGuard extends DataserviceGuard {
         minProperties: 2,
         additionalProperties: false,
         properties: {
-          untillDate: { type: ['string', 'null'] },
+          finishedOnDay: { type: ['integer', 'null'] },
           acceptanceId: { type: 'string', maxLength: 26 },
-          spendedDays: { type: 'integer' },
+          needToSpend: { type: ['integer', 'null'] },
         },
         required: ['acceptanceId'],
       },

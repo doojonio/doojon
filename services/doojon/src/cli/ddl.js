@@ -42,4 +42,5 @@ export default async function run(app, args) {
   }
 
   await fn.call(app, args);
+  app.model.closeAllConnections();
 }

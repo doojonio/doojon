@@ -13,12 +13,12 @@ export const DDL_STATEMENTS = [
    * @column created - Time when the profile was created
    */
   `CREATE TABLE Profiles (
-  id       STRING(36)  NOT NULL,
-  email    STRING(320) NOT NULL,
-  password STRING(70)  NOT NULL,
-  username STRING(16)  NOT NULL,
-  bio      STRING(300),
-  created  TIMESTAMP   NOT NULL
+  id           STRING(36)  NOT NULL,
+  email        STRING(320) NOT NULL,
+  password     STRING(70)  NOT NULL,
+  username     STRING(16)  NOT NULL,
+  bio          STRING(300),
+  created      TIMESTAMP   NOT NULL
 ) PRIMARY KEY (id)`,
   /**
    * Creates unique index on profiles email
@@ -55,6 +55,8 @@ ON Profiles (username)`,
 
   FOREIGN KEY (authorId) REFERENCES Profiles(id)
 ) PRIMARY KEY (id)`,
+
+  `CREATE NULL_FILTERED INDEX PostsByAuthorId ON Posts(authorId)`,
   /**
    * Creates table for user post comments
    * @name Comments
@@ -75,6 +77,8 @@ ON Profiles (username)`,
   FOREIGN KEY (authorId) REFERENCES Profiles(id),
   FOREIGN KEY (postId)   REFERENCES Posts(id)
 ) PRIMARY KEY (id)`,
+
+  `CREATE NULL_FILTERED INDEX CommentsByPostId ON Comments(postId)`,
   /**
    * Creates table for user post replies
    * @name Replies
@@ -95,6 +99,7 @@ ON Profiles (username)`,
   FOREIGN KEY (authorId)  REFERENCES Profiles(id),
   FOREIGN KEY (commentId) REFERENCES Comments(id)
 ) PRIMARY KEY (id)`,
+  `CREATE NULL_FILTERED INDEX RepliesByCommentId ON Replies(commentId)`,
   /**
    * Creates table for challenges.
    *
@@ -114,12 +119,44 @@ ON Profiles (username)`,
   id            STRING(11)    NOT NULL,
   authorId      STRING(36),
   isPublic      BOOL          NOT NULL,
-  criterionType STRING(16)    NOT NULL,
-  title         STRING(100)   NOT NULL,
-  description   STRING(10000) NOT NULL,
+  criterionType INT64         NOT NULL,
   created       TIMESTAMP     NOT NULL
 
 ) PRIMARY KEY (id)`,
+  `CREATE NULL_FILTERED INDEX ChallengesByAuthorId ON Challenges(authorId)`,
+
+  `CREATE TABLE ChallengeTranslations (
+  challengeId       STRING(11)    NOT NULL,
+  languageCode      STRING(13)    NOT NULL,
+  title             STRING(100)   NOT NULL,
+  tag               STRING(50)    NOT NULL,
+  description       STRING(10000) NOT NULL,
+  criteriumSpecific JSON,
+
+  FOREIGN KEY (challengeId) REFERENCES Challenges(id),
+) PRIMARY KEY (challengeId, languageCode)`,
+  `CREATE NULL_FILTERED INDEX ChallengeTranslationsByChallengeId ON ChallengeTranslations(challengeId)`,
+  `CREATE UNIQUE NULL_FILTERED INDEX ChallengeTranslationsByTag ON ChallengeTranslations(tag)`,
+
+  `CREATE TABLE ChallengeCrSettingsTDPP (
+    challengeId     STRING(11)  NOT NULL,
+    minTimes        INT64       NOT NULL,
+    maxTimes        INT64       NOT NULL,
+    minPeriod       INT64       NOT NULL,
+    maxPeriod       INT64       NOT NULL,
+    minPeriodsNum   INT64       NOT NULL,
+    maxPeriodsNum   INT64,
+
+    FOREIGN KEY (challengeId) REFERENCES Challenges(id),
+  ) PRIMARY KEY (challengeId)`,
+
+  `CREATE TABLE ChallengeCrSettingsSD (
+    challengeId     STRING(11)  NOT NULL,
+    minNeedToSpend  INT64       NOT NULL,
+    maxNeedToSpend  INT64,
+
+    FOREIGN KEY (challengeId) REFERENCES Challenges(id),
+  ) PRIMARY KEY (challengeId)`,
   /**
    * Creates table for storing every challenge acceptance.
    *
@@ -136,30 +173,32 @@ ON Profiles (username)`,
   id          STRING(26) NOT NULL,
   profileId   STRING(36) NOT NULL,
   challengeId STRING(11) NOT NULL,
-  status      STRING(16) NOT NULL,
+  status      INT64      NOT NULL,
   created     TIMESTAMP  NOT NULL,
   updated     TIMESTAMP,
 
   FOREIGN KEY (profileId) REFERENCES Profiles(id),
   FOREIGN KEY (challengeId) REFERENCES Challenges(id)
 ) PRIMARY KEY (id)`,
+  `CREATE NULL_FILTERED INDEX AcceptancesByProfileId ON Acceptances(profileId)`,
+  `CREATE NULL_FILTERED INDEX AcceptancesByChallengeId ON Acceptances(challengeId)`,
   /**
    * Creates table for storing users challenge
    * progresses with type bySpendedDays. We save
    * here user's spended days and date until user
    * fulfills the challenge
    *
-   * @name ProgressesBySpendedDays
+   * @name ProgressesBySD
    * @type {CreateTable}
    * @column acceptanceId - Id of challenge acceptance
-   * @column spendedDays  - Number of days spended during challenge
-   * @column untillDate   - Date of the end of the challenge. If null
-   *    then user is want to do this challege forever
+   * @column needToSpend  - Number of days needed to spend in challenge
+   * @column finishedOnDay  - Number of day when user finished challenge
+   *
    */
-  `CREATE TABLE ProgressesBySpendedDays (
+  `CREATE TABLE ProgressesBySD (
   acceptanceId STRING(26) NOT NULL,
-  spendedDays  INT64      NOT NULL,
-  untillDate   DATE,
+  needToSpend  INT64,
+  finishedOnDay  INT64,
 
   FOREIGN KEY (acceptanceId) REFERENCES Acceptances(id)
 ) PRIMARY KEY (acceptanceId)`,
@@ -170,7 +209,7 @@ ON Profiles (username)`,
    * will do, how many times he will do this during
    * period, period in days and amount of periods.
    *
-   * @name ProgressesByThingsDonePerPeriod
+   * @name ProgressesByTDPP
    * @type {CreateTable}
    * @column acceptanceId - Id of challenge acceptance
    * @column thing - description of the thing user will do
@@ -179,9 +218,8 @@ ON Profiles (username)`,
    * @column periodsNum - number of periods. If null, then
    *    user is going to do things forever
    */
-  `CREATE TABLE ProgressesByThingsDonePerPeriod (
+  `CREATE TABLE ProgressesByTDPP (
   acceptanceId STRING(26)  NOT NULL,
-  thing        STRING(150) NOT NULL,
   times        INT64       NOT NULL,
   period       INT64       NOT NULL,
   periodsNum   INT64,
