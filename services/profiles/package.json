@@ -1,0 +1,31 @@
+{
+  "name": "profiles",
+  "version": "1.0.0",
+  "description": "Doojon's Profiles Service",
+  "main": "script/app.js",
+  "scripts": {
+    "test": "npx tap",
+    "morbo": "npx supervisor -w src/ -- ./script/doojon.js server -l http://*:8080",
+    "ddl": "node script/doojon.js ddl run",
+    "style-check": "npx prettier -c src/ test/ script/ cfg/",
+    "style-fix": "npx prettier -w src/ test/ script/ cfg/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/doojonio/doojon"
+  },
+  "author": "doojonio",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@doojon/breadboard": "^2.1.1",
+    "@google-cloud/spanner": "^5.16.2",
+    "@mojojs/core": "^0.17.3",
+    "ajv": "^8.9.0",
+    "redis": "^4.0.2"
+  },
+  "devDependencies": {
+    "prettier": "^2.5.1",
+    "supervisor": "^0.12.0",
+    "tap": "^15.1.6"
+  }
+}

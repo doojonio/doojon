@@ -1,0 +1,28 @@
+version: "3"
+services:
+  profiles_devc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VARIANT: 16
+        USER_UID: 1000
+        USER_GID: 1000
+    volumes:
+      - ../../..:/workspace
+    command: sleep infinity
+    environment:
+      GCP_PROJECT: djn-dev
+      SPANNER_EMULATOR_HOST: spannerc:9010
+      SPANNER_INSTANCE: djn-dev
+      SPANNER_DATABASE: doojon
+      REDIS_URL: redis://redisc
+  spannerc:
+    image: gcr.io/cloud-spanner-emulator/emulator
+    restart: unless-stopped
+  redisc:
+    image: redis
+    restart: unless-stopped
+networks:
+  default:
+    name: djn-dev

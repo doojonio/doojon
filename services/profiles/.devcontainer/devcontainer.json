@@ -1,0 +1,29 @@
+{
+  "name": "Profiles Service DevContainer",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "profiles_devc",
+  "workspaceFolder": "/workspace/services/profiles",
+  "extensions": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "google-cloud-spanner-ecosystem.google-cloud-spanner-driver",
+    "mtxr.sqltools",
+    "dunn.redis"
+  ],
+  "settings": {
+    "sqltools.connections": [
+      {
+        "previewLimit": 50,
+        "driver": "Google Cloud Spanner Driver",
+        "name": "Spanner Container",
+        "project": "djn-dev",
+        "instance": "djn-dev",
+        "database": "doojon",
+        "connectToEmulator": true,
+        "emulatorHost": "spannerc",
+        "emulatorPort": 9010
+      }
+    ]
+  },
+  "remoteUser": "node"
+}
