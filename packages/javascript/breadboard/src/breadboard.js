@@ -1,12 +1,18 @@
-
 export class Container {
-  constructor(parentContainer) {
+  constructor(parentContainer, containerName) {
     this._containers = {};
     this._services = {};
 
     if (parentContainer) {
       this._parentRef = new WeakRef(parentContainer);
+      this.name = containerName;
+    } else {
+      this._classMap = new Map();
     }
+  }
+
+  setClassMapping(servicePath, dependencyClass) {
+    this._classMap.set(servicePath, dependencyClass);
   }
 
   initAll() {
@@ -30,7 +36,7 @@ export class Container {
       throw new Error(`service ${serviceName} already exists`);
     }
 
-    const service = new ContainerService(conf, this);
+    const service = new ContainerService(conf, this, serviceName);
     this._services[serviceName] = service;
 
     return service;
@@ -45,12 +51,13 @@ export class Container {
    * @param {string} containerName
    * @returns {Container} container
    */
+
   addContainer(containerName) {
     if (this._containers[containerName]) {
       throw new Error(`container ${containerName} already exists`);
     }
 
-    const container = new Container(this);
+    const container = new Container(this, containerName);
     this._containers[containerName] = container;
 
     return container;
@@ -89,7 +96,27 @@ export class Container {
    * @returns {ContainerService | Container}
    */
   fetch(path, isContainer = false) {
-    path = path.split('/').filter(el => el);
+    if (typeof path !== "string" && isContainer) {
+      throw new Error("Only string allowed as path to fetch container");
+    }
+    if (path instanceof Function && this._parentRef !== undefined) {
+      throw new Error("Fetching by class allowed only in root container");
+    }
+
+    if (path instanceof Function) {
+      for (const [servicePath, depClass] of this._classMap.entries()) {
+        if (depClass === path) {
+          path = servicePath;
+          break;
+        }
+      }
+
+      if (path instanceof Function) {
+        throw new Error(`No service found for class ${path.name}`);
+      }
+    }
+
+    path = path.split("/").filter(el => el);
 
     if (path.length === 0) return this;
 
@@ -109,7 +136,7 @@ export class Container {
 
   /**
    *
-   * @param {string} path
+   * @param {string | Function } path
    * @returns Dereferenced service (result of `block` or `class` constructor)
    */
   resolve(path) {
@@ -118,31 +145,40 @@ export class Container {
 }
 
 class ContainerService {
-  constructor(conf, parentContainer) {
+  constructor(conf, parentContainer, serviceName) {
     if (!parentContainer) {
-      throw new Error('Missing parent container for service');
+      throw new Error("Missing parent container for service");
     }
+
+    this.isLocked = false;
+    this._serviceName = serviceName;
+    this._parentRef = new WeakRef(parentContainer);
 
     if (conf.block) {
       this._block = conf.block;
     } else if (conf.class) {
       this._serviceClass = conf.class;
-    } else {
-      throw new Error('Missing block or class');
-    }
 
-    this.isLocked = false;
-    this._parentRef = new WeakRef(parentContainer);
+      const [root, pathToService] = this._rootContainer;
+      root.setClassMapping(pathToService, conf.class);
+    } else {
+      throw new Error("Missing block or class");
+    }
   }
 
   get _rootContainer() {
     let container = this._parentRef.deref();
 
-    while (container._parentRef) {
+    const pathParts = [this._parentRef.name, this._serviceName];
+
+    while (container._parentRef !== undefined) {
       container = container._parentRef.deref();
+      pathParts.unshift(container.name);
     }
 
-    return container;
+    const path = "/" + pathParts.join("/");
+
+    return [container, path];
   }
 
   get _dependencies() {
@@ -163,7 +199,9 @@ class ContainerService {
     } else {
       this._instance = new this._serviceClass();
       const dependencies = this._resolveDependencies(options);
-      for (const [dependencyName, dependencyObject] of Object.entries(dependencies)) {
+      for (const [dependencyName, dependencyObject] of Object.entries(
+        dependencies
+      )) {
         this._instance[dependencyName] = dependencyObject;
       }
     }
@@ -179,20 +217,26 @@ class ContainerService {
     if (!this._dependencies) return {};
 
     this.isLocked = true;
-    const root = this._rootContainer;
+    const [root] = this._rootContainer;
     const resolvedDeps = {};
 
-    for (let [dependencyName, dependencyPath] of Object.entries(this._dependencies)) {
-      const dependencyServiceGetOptions = { };
-      const isWeak = dependencyPath.substring(0, 5) === 'weak:';
+    for (let [dependencyName, dependencyPath] of Object.entries(
+      this._dependencies
+    )) {
+      const dependencyServiceGetOptions = {};
+      let isWeak = false;
 
-      if (isWeak) {
-        dependencyServiceGetOptions.weakFrom = this;
-        dependencyPath = dependencyPath.substring(5);
-      }
-
-      if (!dependencyPath.startsWith('/')) {
-        throw new Error(`dependency path should be absolute (${dependencyPath})`);
+      if (typeof dependencyPath === "string") {
+        isWeak = dependencyPath.substring(0, 5) === "weak:";
+        if (isWeak) {
+          dependencyServiceGetOptions.weakFrom = this;
+          dependencyPath = dependencyPath.substring(5);
+        }
+        if (!dependencyPath.startsWith("/")) {
+          throw new Error(
+            `dependency path should be absolute (${dependencyPath})`
+          );
+        }
       }
 
       const service = root.fetch(dependencyPath);

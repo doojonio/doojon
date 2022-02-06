@@ -1,6 +1,6 @@
 {
   "name": "@doojon/breadboard",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "type": "module",
   "description": "Lightweight DI system",
   "main": "src/lib.js",
@@ -21,6 +21,7 @@
   "author": "Anton Fedotov",
   "license": "ISC",
   "devDependencies": {
+    "prettier": "^2.5.1",
     "tap": "^15.0.10"
   }
 }
