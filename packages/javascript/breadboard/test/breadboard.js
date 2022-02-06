@@ -173,3 +173,29 @@ t.test("Class as dependency path when circular", t => {
 
   t.end();
 });
+
+t.test("Class as dependency path when class is not in DI system", t => {
+  const container = new Container();
+
+  class Dependency {
+    method() {}
+  }
+
+  class DependentClass {
+    static get deps() {
+      return { dep: Dependency };
+    }
+
+    callDependencyMethod() {
+      this.dep.method();
+    }
+  }
+
+  container.addService("dependent", { class: DependentClass });
+
+  t.throws(() => {
+    container.resolve(DependentClass);
+  }, "No service found for class");
+
+  t.end();
+});
